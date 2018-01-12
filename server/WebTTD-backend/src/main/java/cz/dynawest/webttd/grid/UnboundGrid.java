@@ -16,7 +16,7 @@ public interface UnboundGrid<T> {
 
   public int getX2();
   public int getY2();
-  
+
   public int getWidth();
   public int getHeight();
 
