@@ -10,9 +10,6 @@ import java.awt.Rectangle;
 import java.util.*;
 
 
-
-
-
 /**
  *
  * @author Ondrej Zizka
@@ -32,7 +29,7 @@ public class TtdGrid extends TiledGrid<Cell> {
   }
 
 
-  
+
   @Override
   public CellsAreaMetaInfo createView( Rect rect ) {
     return new CellsAreaMetaInfo( this, rect );
@@ -62,28 +59,4 @@ public class TtdGrid extends TiledGrid<Cell> {
     return true;
   }
 
-
-
 }// class TtdGrid
-
-
-
-
-
-
-/** 
- * Factory to create new cells which not yet exist when calling get().
- */
-class TtdCellFactory implements GridCellFactory {
-
-  @Override
-  public Cell createCell( int x, int y ) {
-    return createCell( new Point(x,y) );
-  }
-
-  @Override
-  public Cell createCell( Point pt ) {
-    return new Cell( pt );
-  }
-
-}

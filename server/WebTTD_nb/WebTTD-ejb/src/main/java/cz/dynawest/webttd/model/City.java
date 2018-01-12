@@ -5,7 +5,7 @@ import javax.persistence.*;
 
 /**
  *
- * @author Ondøej Žižka
+ * @author Ondrej Zizka
  */
 @Entity
 @Table(name="cities")

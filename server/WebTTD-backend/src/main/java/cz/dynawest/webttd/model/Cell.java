@@ -73,7 +73,9 @@ public class Cell implements Cloneable {
     return new String(newChars, 0, pos);
   }
 
-
+  private Type type = Type.plain;
+  private Building building = Building.none;
+  private RoadDirs roads = new RoadDirs();
 
 
 
@@ -87,7 +89,12 @@ public class Cell implements Cloneable {
     this.y = pt.y;
   }
 
+  public void setRoads( String roads ){
+    this.roads = new RoadDirs( roads );
+  }
 
+  public int getX() { return x; }
+  public int getY() { return y; }
 
 
 
@@ -200,7 +207,7 @@ public class Cell implements Cloneable {
 
     /** toString() */
     public final String toString(){ return this.string; }
-    
+
   }// class RoadDirs
 
 

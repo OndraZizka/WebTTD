@@ -1,16 +1,77 @@
 
 package cz.dynawest.webttd.model;
 
+import javax.xml.bind.annotation.*;
+import org.apache.commons.lang.StringUtils;
+
+
 /**
  *
  * @author Ondrej Zizka
  */
-public class Cell {
+@XmlType(propOrder={"x","y","roads"})
+public class Cell implements Cloneable {
 
-  int x;
-  int y;
+  @XmlAttribute int x;
+  @XmlAttribute int y;
 
-  long lastChanged = 0; // TimeStamp
+  public int getX() { return x; }
+  public int getY() { return y; }
+
+
+  @XmlAttribute long lastChanged = 0; // TimeStamp
+
+
+
+  // --- Cell data --- //
+
+
+  // Type
+  @XmlAttribute private Type type = Type.plain;
+  public Type getType() {    return type;  }
+  public void setType( Type type ) {    this.type = type;  }
+
+
+  // Building
+  @XmlAttribute private Building building = Building.none;
+  public Building getBuilding() {    return building;  }
+  public void setBuilding( Building building ) {    this.building = building;  }
+
+
+  // Roads
+  private RoadDirs2 roads = RoadDirs2.NONE;
+
+  /** "[N][S][W][E]" */
+  public void setRoads( String roads ){
+    //this.roads = new RoadDirs( roads );
+    if( "".equals(roads))
+      this.roads = RoadDirs2.NONE;
+    else
+      this.roads = RoadDirs2.valueOf( normalizeRoadsStr(roads) );
+  }
+
+  public String getRoads(){ return this.roads.string; }
+
+
+
+  public static String normalizeRoadsStr( String str ){
+    int flags = 0x0;
+    byte[] chars = StringUtils.substring(str,0,4).getBytes();
+    for( int i = 0; i < chars.length && i < 4; i++ ){
+      if( chars[i] == 'N' )  flags |= 0x1;
+      if( chars[i] == 'S' )  flags |= 0x2;
+      if( chars[i] == 'W' )  flags |= 0x4;
+      if( chars[i] == 'E' )  flags |= 0x8;
+    }
+    int pos = 0;
+    byte[] newChars = new byte[4];
+    if( (flags & 0x1) != 0 ) newChars[pos++] = 'N';
+    if( (flags & 0x2) != 0 ) newChars[pos++] = 'S';
+    if( (flags & 0x4) != 0 ) newChars[pos++] = 'W';
+    if( (flags & 0x8) != 0 ) newChars[pos++] = 'E';
+    //newChars[pos] = 0x0;
+    return new String(newChars, 0, pos);
+  }
 
   private Type type = Type.plain;
   private Building building = Building.none;
@@ -22,6 +83,10 @@ public class Cell {
   public Cell( int x, int y ) {
     this.x = x;
     this.y = y;
+  }
+  public Cell( Point pt ) {
+    this.x = pt.x;
+    this.y = pt.y;
   }
 
   public void setRoads( String roads ){
@@ -55,12 +120,49 @@ public class Cell {
   }
 
 
+  /** Road directions enum. */
   public enum RoadDir {
     NONE(0), N(0x1), S(0x2), W(0x4), E(0x8);
     final int value;
     RoadDir( int value ){ this.value = value; }
   }
 
+
+  public enum RoadDirs2 {
+    NONE, N, S, W, E, NS, NW, NE, NSW, NSE, NWE, NSWE, SW, SE, SWE, WE;
+
+    final int flags;
+    final String string;
+
+    /** Constructor: Pre-computes flags from the enum member's name. */
+    RoadDirs2() {
+
+      final String dirs = this.name();
+      if( "NONE".equals(dirs) ){
+        this.flags = 0;
+        this.string = "";
+        return;
+      }
+
+      int fl = 0;
+      for( int i = 0; i < dirs.length(); i++ ) {
+        switch( dirs.charAt( i ) ){
+          case 'N': fl |= RoadDir.N.value; break;
+          case 'S': fl |= RoadDir.S.value; break;
+          case 'W': fl |= RoadDir.W.value; break;
+          case 'E': fl |= RoadDir.E.value; break;
+        }
+      }
+      this.flags = fl;
+      this.string = dirs;
+    }
+  }
+
+
+  /**
+   * Road directions set, based on the RoadDir enum.
+   * @Immutable
+   */
   public final class RoadDirs {
 
     // TODO: make unmodifiable.
@@ -77,7 +179,7 @@ public class Cell {
     }
 
     /** "[N][S][W][E]" */
-    public void set( String dirs ){
+    private void set( String dirs ){
       int fl = 0;
       dirs = dirs.toUpperCase();
       for( int i = 0; i < dirs.length(); i++ ) {
@@ -93,7 +195,7 @@ public class Cell {
     }
 
     /** N = 0x1 .. E = 0x8 */
-    public void set( int dirs ){
+    private void set( int dirs ){
       StringBuilder sb = new StringBuilder(4);
       if( (dirs & RoadDir.N.value) == 0 ) sb.append('N');
       if( (dirs & RoadDir.S.value) == 0 ) sb.append('S');
@@ -102,8 +204,12 @@ public class Cell {
       this.string = sb.toString();
       this.flags = dirs;
     }
-    
-  }
+
+    /** toString() */
+    public final String toString(){ return this.string; }
+
+  }// class RoadDirs
+
 
 
   public enum RailDir {

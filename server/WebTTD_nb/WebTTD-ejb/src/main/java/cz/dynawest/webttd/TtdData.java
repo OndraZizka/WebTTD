@@ -27,6 +27,14 @@ public class TtdData {
   public void loadAllData(){
     // TODO
   }
-  
+
+
+
+  @Override
+  public String toString() {
+    return "TtdData";
+  }
+
+
 
 }// class TtdData

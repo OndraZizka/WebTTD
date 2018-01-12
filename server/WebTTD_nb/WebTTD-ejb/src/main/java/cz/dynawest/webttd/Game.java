@@ -2,6 +2,7 @@
 package cz.dynawest.webttd;
 
 
+import cz.dynawest.webttd.grid.TimestampProvider;
 import cz.dynawest.logging.LoggingUtils;
 import java.awt.Rectangle;
 import java.util.logging.*;
@@ -21,8 +22,12 @@ public class Game implements GameLocal {
 
   private static final Logger log = Logger.getLogger( Game.class.getName() );
 
-
+  @XmlElement
+  public TtdGrid getLand() {    return land;  }
   private TtdGrid land;
+
+  @XmlElement
+  public TtdData getData() {    return data;  }
   private TtdData data;
   public TtdData getData() {    return data;  }
 
@@ -40,10 +45,10 @@ public class Game implements GameLocal {
   public synchronized boolean isStopped(){ return this.state == State.STOPPED; }
 
 
-  // Game time. Only server as optimization, to prevent calling currentTimeMillis() all the time.
+  // Game time. Only serves as optimization, to prevent calling currentTimeMillis() all the time.
   private static volatile long timestamp = System.currentTimeMillis() / 1000;
-  public static final long getTimestamp(){ return timestamp; }
-  public static void touch(){ timestamp = System.currentTimeMillis() / 1000; }
+  public final long getTimestamp(){ return Game.timestamp; }
+  public final void touch(){ timestamp = System.currentTimeMillis() / 1000; }
 
 
   /**
@@ -54,7 +59,7 @@ public class Game implements GameLocal {
     LoggingUtils.initLogging();
     log.info("Initializing the game...");
     this.state = State.INIT;
-    this.land = new TtdGrid( new Rectangle(-20,-20,20,20) );
+    this.land = new TtdGrid( this, new Rectangle(-20,-20,20,20) );
     // TODO: Load the grid.
     this.data = new TtdData();
     this.data.loadAllData();
@@ -70,7 +75,7 @@ public class Game implements GameLocal {
   public synchronized void run(){
     log.info("Running the game...");
     this.state = State.RUNNING;
-    
+
     // Run the ticker thread.
     tickerThread.start();
   }
@@ -95,7 +100,7 @@ public class Game implements GameLocal {
     switch( this.state ){
       case STOPPED: return;
     }
-    
+
     this.state = State.STOPPED;
 
     // Stop the ticker thread.
@@ -109,6 +114,23 @@ public class Game implements GameLocal {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+  @Override
+  public String toString() {
+    return "Game{ land: "+land+" data: "+data+" }";
+  }
 
 
 

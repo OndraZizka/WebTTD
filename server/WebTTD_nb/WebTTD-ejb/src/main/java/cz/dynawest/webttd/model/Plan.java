@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 /**
  *
- * @author Ondøej Žižka
+ * @author Ondrej Zizka
  */
 @Entity
 public class Plan

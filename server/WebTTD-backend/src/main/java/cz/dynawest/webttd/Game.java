@@ -6,7 +6,8 @@ import cz.dynawest.webttd.grid.TimestampProvider;
 import cz.dynawest.logging.LoggingUtils;
 import java.awt.Rectangle;
 import java.util.logging.*;
-import javax.xml.bind.annotation.*;
+import org.jboss.ejb3.annotation.LocalBinding;
+import org.jboss.ejb3.annotation.Service;
 
 
 
@@ -14,8 +15,10 @@ import javax.xml.bind.annotation.*;
  *
  * @author Ondrej Zizka
  */
-@XmlRootElement
-public class Game implements TimestampProvider {
+//@Stateless
+@Service(name="game")
+@LocalBinding(jndiBinding="ttd/game")
+public class Game implements GameLocal {
 
   private static final Logger log = Logger.getLogger( Game.class.getName() );
 
@@ -26,6 +29,7 @@ public class Game implements TimestampProvider {
   @XmlElement
   public TtdData getData() {    return data;  }
   private TtdData data;
+  public TtdData getData() {    return data;  }
 
   private GameTickerThread tickerThread;
 
@@ -71,7 +75,7 @@ public class Game implements TimestampProvider {
   public synchronized void run(){
     log.info("Running the game...");
     this.state = State.RUNNING;
-    
+
     // Run the ticker thread.
     tickerThread.start();
   }
@@ -96,7 +100,7 @@ public class Game implements TimestampProvider {
     switch( this.state ){
       case STOPPED: return;
     }
-    
+
     this.state = State.STOPPED;
 
     // Stop the ticker thread.
@@ -113,7 +117,7 @@ public class Game implements TimestampProvider {
 
 
 
-  
+
 
 
 

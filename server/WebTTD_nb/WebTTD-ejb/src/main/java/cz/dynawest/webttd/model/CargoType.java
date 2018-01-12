@@ -3,7 +3,7 @@ package cz.dynawest.webttd.model;
 
 /**
  *
- * @author Ondøej Žižka
+ * @author Ondrej Zizka
  */
 public enum CargoType {
 
@@ -24,7 +24,7 @@ public enum CargoType {
     this.unit = null;
   }
 
-  
+
   public final String asString( int amount ){
     if( this.unit == null )
       return amount+" "+this.name();

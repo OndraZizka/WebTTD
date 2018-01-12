@@ -42,9 +42,9 @@ public class GameTicker {
   public void tick()
   {
     log.fine("Tick!");
-    Game.touch();
+    game.touch();
 
-    
+
     // Update waiting transportables in stations.
     List<Station> stations = game.getData().getStations();
     if( null != stations )
