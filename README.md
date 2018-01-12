@@ -1,4 +1,92 @@
-# WebTTD
+# WebTTD - A Browser-based Transport Tycoon Derivate
 
-An OpenTTD-like massive multiplayer web game with isometric graphics and Java backend.
+(Note: This text is from 2008.)
+
+I've a fixed idea of creating a web version of Transport Tycoon.
+
+Imagine how wonderful it would be if you could build your company for several weeks or months,
+on a vast landscape.
+No hush-hush game like classical TTD, but rather slow progress, more business cooperation amongst players...
+
+
+## Game concept
+
+Web game concepts are different from those of desktop games.
+If you ever have played Travian, you know how such web game works.
+
+ 1) First, the game progress must be //veeery sloooow//. Why?
+Because web games are played occassionally -
+during a boring meetings, during launch break, before bed...
+People want to spend few minutes daily on such game.
+What can you do in that time? Build a track or two, buy a train and set their orders.
+Then you leave it until the next day. The train should do no more than few turns in that time.
+
+
+ 2) Second, there are many many players, which join the game at different times.
+By the time you have been playing for several weeks, someone other joins the game;
+so you have your logistic imperium with dozens of tracks, and the other player has nothing but a loan.
+I've been thinking about this a lot, and came up with a solution similar to Travian's one.
+
+ 3) Third, web games are not fun because of fancy graphics; But even not because of complicated game logic.
+The best part of MMO games are - the other players! Yes, it's the social part of the game which
+keeps people playing: The feel of being a part of gang.
+
+This aspect would have to be carefully applied in the game design. Again, I have ideas about how to achieve that:
+In classical TTD, you always found point A, point B and built a track between them.
+Sometimes you found out that it's impossible because some area is being blocked by other player.
+
+Well, in MMO-TTD, this would inevitably happen all the time, so it's not a good concept at all.
+Better would be to let people deal at which price can one player use other's track.
+
+There are other things to think about, but these three are the main to focus at.
+
+
+
+## Technology
+
+It would be programmed using technologies:
+
+ * HTML + CSS, eventually Canvas
+ * JavaScript for client logic
+ * J2EE backend with JBoss Cache,
+ * or perhaps thin PHP layer with stored procedures in PostgreSQL or MySQL
+
+So far, I gave it about two days of work and have some poor proofs-of-concept:
+
+ 1) TTD-like dialogs made in HTML. Currently only layout + some DoJo code to make them move.
+    This part would need a lot of work: many dialog types + data binding.
+    See "the demo":/samostatne/ttd/HtmlGUI/TTDdialog.html .
+    (Note that the dialogs are not images, but only HTML+CSS - see the page code.)
+
+    [* /samostatne/ttd/HtmlGUI/screenshots/screenshot01.png .(WebTTD - dialogs) *]
+    [* /samostatne/ttd/landscape/screenshots/webttd-landscape-01.png .(WebTTD - landscape) *]
+    [* /samostatne/ttd/landscape/screenshots/webttd-landscape-02.png .(WebTTD - landscape) *]
+
+ 2) Isometric landscape drawing and editing, plus client/server communication (AJAX).
+    I'll add URL of this drawing as soon as I put the database on the server.
+    Works quite fine, but there's one big problem: When you click somewhere,
+    it's almost impossible to compute which cell has been clicked, so it's needed to store it somewhere.
+    And since current technologies, including canvas, do not provide such functionality,
+    the only solution seems to use only flat landscape, which is kinda boring...
+
+    Or, the other option - create the client in .NET or Java or Flash.
+    Since I don't like Flash and .NET is bound to Microsoft, it would be Java's WebStart.
+
+
+
+Next I'd move to drawing of vehicles. That should be quite easy,
+provided we had waypoints of their movement together with their times.
+
+These data have to be computed on the server side.
+So next stage would be J2EE or PL/SQL programming (I'm SQL fan, so it's likely to be PL/SQL :).
+
+Then the data are needed to be send to the client somehow, so some AJAX-Push would be necessary.
+
+
+## A bit of realism
+
+But of course, for one man, this is work for years.
+
+For now, it will just be my humble dream :)
+
 
