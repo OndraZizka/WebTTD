@@ -1,0 +1,266 @@
+Index: src/saveload/map_sl.cpp
+===================================================================
+--- src/saveload/map_sl.cpp	(revision 18254)
++++ src/saveload/map_sl.cpp	(working copy)
+@@ -9,11 +9,15 @@
+ 
+ /** @file map_sl.cpp Code handling saving and loading of map */
+ 
++#include <stdio.h>
++
+ #include "../stdafx.h"
+ #include "../map_func.h"
+ #include "../core/alloc_type.hpp"
+ #include "../core/bitmath_func.hpp"
+ 
++
++
+ #include "saveload.h"
+ 
+ static uint32 _map_dim_x;
+@@ -49,7 +53,10 @@
+ 
+ 	for (TileIndex i = 0; i != size;) {
+ 		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
+-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].type_height = buf[j];
++		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++){
++                    printf("  Load_MAPT(): %d %d\n", i, buf[j] );
++                    _m[i++].type_height = buf[j];
++                }
+ 	}
+ }
+ 
+@@ -72,7 +79,10 @@
+ 
+ 	for (TileIndex i = 0; i != size;) {
+ 		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
+-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].m1 = buf[j];
++		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++){
++                    printf("  Load_MAP1(): %d %d\n", i, buf[j] );
++                    _m[i++].m1 = buf[j];
++                }
+ 	}
+ }
+ 
+@@ -98,7 +108,10 @@
+ 			/* In those versions the m2 was 8 bits */
+ 			CheckSavegameVersion(5) ? SLE_FILE_U8 | SLE_VAR_U16 : SLE_UINT16
+ 		);
+-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].m2 = buf[j];
++		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++){
++                    printf("  Load_MAP2(): %d %d\n", i, buf[j] );
++                    _m[i++].m2 = buf[j];
++                }
+ 	}
+ }
+ 
+@@ -121,7 +134,10 @@
+ 
+ 	for (TileIndex i = 0; i != size;) {
+ 		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
+-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].m3 = buf[j];
++		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++){
++                    printf("  Load_MAP3(): %d %d\n", i, buf[j] );
++                    _m[i++].m3 = buf[j];
++                }
+ 	}
+ }
+ 
+@@ -144,7 +160,10 @@
+ 
+ 	for (TileIndex i = 0; i != size;) {
+ 		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
+-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].m4 = buf[j];
++		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++){
++                    printf("  Load_MAP4(): %d %d\n", i, buf[j] );
++                    _m[i++].m4 = buf[j];
++                }
+ 	}
+ }
+ 
+@@ -167,7 +186,10 @@
+ 
+ 	for (TileIndex i = 0; i != size;) {
+ 		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
+-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].m5 = buf[j];
++		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++){
++                    printf("  Load_MAP5(): %d %d\n", i, buf[j] );
++                    _m[i++].m5 = buf[j];
++                }
+ 	}
+ }
+ 
+@@ -226,7 +248,10 @@
+ 
+ 	for (TileIndex i = 0; i != size;) {
+ 		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
+-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _me[i++].m7 = buf[j];
++		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++){
++                    printf("  Load_MAP7(): %d %d\n", i, buf[j] );
++                    _me[i++].m7 = buf[j];
++                }
+ 	}
+ }
+ 
+Index: src/saveload/saveload.cpp
+===================================================================
+--- src/saveload/saveload.cpp	(revision 18254)
++++ src/saveload/saveload.cpp	(working copy)
+@@ -42,11 +42,19 @@
+ #include "../gamelog.h"
+ #include "../string_func.h"
+ #include "../engine_base.h"
++#include "../townname_func.h"
+ 
+ #include "table/strings.h"
+ 
+ #include "saveload_internal.h"
+ 
++/// Added for dump
++#include "../industry.h"
++
++
++bool dump = false;
++
++
+ extern const uint16 SAVEGAME_VERSION = 127;
+ 
+ SavegameType _savegame_type; ///< type of savegame we are loading
+@@ -558,7 +566,7 @@
+ 				case SLE_FILE_I16: x = (int16 )SlReadUint16(); break;
+ 				case SLE_FILE_U16: x = (uint16)SlReadUint16(); break;
+ 				case SLE_FILE_I32: x = (int32 )SlReadUint32(); break;
+-				case SLE_FILE_U32: x = (uint32)SlReadUint32(); break;
++                                case SLE_FILE_U32: x = (uint32)SlReadUint32(); if(dump) printf("SLE_FILE_U32: %d\n", (uint32)x); break;
+ 				case SLE_FILE_I64: x = (int64 )SlReadUint64(); break;
+ 				case SLE_FILE_U64: x = (uint64)SlReadUint64(); break;
+ 				case SLE_FILE_STRINGID: x = RemapOldStringID((uint16)SlReadUint16()); break;
+@@ -675,6 +683,7 @@
+ 
+ 			((char *)ptr)[len] = '\0'; // properly terminate the string
+ 			str_validate((char *)ptr, (char *)ptr + len);
++                        //printf( "SlString(): %s\n", (char *)ptr );///
+ 			break;
+ 		}
+ 		case SLA_PTRS: break;
+@@ -950,6 +959,7 @@
+ 	return true;
+ }
+ 
++
+ /**
+  * Main SaveLoad function.
+  * @param object The object that is being saved or loaded
+@@ -963,8 +973,11 @@
+ 		if (_sl.need_length == NL_CALCLENGTH) return;
+ 	}
+ 
++        //dump = ( sld == _town_desc );
++
+ 	for (; sld->cmd != SL_END; sld++) {
+ 		void *ptr = sld->global ? sld->address : GetVariableAddress(object, sld);
++                if( dump )  printf("%p:\n", sld );///
+ 		SlObjectMember(ptr, sld);
+ 	}
+ }
+@@ -1785,6 +1798,11 @@
+  */
+ SaveOrLoadResult SaveOrLoad(const char *filename, int mode, Subdirectory sb, bool threaded)
+ {
++
++        printf("\n  ============================= SaveOrLoad() called =============================\n\n" );
++
++
++
+ 	uint32 hdr[2];
+ 	const SaveLoadFormat *fmt;
+ 
+@@ -1862,6 +1880,10 @@
+ 				return result;
+ 			}
+ 		} else { // LOAD game
++
++                        freopen ("last_load_output.txt", "w", stdout);///
++                        printf("<load filename=\"%s\">\n", filename);
++
+ 			assert(mode == SL_LOAD);
+ 			DEBUG(desync, 1, "load: %s\n", filename);
+ 
+@@ -1924,7 +1946,10 @@
+ 
+ 			GamelogReset();
+ 
++                        printf("  <chunks>\n");
++                        printf("\n  ----------------- calling SlLoadChunks() ------------------\n\n" );
+ 			SlLoadChunks();
++                        printf("  </chunks>\n");
+ 			SlFixPointers();
+ 			fmt->uninit_read();
+ 			fclose(_sl.fh);
+@@ -1941,6 +1966,36 @@
+ 			}
+ 
+ 			GamelogStopAction();
++
++                        // ************************************************************************
++                        /// Debug dump.
++                        // ************************************************************************
++                        {
++                            /* Write the towns. */
++                            printf("  <towns>\n");
++                            Town *t;
++                            FOR_ALL_TOWNS(t) {
++                                char buf[1024];
++                                GetTownName(buf, t, buf+512);
++                                printf("    <town id=\"%d\" tileindex=\"%d\" name=\"%s\" />\n", t->index, t->xy, buf);
++                            }
++                            printf("  </towns>\n");
++                        }
++
++                        {
++                            /* Write the industries. */
++                            printf("  <industries>");
++                            Industry *ind;
++
++                            FOR_ALL_INDUSTRIES(ind) {
++                                printf("    <industry id=\"%d\" tileindex=\"%d\" type=\"%d\" w=\"%d\" h=\"%d\" />\n",
++                                        ind->index, ind->xy, ind->type, ind->width, ind->height
++                                );
++                            }
++                            printf("  </industries>");
++                        }
++
++                    printf("</load>\n");///
+ 		}
+ 
+ 		return SL_OK;
+Index: src/saveload/town_sl.cpp
+===================================================================
+--- src/saveload/town_sl.cpp	(revision 18254)
++++ src/saveload/town_sl.cpp	(working copy)
+@@ -9,6 +9,8 @@
+ 
+ /** @file town_sl.cpp Code handling saving and loading of towns and houses */
+ 
++#include <stdio.h>
++
+ #include "../stdafx.h"
+ #include "../newgrf_house.h"
+ #include "../newgrf_commons.h"
+@@ -185,10 +187,16 @@
+ {
+ 	int index;
+ 
++        //printf("<towns>\n");
+ 	while ((index = SlIterateArray()) != -1) {
++                //printf("  <town id=\"%d\">\n", index);
+ 		Town *t = new (index) Town();
+ 		SlObject(t, _town_desc);
++                //printf("    Town name: %s\n", t->name);
++                //printf("    Town tileindex: %d\n", t->xy);
++                //printf("  </town>\n");
+ 	}
++        //printf("</towns>\n");
+ }
+ 
+ extern const ChunkHandler _town_chunk_handlers[] = {
