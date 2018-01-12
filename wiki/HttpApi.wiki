@@ -1,0 +1,31 @@
+= HTTP API =
+
+=== Full data download ===
+
+http://localhost:8080/webttd/data?minX=-2&maxX=2&minY=-2&maxY=2
+
+=== Update ===
+
+http://localhost:8080/webttd/data?minX=-2&maxX=2&minY=-2&maxY=2&since=<timestamp>
+
+{{{
+{
+  cells:{
+    "-3":{
+      "-1": {
+        x:"-1", y:"-3", level:"1",
+        type:"plain",
+        owner:null,
+        ground:"grass",
+        building:"houses_3garden",
+        roads:"S"
+      },
+      ...
+    },
+    "0": { ... }, ...
+  },
+
+  cities: { ... }
+  // Other data...
+}
+}}}

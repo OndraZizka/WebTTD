@@ -1,0 +1,29 @@
+#summary OpenTTD savegame XML export
+
+= OpenTTD savegame XML export =
+
+ * Created by modified OpenTTD
+ * Transformed by a Groovy script - https://webttd.googlecode.com/svn/trunk/server/SaveTransformer
+ * UTF-8
+ * <cells> is a list of cells as they were on the OpenTTD map
+   * top to left ... right to bottom
+ * OpenTTD maps have 1 cell void around the map, so 64x64 comes 62x62, thus 3844 cells.
+ * Only ground, roads, trees and building cells currently processed.
+
+= Format =
+
+{{{
+<load filename="C:\Documents and Settings\Administrator\My Documents\OpenTTD\save\Mesta.sav">
+  <cells>
+    <cell ownerType="NOBODY" owner="0" height="1" />
+    <roadCell dirs="WE"  ownerType="TOWN" owner="1" height="1" />
+    <buildingCell buildingType="12"  ownerType="NOBODY" owner="1" height="1" />
+    ...
+  </cells>
+  <towns>
+    <town id="0" tileindex="781" name="MÄ›lnĂ­k" />
+    <town id="1" tileindex="946" name="Ăšvaly nad DyjĂ­" />
+    ...
+  </towns>
+</load> 
+}}} 
