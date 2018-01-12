@@ -1,0 +1,35 @@
+
+
+/--code js .[brush:]
+/* update: */
+{
+  since: 123456789, /* timestamp */
+  area: {
+    x: %d, y: %d, wid: %d, hei: %d,
+    cells: [ 
+        { x: %d, y: %d, cell: { /* cell */ } },
+    ]
+  }
+}
+\--
+
+/--code js .[brush:]
+/* areaLoad: */
+{
+  area: {
+    x: %d, y: %d, wid: %d, hei: %d,
+    cells: [  /* Rows */
+      [ /* Columns */
+        { /* cell */ },
+        { /* cell */ },
+        ...
+      ],
+      [
+        { /* cell */ },
+        { /* cell */ },
+      ],
+      ...
+    ]
+  }
+}
+\--

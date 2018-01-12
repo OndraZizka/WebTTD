@@ -1,0 +1,10 @@
+﻿TRUNCATE xcom_land;
+CALL lib_GenerateLand(10, 10);
+SELECT * FROM xcom_land x;
+
+UPDATE xcom_land SET type = 'village1' WHERE x = 3 AND y = 3;
+SELECT * FROM xcom_land x;
+
+
+
+
