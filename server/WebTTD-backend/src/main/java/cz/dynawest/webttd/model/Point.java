@@ -19,7 +19,7 @@ public class Point extends java.awt.Point {
     return new Point( this.x + pt.x, this.y + pt.y );
   }
 
-  
+
   @Override
   public String toString() {
     return "["+x+","+y+"]";

@@ -14,7 +14,7 @@ public class Station implements Serializable {
 
   @Id  private Long id;
   public Long getId() {    return id;  }
-  
+
   public String name;
   public Point homeCell;
 
@@ -28,6 +28,6 @@ public class Station implements Serializable {
     this.homeCell = homeCell;
   }
 
-  
+
 
 }// class Station

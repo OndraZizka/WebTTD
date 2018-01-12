@@ -14,11 +14,11 @@ public class Stop implements Serializable
   @Id private Long id;
   public Long getId() {    return id;  }
 
-  
+
   @Embedded
   private Point coords;
   public Point getCoords() {    return coords;  }
-  
+
 
   private Station station;
   public Station getStation() {    return station;  }

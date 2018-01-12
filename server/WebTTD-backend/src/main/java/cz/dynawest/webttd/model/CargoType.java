@@ -24,7 +24,7 @@ public enum CargoType {
     this.unit = null;
   }
 
-  
+
   public final String asString( int amount ){
     if( this.unit == null )
       return amount+" "+this.name();
