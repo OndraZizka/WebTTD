@@ -1,177 +1,179 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>cz.dynawest.webttd</groupId>
-  <artifactId>WebTTD-backend</artifactId>
-  <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
-  <name>WebTTD backend</name>
-  <url>http://maven.apache.org</url>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-    </resources>
+    <groupId>cz.dynawest.webttd</groupId>
+    <artifactId>WebTTD-backend</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0-SNAPSHOT</version>
 
-    <plugins>
+    <name>WebTTD backend</name>
+    <url>http://maven.apache.org</url>
 
-      <!-- Java 1.6 -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.0.2</version>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-            <encoding>${project.build.sourceEncoding}</encoding>
-        </configuration>
-      </plugin>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.4.3</version>
-        <configuration>
-        </configuration>
-      </plugin>
+        <plugins>
 
-      <!-- AOP -->
-      <!--
-      <plugin>
-        <groupId>org.jboss.maven.plugins</groupId>
-        <artifactId>maven-jbossaop-plugin</artifactId>
-        <version>2.1.3.GA</version>
-        <executions>
-          <execution>
-            <id>compile</id>  <goals> <goal>compile</goal> </goals>
-            <configuration>
-              <includeProjectDependency>true</includeProjectDependency>
-              <aoppaths>
-                <aoppath>src/main/resources/META-INF/jboss-aop.xml</aoppath>
-              </aoppaths>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      -->
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-resources-plugin</artifactId>
-            <version>2.2</version>
-            <configuration>
-                <encoding>${project.build.sourceEncoding}</encoding>
-            </configuration>
-        </plugin>
-    </plugins>
+            <!-- Java 1.6 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
 
-  </build>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.4.3</version>
+                <configuration>
+                </configuration>
+            </plugin>
 
-  <dependencies>
+            <!-- AOP -->
+            <!--
+            <plugin>
+              <groupId>org.jboss.maven.plugins</groupId>
+              <artifactId>maven-jbossaop-plugin</artifactId>
+              <version>2.1.3.GA</version>
+              <executions>
+                <execution>
+                  <id>compile</id>  <goals> <goal>compile</goal> </goals>
+                  <configuration>
+                    <includeProjectDependency>true</includeProjectDependency>
+                    <aoppaths>
+                      <aoppath>src/main/resources/META-INF/jboss-aop.xml</aoppath>
+                    </aoppaths>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
 
-    <!-- Groovy -->
-    <dependency>
-        <groupId>org.codehaus.groovy</groupId>
-        <artifactId>groovy-all</artifactId>
-        <version>1.6.5</version>
-    </dependency>
+    </build>
 
+    <dependencies>
 
-    <!-- JAXB -->
-    <dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-impl</artifactId>
-      <version>2.1.12</version>
-    </dependency>
-
-    <!-- JSON -->
-    <dependency>
-      <groupId>net.sf.json-lib</groupId>
-      <artifactId>json-lib</artifactId>
-      <version>2.3</version>
-      <classifier>jdk15</classifier>
-    </dependency>
-
-    <!-- Jackson -->
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-lgpl</artifactId>
-      <version>1.3.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-lgpl</artifactId>
-      <version>1.3.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-xc</artifactId>
-      <version>1.3.0</version>
-    </dependency>
+        <!-- Groovy -->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>1.6.5</version>
+        </dependency>
 
 
-		<!-- Hibernate - for JPA -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>3.4.0.GA</version>
-		</dependency>
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjweaver</artifactId>
-			<version>1.6.6</version>
-		</dependency>
+        <!-- JAXB -->
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.1.12</version>
+        </dependency>
+
+        <!-- JSON -->
+        <dependency>
+            <groupId>net.sf.json-lib</groupId>
+            <artifactId>json-lib</artifactId>
+            <version>2.3</version>
+            <classifier>jdk15</classifier>
+        </dependency>
+
+        <!-- Jackson -->
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-lgpl</artifactId>
+            <version>1.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-lgpl</artifactId>
+            <version>1.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-xc</artifactId>
+            <version>1.3.0</version>
+        </dependency>
 
 
-    <!-- JBoss MC and AOP -->
-    <!--
-    <dependency>
-      <groupId>org.jboss.microcontainer</groupId>
-      <artifactId>jboss-kernel</artifactId>
-      <version>2.0.9.GA</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-       <groupId>org.jboss.microcontainer</groupId>
-       <artifactId>jboss-dependency</artifactId>
-       <version>2.0.9.GA</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.microcontainer</groupId>
-      <artifactId>jboss-aop-mc-int</artifactId>
-      <version>2.0.9.GA</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.aop</groupId>
-      <artifactId>jboss-aop</artifactId>
-      <version>2.1.6.GA</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.cl</groupId>
-      <artifactId>jboss-classloading</artifactId>
-      <version>2.0.1.GA</version>
-    </dependency>
-    -->
+        <!-- Hibernate - for JPA -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>3.4.0.GA</version>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.6.6</version>
+        </dependency>
 
 
-    <!-- Tests -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.testng</groupId>
-      <artifactId>testng</artifactId>
-      <version>5.10</version>
-      <classifier>jdk15</classifier>
-      <scope>test</scope>
-    </dependency>
+        <!-- JBoss MC and AOP -->
+        <!--
+        <dependency>
+          <groupId>org.jboss.microcontainer</groupId>
+          <artifactId>jboss-kernel</artifactId>
+          <version>2.0.9.GA</version>
+          <scope>compile</scope>
+        </dependency>
+        <dependency>
+           <groupId>org.jboss.microcontainer</groupId>
+           <artifactId>jboss-dependency</artifactId>
+           <version>2.0.9.GA</version>
+        </dependency>
+        <dependency>
+          <groupId>org.jboss.microcontainer</groupId>
+          <artifactId>jboss-aop-mc-int</artifactId>
+          <version>2.0.9.GA</version>
+          <scope>compile</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.jboss.aop</groupId>
+          <artifactId>jboss-aop</artifactId>
+          <version>2.1.6.GA</version>
+        </dependency>
+        <dependency>
+          <groupId>org.jboss.cl</groupId>
+          <artifactId>jboss-classloading</artifactId>
+          <version>2.0.1.GA</version>
+        </dependency>
+        -->
 
-  </dependencies>
+
+        <!-- Tests -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>5.10</version>
+            <classifier>jdk15</classifier>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
