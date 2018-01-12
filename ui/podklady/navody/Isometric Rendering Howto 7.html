@@ -1,0 +1,298 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1250">
+
+
+
+  <title>GameDev.net - Coordinates in Hexagon-Based Tile Maps</title>
+  <link rel="stylesheet" href="Isometric%20Rendering%20Howto%207_soubory/reference.css" type="text/css">
+  <link rel="icon" href="http://www.gamedev.net/pics/gdicon.png" type="image/png">
+</head><body leftmargin="0" topmargin="0" alink="#000000" background="Isometric%20Rendering%20Howto%207_soubory/watermark.gif" bgcolor="#ffffff" link="#666699" marginheight="0" marginwidth="0" text="#000000" vlink="#666699">
+
+<table border="0" cellpadding="3" cellspacing="0" width="100%">
+  <tbody><tr>
+    <td class="tblhdr">Coordinates in Hexagon-Based Tile Maps</td>
+    <td class="tblhdr" align="right" nowrap="nowrap"><img src="Isometric%20Rendering%20Howto%207_soubory/littleg.gif" align="absbottom" height="16" width="16">&nbsp;<a href="http://www.gamedev.net/"><span style="color: white; text-decoration: none;">GameDev.net</span></a></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+<!-- Begin -  Site: GameDev.net Zone: GameDev.net variable width -->
+<script language="javascript" type="text/javascript">
+<!--
+var browName = navigator.appName;
+var SiteID = 1;
+var browDateTime = (new Date()).getTime();
+if (browName=='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;IFR=False&amp;Browser=NETSCAPE4&amp;PageID=55140&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+if (browName!='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;IFR=False&amp;PageID=55140&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+// --> 
+</script><script language="javascript" src="Isometric%20Rendering%20Howto%207_soubory/a.js"></script>
+<noscript> <a
+href="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Click&amp;Mode=HTML&amp;SiteID=1&amp;PageID="
+target="_blank"> <img
+src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;Mode=HTML&amp;SiteID=1&amp;PageID="
+width="728" height="90" border="0" alt=""></a>
+</noscript>
+<!-- End -  Site: GameDev.net Zone: GameDev.net variable width --></td>
+  </tr>
+</tbody></table>
+<table border="0" cellpadding="5" cellspacing="0" width="100%"><tbody><tr><td>
+
+<p align="center"><span class="title">Coordinates in Hexagon-Based Tile Maps</span>
+<br><span class="author">by <a href="mailto:lithander@gmx.de">Thomas Jahn</a>
+<br>28 Feb. 2002</span></p>
+
+<h1>Introduction</h1>
+<p>Tile Maps are often used for the graphics in two-dimensional games.
+Using tiles means that all graphics are combinations of smaller
+graphics, similar to mosaics. The advantage is a smaller need for
+memory. The tilesets are seldom bigger than a few hundred kilobytes and
+a map needs far less memory than a pre-rendered image; it needs only a
+pointer per field that identifies which tile is used.
+</p><p>The simplest tiling system has plain squares. It's used in
+games like Warcraft II or the first C&amp;C games. For isometric views
+a la Diablo or Ulitma 7 you usually use diamond shaped tiles. These
+Tiles allow you to achieve a pseudo 3D look. Both tiling systems have a
+major disadvantage. All movements are restricted to four directions
+(vertical and horizontal for squares and diagonal for diamonds) or you
+have to cope with different step distances. (The distance between two
+tiles that touch only at the edges is bigger, then the distance of
+tiles that touch at the sides.)
+</p><p>A hexagon based tile system offers a very nice solution. It
+allows movements in 6 directions with equal distances, so it's used
+especially by tactical games like Panzer General. A second advantage is
+that those hexagon-tiled maps often just look better then simple square
+maps.
+</p><p>On the other side hexagon tiles are harder to work with, both
+for artists as well as for programmers. This article solves some
+problems you might have when trying to implement hexagon based tile
+maps. I will explain how to plot the tiles correctly and how to define
+which pixel is on which hexagon (i.e. for mouse event handling).
+</p><h1>The mathematical structure of Hexagons</h1>
+<p>First of all let's have a look at the mathematical characteristics of a hexagon.
+</p><p align="center"><img src="Isometric%20Rendering%20Howto%207_soubory/image002.gif">
+</p><p>In a hexagon all six sides have the same length <b>s</b> which meet at an angle of 120°. All other values depend on <b>s</b>, so if you set <b>s</b> you can easily calculate the missing information:
+
+</p><p><table border="0" cellpadding="0" cellspacing="0">
+  <tbody><tr>
+    <td>The height <b>h</b>:</td>
+    <td><b>h = sin( 30°) * s</b></td>
+  </tr>
+  <tr>
+    <td>The distance <b>r</b>:</td>
+    <td><b>r = cos( 30°) * s</b></td>
+  </tr>
+  <tr>
+    <td>The height of the surrounding rectangle <b>b</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td><b>b = s + 2 * h</b></td>
+  </tr>
+  <tr>
+    <td>The width of the surrounding rectangle <b>a</b>:</td>
+    <td><b>a = 2 * r</b></td>
+  </tr>
+</tbody></table>
+							
+</p><h1>Converting array coordinates to pixel coordinates</h1>
+<p>As in all other tile maps the information for hexagon based tile
+maps is stored in a two dimensional array. To plot hexagonal tiles we
+need to know the pixel coordinate of the top left edge of the bounding
+rectangle of the hexagon. As we only know the array coordinate (the
+position in the array) we have to find a way to convert these
+coordinates to pixel coordinates.
+</p><p align="center"><img src="Isometric%20Rendering%20Howto%207_soubory/image003.gif">
+</p><p>If you have a look at the above picture you'll probably realize that every second row of tiles is indented by <b>r</b>.
+</p><p>For even rows (blue-green) we have to use this calculation:
+
+</p><p><b>x</b><sub>pixel</sub> = <b>x</b><sub>field</sub> * <b>2 r</b>
+<br><b>y</b><sub>pixel</sub> = <b>y</b><sub>field</sub> * <b>( h + s )</b>
+
+</p><p>For odd rows (red-orange) we have to add <b>r</b> to the horizontal pixel coordinate:
+
+</p><p><b>x</b><sub>pixel</sub> = <b>x</b><sub>field</sub> * <b>2 r + r</b>
+<br><b>y</b><sub>pixel</sub> = <b>y</b><sub>field</sub> * <b>( h + s )</b>
+
+</p><p>It's not hard to write that as program code:
+
+</p><blockquote><pre class="code">//pseudo Code!!!
+PixelX := ArrayX * 2 * TileR + (FieldX AND 1) * TileR
+PixelY := ArrayY * (HexagonH + HexagonS);
+</pre></blockquote>
+
+<p>AND is a boolean And-Operator. The result of the brackets is always
+one if the last bit of ArrayX is on, which means that ArrayX is odd.
+</p><h1>Converting pixel coordinates to array coordinates</h1>
+<p>Now it should be quite easy to plot our map. But that's not enough!
+Things become complicated again if we want to know which tile (the
+array coordinate) the mouse cursor is over. To solve this we have to
+find a way to convert pixel coordinates to array coordinates. A
+relatively simple solution is using a mousemap (like CivII does) but
+there is (in my opinion) a more elegant and faster way.
+</p><p>The first thing we do is to get the pixel coordinate. If we
+have a scrollable map we have to add the position of the left top edge
+of the viewable sector to the cursor position.
+</p><p>Now we divide our map into rectangular sections. Have a look at
+the illustration below. It's quite easy to calculate the section in
+which our pixel coordinate lies. A section has a height of <b>h + s</b> and a width of <b>2 * r</b> (or simply <b>a</b>). Therefore we can use these simple equations:
+
+</p><p><b>x</b><sub>section</sub> = <b>x</b><sub>pixel</sub> / <b>( 2 r )</b>
+<br><b>y</b><sub>section</sub> = <b>y</b><sub>pixel</sub> / <b>( h + s )</b>
+
+</p><p>Keep in mind that you have to round off when doing these calculations.
+</p><p>It's not enough to know in which section we are. We also need to
+know on which pixel we're on within the section. To determine that we
+subtract the position of the left top edge of our section from the
+global pixel coordinates.
+</p><p><b>x</b><sub>sectpxl</sub> = <b>x</b><sub>pixel</sub> - <b>x</b><sub>section</sub> * <b>( 2 r )</b>
+<br><b>y</b><sub>sectpxl</sub> = <b>y</b><sub>pixel</sub> - <b>y</b><sub>section</sub> * <b>( h + s )</b>
+</p><p align="center"><img src="Isometric%20Rendering%20Howto%207_soubory/image004.gif">
+</p><p>There are two different types of section as you can see. It's
+very important to know of what type our section is. Looking at the
+above illustration you might realize that sections in even rows (those
+with an even <b>y</b><sub>section</sub> value) are type A while sections in odd rows are of type B.
+</p><p>Let's see how all these calculations are coded:
+
+</p><blockquote><pre class="code">//pseudo Code!!!
+SectX := PixelX div (2 * TileR);
+SectY := PixelY div (HexagonH + HexagonS);
+
+SectPxlX := PixelX mod (2 * TileR);
+SectPxlY := PixelY mod (HexagonH + HexagonS);
+
+If (SectY AND 1 = 0) then SectTyp := A else SectTyp := B;
+</pre></blockquote>
+
+<p>Now we have all the information we need to determine the array
+coordinate of the tile a pixel is in. Depending on what section we have
+the remaining calculations are different.
+</p><h1>A-Sections</h1>
+
+<p>A-Sections consist of three areas.
+</p><ul>
+  <li>If the pixel position in question lies within the big
+bottom area the array coordinate of the tile is the same as the
+coordinate of our section. </li><li>If the position lies within the top left edge we have to
+subtract one from the horizontal (x) and the vertical (y) component of
+our section coordinate. </li><li>If the position lies within the top right edge we reduce only the vertical component.
+</li></ul>
+
+<p>It's not hard to determine which area we are in if we know the
+gradient of the diagonal edges. Every edge has a gradient of either <b>m = HexagonH / HexagonR</b> or <b>m' = - HexagonH / HexagonR</b>. The following code shows how you can code the area distinction:
+
+</p><blockquote><pre class="code">//pseudo Code!!!
+// middle
+ArrayY := SectY;
+ArrayX := SectX;
+// left Edge
+if SectPxlY &lt; (HexagonH - SectPxlX * m) then begin
+  ArrayX := SectY - 1;
+  ArrayX := SectX - 1;
+end;
+// right Edge
+if SectPxlY &lt; (- HexagonH + SectPxlX * m) then begin
+  ArrayY := SectY - 1;
+  ArrayX := SectX;
+end;
+</pre></blockquote>
+
+<h1>B-Sections</h1>
+<p>B-Sections consist of three areas, too. But they are shaped differently!
+
+</p><ul>
+  <li>If the pixel position in question lies within the right
+area the array coordinate of the tile is the same as the coordinate of
+our section. </li><li>If the position lies within the left area we have to subtract one from the horizontal (x) component of our section coordinate.
+  </li><li>If the position lies within the top area we have to subtract one from the vertical (y) component.
+</li></ul>
+
+<p>We will again use the gradient of the edges to determine which area the pixel is in. The following code shows how:
+ 
+</p><blockquote><pre class="code">//pseudo Code!!!
+// right side
+if SectPxlX  &gt;= HexagonR then begin
+  if sectPxlY &lt; (2 * HexagonH - SectPxlX * m) then begin
+    ArrayY := SectY - 1;
+    ArrayX := SectX - 1;
+  end else begin
+    ArrayY := SectY;
+    ArrayX := SectX;
+  end;
+end;
+// left side
+if SectPxlX &lt; HexagonR then begin
+  if SectPxlY &lt; (SectPxlX * m) then begin
+    ArrayY := SectY - 1;
+    ArrayX := SectX;   
+  end else begin
+    ArrayY := SectY;
+    ArrayX := SectX - 1;
+  end;
+end;
+</pre></blockquote>
+
+<p>Well, now you should be able to handle mouse events and cope with
+every other problem involved with the conversion of pixel coordinates
+to array coordinates.
+</p><p>Last but not least I want to thank David House for reviewing this article!
+</p><p>Please visit my website at <a href="http://pixelpracht.flipcode.com/">http://pixelpracht.flipcode.com</a> to get more articles and other stuff.
+I'd welcome some comments or inspirational ideas. Here's my mail address: <a href="mailto:lithander@gmx.de">lithander@gmx.de</a>!
+</p><p>Happy Coding!
+<br>Thomas
+
+</p><p align="center"><b><a href="http://www.gamedev.net/community/forums/topic.asp?key=featart&amp;uid=1800&amp;forum_id=35&amp;Topic_Title=Coordinates+in+Hexagon%2DBased+Tile+Maps">Discuss this article in the forums</a></b></p>
+<p>
+<br><span class="maintext-2">Date this article was posted to GameDev.net: <b>4/13/2002</b>
+<br>(Note that this date does not necessarily correspond to the date the article was written)</span>
+</p><p><b>See Also:</b><br>
+
+<a href="http://www.gamedev.net/reference/list.asp?categoryid=198">General  </a><br>
+
+<a href="http://www.gamedev.net/reference/list.asp?categoryid=53">Sweet Snippets  </a><br>
+
+</p><p align="center">© 1999-2009 Gamedev.net. All rights reserved. <a href="http://www.gamedev.net/info/legal.htm#copyright"><u>Terms of Use</u></a> <a href="http://www.gamedev.net/info/legal.htm#privacy"><u>Privacy Policy</u></a>
+<br><span class="maintext-1">Comments? Questions? Feedback? <a href="http://www.gamedev.net/info/faq.asp">Click here!</a></span></p>
+
+</td></tr></tbody></table>
+
+
+<!-- start Vibrant Media IntelliTXT Tooltip style sheet -->
+<style type="text/css">
+.iTt{
+    FONT-FAMILY:       Verdana, Arial, Helvetica;
+    FONT-SIZE:         11px;
+    FONT-STYLE:        normal;
+    FONT-WEIGHT:       normal;
+    COLOR:             black;
+    BACKGROUND-COLOR:  lightyellow;
+    BORDER:            black 1px solid;
+    PADDING:           2px;
+}
+.iTt a {
+    COLOR:             0000CC;
+}
+.iTt a:visited {
+    COLOR:             0000CC;
+}
+.iTt a:hover {
+    COLOR:             6666CC;
+}
+.iTt TD {
+   COLOR:              999999;
+}
+</style>
+<!-- end Vibrant Media IntelliTXT style sheet -->
+<!-- start Vibrant Media IntelliTXT script section -->
+<script type="text/javascript" src="Isometric%20Rendering%20Howto%207_soubory/front.js"></script>
+<!-- end Vibrant Media IntelliTXT script section -->
+
+<script src="Isometric%20Rendering%20Howto%207_soubory/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-279474-1";
+urchinTracker();
+</script>
+</body></html>

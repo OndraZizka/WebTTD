@@ -1,0 +1,67 @@
+body, a, div, ol, ul, dl, li, h1, h2, h3, h4, h5, h6, h7, td, th, caption
+{
+	color : White;
+	text-shadow : Gray;
+}
+body
+{
+	background-image : url(/common/temperate.png);
+	background-color: Green;
+}
+a
+{
+	color : #FFD700;
+}
+a:visited 
+{
+	color: #E8B810;
+}
+div.picrr, div.picll, div.picr, div.picl, div.picl div.centred, div.picr div.centred
+{
+	color: #FFD700;
+}
+div.sea div.centred
+{
+	color: #FFFFFF;
+}
+.mag
+{
+	color: Fuchsia;
+}
+.att
+{
+	color: red;
+}
+table, td, th
+{
+	border-color: #608020;
+}
+div.sall, div.all
+{
+	background-image : url(/common/temperate12.png);
+	border-color: #6B8E23;
+}
+.town
+{
+	background-image : url(/common/temperate-town.png);
+	height:121px;
+}
+.updown
+{
+	height:50px;
+	background-image : url(/common/land-sea.png);
+}
+.downup
+{
+	background-image : url(/common/sea-land.png);
+	height:18px;
+}
+.down
+{
+	background-image : url(/common/sea.png);
+	background-color: Blue;
+}
+.blueboder, table.blueboder td
+{
+	border-color: #7B68EE;
+}

@@ -1,0 +1,64 @@
+body, a, div 
+{
+	font-family : Arial, Helvetica, sans-serif;
+	color : White;
+	text-shadow : Gray;
+}
+body
+{
+	text-align: center;
+	vertical-align: bottom;
+	background-color: #98845C;
+	margin : 2px;
+	padding : 0px;
+}
+a
+{
+	color : #000000;
+	text-decoration: none;
+	font-size: x-small;
+}
+a:hover
+{
+		text-decoration: underline;
+}
+a:visited 
+{
+	color: #808080;
+}
+div.right
+{
+	text-align: center;
+	margin: 2px;
+	vertical-align: bottom;
+	height: 72px;
+	overflow: visible;
+	float:right;
+	border-color : #FCD898 #E49004 #E49004 #FCD898;
+	border-width : 2px;
+	border-style : solid;
+ 	background-color: #FCB030;
+}
+div.rightIE
+{
+	clear:both;
+	padding: 2px;
+	border-width : 0px;
+}
+img.row
+{
+	clear:both;
+	display:block;
+	padding: 2px;
+}
+a.line
+{
+	display:block;
+	clear:both;
+}
+img.line
+{
+	display:block;
+	clear:both;
+	margin:2px;
+}

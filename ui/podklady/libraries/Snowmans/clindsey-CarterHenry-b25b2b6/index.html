@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>JS ISO</title>
+		<script type="text/javascript" src="lib/jquery-1.3.2.js"></script>
+		<script type="text/javascript" src="lib/RenderQueue.js"></script>
+		<script type="text/javascript" src="lib/CarterHenry.js"></script>
+		<script type="text/javascript" src="lib/Collection.js"></script>
+		<script type="text/javascript" src="lib/Heap.js"></script>
+		<script type="text/javascript" src="lib/HeapIterator.js"></script>
+		<script type="text/javascript" src="lib/Array2.js"></script>
+		<script type="text/javascript" src="lib/Array2Iterator.js"></script>
+		<script type="text/javascript" src="lib/Graph.js"></script>
+		<script type="text/javascript" src="lib/GraphNode.js"></script>
+		<script type="text/javascript" src="lib/GraphArc.js"></script>
+		<script type="text/javascript" src="lib/GraphNodePointer.js"></script>
+		<script type="text/javascript" src="lib/Waypoint.js"></script>
+		<script type="text/javascript" src="lib/AStarLine.js"></script>
+		<script type="text/javascript" src="tiles.js"></script>
+		<script type="text/javascript" src="map.js"></script>
+		<script type="text/javascript">
+			var carter_henry;
+			var canvas, perspective;
+			var hero, cursor, scroll;
+			var scroll_found_counter = 0;
+			jQuery(document).ready(function(){
+				canvas = {background_color:"#77AA00", width:jQuery("#world_canvas").width(), height:jQuery("#world_canvas").height()};
+				perspective = {top:10, left:250}
+				carter_henry = new CarterHenry("world_canvas", map, tile_data, perspective, canvas, true);
+				hero = carter_henry.add_sprite("HeroSprite", 2, 2);
+				scroll = carter_henry.add_sprite("ScrollSprite", 14, 10);
+				carter_henry.start(on_enter_frame);
+			});
+			function on_enter_frame(){
+				if(hero.map_x == scroll.map_x && hero.map_y == scroll.map_y){
+					jQuery("#scroll_found_count").html(++scroll_found_counter);
+					move_scroll_to_open_space();
+				};
+			};
+			function move_scroll_to_open_space(){
+				var found = false;
+				var index, y, x;
+				while(!found){
+					index = Math.round(Math.random() * (map.data.length * map.data[0].length));
+					y = Math.floor(index / map.data[0].length);
+					x = index - y * map.data[0].length;
+					if(map.data[y][x] == 0){
+						break;
+					};
+				};
+				carter_henry.move_sprite(scroll, x, y);
+			};
+		</script>
+		<style type="text/css">
+			#world_canvas{cursor:default;}
+			#body{background-color:#DDDDDD;}
+		</style>
+	</head>
+	<body>
+		<div id="score">
+			<h1>NINJA HAS FOUND <span id="scroll_found_count">0</span> SCROLLS</h1>
+		</div>
+		<canvas id="world_canvas" width="900" height="460">
+			Oops, No Canvas Support
+		</canvas>
+		<div id="instructions">
+			<p>
+				The Way:
+				<ol>
+					<li>Ninja clicks to move</li>
+					<li>Ninja finds the scrolls</li>
+				<ol>
+			</p>
+		</div>
+	</body>
+</html>

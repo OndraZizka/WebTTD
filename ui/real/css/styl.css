@@ -1,0 +1,103 @@
+	body {
+		background-color: #ffffff; color: black;
+		font-family: "Arial CE", "Helvetica CE", "Verdana CE", Arial, Helvetica, Verdana, sans-serif;
+	}
+  
+  
+	/**  Samotná mapa, èerné pozadí, nic by ji nemìlo pøesáhnout.  **/
+  #mapbox        { position: relative; background-color: black; height: 700px; width: 800px; border: 1px solid red; overflow: hidden; }
+  #mapbox .label { position: absolute; bottom: 0px; color: red; }
+
+
+/******************************************************************************
+
+Pozicování políèek
+
+Pozicování políèek je vytváøeno pomocí dvou <div>:
+
+První má position: absolute a pomocí top: a left: se umístí na správné místo.
+V nìm je vnoøený další <div>. V nìm je od levého horního rohu na pozadí
+pøíslušný obrázek. <div> má position: relative, a je posunutý podle bodu,
+kde je v obrázku "vrchol" nejbližší k pozorovateli.
+
+******************************************************************************/
+	
+	/**  Kontejner obsahující políèka.  **/
+  #map        { position: absolute; top: 50%; left: 50%; height: 250px; width: 250px; border: 1px solid green; }
+  #map .label { position: absolute; bottom: 0px; color: green; }
+  #map img.field { position: absolute; }
+  #map div.field { position: absolute;
+		width: 64px; height: 31px; /* Mùže být... ale .img_holder to mùže pøesáhnout. */
+		border: 1px dotted orange;/**/
+	}
+  #map div.field div.img_holder {
+		position: relative; top: -31; left: -31;
+		background: URL("../img/ttd/louka-zelena.png") no-repeat left top;
+		width: 128px; height: 128px;
+	}
+	
+	/**** Field types ****/
+	
+	/** Plain **/
+  #map div.field.plain          .img_holder    { background-image: URL("../img/ttd/sutry.png"); }  /* default look for plain */
+  #map div.field.plain.grass    .img_holder    { background-image: URL("../img/ttd_web/ground/grass.png"); }
+  #map div.field.plain.bumpy    .img_holder    { background-image: URL("../img/ttd_web/ground/bumpy.png"); }
+  #map div.field.plain.stones   .img_holder    { background-image: URL("../img/ttd_web/ground/rocks.png"); }
+  #map div.field.plain.concrete .img_holder    { background-image: URL("../img/ttd_web/ground/concrete.png"); }
+  #map div.field.plain.farm     .img_holder    { background-image: URL("../img/ttd_web/ground/farm7.png"); }
+
+	/** Buildings **/
+  #map div.field.building   .img_holder    { background-image: URL("../img/ttd/domky1.png"); } /* default look for building */
+	
+	/** Roads **/
+  #map div.field.road       .img_holder    { background-image: URL("../img/ttd_web/road/NSWE.png"); } /* default look for road */
+	
+	/** Rails **/
+  #map div.field.rail       .img_holder    { background-image: URL("../img/ttttd_webd/rail/NS_WE.png"); } /* default look for rail */
+	
+
+	/** OVERLAY **/
+  #overlay        {
+		position: absolute;
+		/*top: 50%; left: 50%;*/
+		height: 700px; width: 800px;
+		z-index:50000;
+		border: 1px solid magenta;  }
+  #overlay.dragging { cursor: move; }
+  #overlay .label { position: absolute; bottom: 3ex; color: magenta; }
+  
+
+	
+	/** GUI **/
+	#gui {
+		position: absolute; top: 1ex; left: 850px;
+	}
+	
+	
+
+
+	/** DEBUG **/
+  pre#messages { float: right; font-size: 80%; width: 300px; height: 100%; overflow: auto; border: 1px dashed black; }
+  div.debug_object_info.event { float: right; font-size: 80%; border: 1px solid red; }
+  
+  table.debug_object_info { border-collapse: collapse; font-size: 75%; }
+	
+	#corner_bottom_right {
+		position: absolute;
+    z-index: 1000;
+    bottom: 2ex;
+    left: 2ex;
+    border: 1px solid black;
+    background: white;
+	}
+		#corner_bottom_right .float {
+			float: left;
+		}
+			#corner_bottom_right .float.overlay div {
+				border: 1px solid magenta;
+			}
+			#corner_bottom_right .float.map div {
+				border: 1px solid green;
+			}
+	
+

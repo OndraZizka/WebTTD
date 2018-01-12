@@ -1,0 +1,584 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1250">
+
+
+
+  <title>GameDev.net - Isometric 'n' Hexagonal Maps Part I</title>
+  <link rel="stylesheet" href="Isometric%20Rendering%20Howto_soubory/reference.css" type="text/css">
+  <link rel="icon" href="http://www.gamedev.net/pics/gdicon.png" type="image/png">
+</head><body leftmargin="0" topmargin="0" alink="#000000" background="Isometric%20Rendering%20Howto_soubory/watermark.gif" bgcolor="#ffffff" link="#666699" marginheight="0" marginwidth="0" text="#000000" vlink="#666699">
+
+<table border="0" cellpadding="3" cellspacing="0" width="100%">
+  <tbody><tr>
+    <td class="tblhdr">Isometric 'n' Hexagonal Maps Part I</td>
+    <td class="tblhdr" align="right" nowrap="nowrap"><img src="Isometric%20Rendering%20Howto_soubory/littleg.gif" align="absbottom" height="16" width="16">&nbsp;<a href="http://www.gamedev.net/"><span style="color: white; text-decoration: none;">GameDev.net</span></a></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+<!-- Begin -  Site: GameDev.net Zone: GameDev.net variable width -->
+<script language="javascript" type="text/javascript">
+<!--
+var browName = navigator.appName;
+var SiteID = 1;
+var browDateTime = (new Date()).getTime();
+if (browName=='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;IFR=False&amp;Browser=NETSCAPE4&amp;PageID=55140&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+if (browName!='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;IFR=False&amp;PageID=55140&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+// --> 
+</script><script language="javascript" src="Isometric%20Rendering%20Howto_soubory/a.js"></script>
+<noscript> <a
+href="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Click&amp;Mode=HTML&amp;SiteID=1&amp;PageID="
+target="_blank"> <img
+src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;Mode=HTML&amp;SiteID=1&amp;PageID="
+width="728" height="90" border="0" alt=""></a>
+</noscript>
+<!-- End -  Site: GameDev.net Zone: GameDev.net variable width --></td>
+  </tr>
+</tbody></table>
+<table border="0" cellpadding="5" cellspacing="0" width="100%"><tbody><tr><td>
+
+<p align="center"><span class="title">Isometric 'n' Hexagonal Maps Part I</span>
+<br><span class="author">by <a href="mailto:tanstaafl@gamedev.net">TANSTAAFL</a></span></p>
+
+<br><br><ol type="A">
+   <li><a href="#INTRO">Introduction</a> 
+   </li><li><a href="#WHATFOR">What the Hell are Isometric and Hexagonal Maps for?</a>
+   </li><li><a href="#RECTGRID">Forcing Iso/Hex Maps onto a Rectangular Grid</a>
+   </li><li><a href="#PLOTTING">Plotting Iso/Hex Tiles on the Map</a>
+   </li><li><a href="#MOVING">Moving Around in Iso/Hex Maps</a>
+   </li><li><a href="#FACING">Facing and Turning</a>
+   </li><li><a href="#MOUSE">Mouse Matters</a>
+</li></ol>
+
+<a name="INTRO"></a>
+<h1>Introduction</h1>
+<p>WHOA! What do you know, I'm finally doing a tutorial on an actual
+Programming Topic. I think the temperature in Hell must have dropped
+below 32.</p>
+<p>The source code examples in this tutorial will be both in Pascal,
+and C (wherever I can translate it). Since the techniques are cross
+platform, I won't be showing code on how to Blit the images to the
+screen.</p>
+<p>All of the tiles I use are 40x40, and all of the calculations are
+based on it. Depending on the size of bitmap you use, you may have to
+scale up or down.</p>
+
+<a name="WHATFOR"></a>
+<h1>What the Hell are Isometric and Hexagonal Maps for?</h1>
+<p>Isometric Maps are maps that use rhombuses instead of squares or
+rectangles. (A rhombus is a four sided figure, with all sides the same
+length, but not necessarily 90 degrees at the corners. Yes, a Square is
+technically a rhombus). Isometric maps give sort of an illusion of
+being 3d, but without actually being so. Sid Meier's Civilization II
+uses Isometric Maps.</p>
+<p>Here is an Isometric Tile: <img src="Isometric%20Rendering%20Howto_soubory/GreenIso.gif"> (This tile is actually 40x40, but the rhombus only takes up the bottom 40x21)</p>
+<p>Hexagonal Maps are maps that use Hexagons (6 sided figures) instead
+of squares or rectangles. Hexagonal maps are used mostly for overhead
+view strategy games (The use of these dates back to Avalon Hill, and
+other strategy game companies).</p>
+<p>Here is a Hexagonal Tile: <img src="Isometric%20Rendering%20Howto_soubory/GreenHex.gif"></p>
+
+<a name="RECTGRID"></a>
+<h1>Forcing Isometric and Hexagonal Maps onto a Rectangular Grid</h1>
+<p>Okay, you can make Chessboard-like maps all day, you just have to
+use a 2d array. Spiffy. But Isometric and Hexagonal Maps don't work
+that way. Every other line is offset.</p>
+<p>We can still put Iso and Hex maps into a 2d Array, but the WAY in which we map them is different.</p>
+<p>Here's an IsoMap:</p>
+<img src="Isometric%20Rendering%20Howto_soubory/MapIso.gif"><br>
+<p>Here's a HexMap:</p>
+<img src="Isometric%20Rendering%20Howto_soubory/MapHex.gif"><br>
+<p>As demonstrated in the above pictures, for odd Y values, you shift the line over by half of a tile (20 pixels, in my case).</p>
+<p>(The White Spaces are border tiles not on the map. Usually, you would fill these with black.)</p>
+
+<a name="PLOTTING"></a>
+<h1>Plotting the Iso/Hex Tiles on the Map</h1>
+<p>Since both Iso and Hex tiles are contained in overlapping rectangles, you MUST USE BITMASKS!</p>
+<p>My Iso Tiles, and the Iso BitMask: <img src="Isometric%20Rendering%20Howto_soubory/GreenIso.gif"><img src="Isometric%20Rendering%20Howto_soubory/BlueIso.gif"><img src="Isometric%20Rendering%20Howto_soubory/MaskIso.gif"></p>
+<p>My Hex Tiles, and the Hex BitMask: <img src="Isometric%20Rendering%20Howto_soubory/GreenHex.gif"><img src="Isometric%20Rendering%20Howto_soubory/BlueHex.gif"><img src="Isometric%20Rendering%20Howto_soubory/MaskHex.gif"></p>
+<p>{The Brief Review of BitMasking: You blit the bitmask using AND, then Blit the Tile using OR.}</p>
+
+<p><b>Pixel Coordinates of Iso/Hex Tiles</b></p>
+<p>When calculating X,Y coordinates for Rectangular tiles, you use the following calculations:</p>
+
+<blockquote><pre class="code">PlotX=MapX*Width
+PlotY=MapY*Height
+</pre></blockquote>
+
+<p>For Iso/Hex maps, it's a little trickier, since the bounding rectangles overlap.</p>
+
+<p><b>Iso Maps:</b></p>
+
+<blockquote><pre class="code">{(MapY AND 1) tells us if MapY is odd or even, and shifts the tile to the right if it is odd}
+PlotX=MapX*Width+(MapY AND 1)*(Width/2)
+PlotY=MapY*HeightOverLapping-YOffset
+</pre></blockquote>
+
+<p>Important: Width should always be an even number, or you wind up with a black zigzag line between rows of tiles</p>
+
+<blockquote><pre class="code">{This assumes you have shaped your rhombus like mine, with one pixel}
+{at the left and right corners, and two at the top and bottom.}
+HeightOverLapping=(Height of Rhombus)/2+1
+
+{to make the first row flush with the top of the map}
+Yoffset=Height-(Height of Rhombus)
+</pre></blockquote>
+
+<p><b>HexMaps:</b></p>
+
+<blockquote><pre class="code">PlotX=MapX*Width+(MapY AND 1)*(Width/2)
+PlotY=MapY*HeightOverLapping
+HeightOverLapping=(Height of Hexagon)*0.75 {Assuming your hexagon looks like mine}
+</pre></blockquote>
+
+<a name="MOVING"></a>
+<h1>Moving Around in Iso/Hex Maps</h1>
+<p>In Rectangular maps, movement from square to square is easy. Just add/subtract 1 to X and/or Y, and you have made the move.</p>
+<p>Iso and Hex maps make THAT more difficult, as well. Due to the fact
+that every other line is offset, there are different calculations,
+depending if whatever is moving is on an Even Row, or an Odd Row.</p>
+<p>Isometric Directions:</p><img src="Isometric%20Rendering%20Howto_soubory/DirectionIso.gif"><br><b></b><p><b>Isometric Directions</b>:</p>
+<p><img src="Isometric%20Rendering%20Howto_soubory/DirectionIso.gif" height="231" width="252"></p>
+<p>For coding purposes, we will give names to these directions:</p>
+
+<blockquote><pre class="code">{Pascal}
+Const
+    IsoEast=0;
+    IsoSouthEast=1;
+    IsoSouth=2;
+    IsoSouthWest=3;
+    IsoWest=4;
+    IsoNorthWest=5;
+    IsoNorth=6;
+    IsoNorthEast=7;
+
+{C}
+#define ISOEAST 0
+#define ISOSOUTHEAST 1
+#define ISOSOUTH 2
+#define ISOSOUTHWEST 3
+#define ISOWEST 4
+#define ISONORTHWEST 5
+#define ISONORTH 6
+#define ISONORTHEAST 7
+</pre></blockquote>
+
+<b></b><p><b>Hexagonal Directions</b>:</p>
+<p><img src="Isometric%20Rendering%20Howto_soubory/DirectionHex.gif" height="262" width="286"></p>
+<p>The names for these directions:</p>
+
+<blockquote><pre class="code">{Pascal}
+Const
+    HexEast=0;
+    HexSouthEast=1;
+    HexSouthWest=2;
+    HexWest=3;
+    HexNorthWest=4;
+    HexNorthEast=5;
+
+{C}
+#define HEXEAST 0
+#define HEXSOUTHEAST 1
+#define HEXSOUTHWEST 2
+#define HEXWEST 3
+#define HEXNORTHWEST 4
+#define HEXNORTHEAST 5
+</pre></blockquote>
+
+<p>Here is a table of DX(Change In X), and DY(Change in Y) for each
+direction on the Iso and Hex maps, divided into two lists, one for even
+Y values, and one for odd Y values.</p>
+
+<center><table border="1" bordercolor="#000000" cellpadding="6" cellspacing="1" width="731">
+<tbody><tr valign="top">
+    <td colspan="2" align="center" bgcolor="#666699" width="34%"><font color="white"><b>Direction</b></font></td>
+    <td colspan="2" align="center" bgcolor="#666699" width="34%"><font color="white"><b>Even Y Value</b></font></td>
+    <td colspan="2" align="center" bgcolor="#666699" width="34%"><font color="white"><b>Odd Y Value</b></font></td>
+</tr>
+<tr valign="top">
+    <td align="center" bgcolor="#c0c0c0"><b>Isometric</b></td>
+    <td align="center" bgcolor="#c0c0c0"><b>Hexagonal</b></td>
+    <td align="center" bgcolor="#c0c0c0"><b>DeltaX(DX)</b></td>
+    <td align="center" bgcolor="#c0c0c0"><b>DeltaY(DY)</b></td>
+    <td align="center" bgcolor="#c0c0c0"><b>DeltaX(DX)</b></td>
+    <td align="center" bgcolor="#c0c0c0"><b>DeltaY(DY)</b></td>
+</tr>
+<tr valign="top">
+    <td align="center" bgcolor="#e0e0e0"><font color="#00983e"></font><p><font color="#00983e">IsoEast</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#800040"></font><p><font color="#800040">HexEast</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#ff0000"></font><p><font color="#ff0000">+1</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#0000ff"></font><p><font color="#0000ff">0</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#ff0000"></font><p><font color="#ff0000">+1</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#0000ff"></font><p><font color="#0000ff">0</font></p></td>
+</tr>
+<tr valign="top">
+    <td align="center" bgcolor="#e0e0e0"><font color="#00983e"></font><p><font color="#00983e">IsoSouthEast</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#800040"></font><p><font color="#800040">HexSouthEast</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#ff0000"></font><p><font color="#ff0000">0</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#0000ff"></font><p><font color="#0000ff">+1</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#ff0000"></font><p><font color="#ff0000">+1</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#0000ff"></font><p><font color="#0000ff">+1</font></p></td>
+</tr>
+<tr valign="top">
+    <td align="center" bgcolor="#e0e0e0"><font color="#00983e"></font><p><font color="#00983e">IsoSouth</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#800040"></font><p><font color="#800040">N/A</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#ff0000"></font><p><font color="#ff0000">0</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#0000ff"></font><p><font color="#0000ff">+2</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#ff0000"></font><p><font color="#ff0000">0</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#0000ff"></font><p><font color="#0000ff">+2</font></p></td>
+</tr>
+<tr valign="top">
+    <td align="center" bgcolor="#e0e0e0"><font color="#00983e"></font><p><font color="#00983e">IsoSouthWest</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#800040"></font><p><font color="#800040">HexSouthWest</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#ff0000"></font><p><font color="#ff0000">-1</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#0000ff"></font><p><font color="#0000ff">+1</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#ff0000"></font><p><font color="#ff0000">0</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#0000ff"></font><p><font color="#0000ff">+1</font></p></td>
+</tr>
+<tr valign="top">
+    <td align="center" bgcolor="#e0e0e0"><font color="#00983e"></font><p><font color="#00983e">IsoWest</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#800040"></font><p><font color="#800040">HexWest</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#ff0000"></font><p><font color="#ff0000">-1</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#0000ff"></font><p><font color="#0000ff">0</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#ff0000"></font><p><font color="#ff0000">-1</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#0000ff"></font><p><font color="#0000ff">0</font></p></td>
+</tr>
+<tr valign="top">
+    <td align="center" bgcolor="#e0e0e0"><font color="#00983e"></font><p><font color="#00983e">IsoNorthWest</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#800040"></font><p><font color="#800040">HexNorthWest</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#ff0000"></font><p><font color="#ff0000">-1</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#0000ff"></font><p><font color="#0000ff">-1</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#ff0000"></font><p><font color="#ff0000">0</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#0000ff"></font><p><font color="#0000ff">-1</font></p></td>
+</tr>
+<tr valign="top">
+    <td align="center" bgcolor="#e0e0e0"><font color="#00983e"></font><p><font color="#00983e">IsoNorth</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#800040"></font><p><font color="#800040">N/A</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#ff0000"></font><p><font color="#ff0000">0</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#0000ff"></font><p><font color="#0000ff">-2</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#ff0000"></font><p><font color="#ff0000">0</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#0000ff"></font><p><font color="#0000ff">-2</font></p></td>
+</tr>
+<tr valign="top">
+    <td align="center" bgcolor="#e0e0e0"><font color="#00983e"></font><p><font color="#00983e">IsoNorthEast</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#800040"></font><p><font color="#800040">HexNorthEast</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#ff0000"></font><p><font color="#ff0000">0</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#0000ff"></font><p><font color="#0000ff">-1</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#ff0000"></font><p><font color="#ff0000">1</font></p></td>
+    <td align="center" bgcolor="#e0e0e0"><font color="#0000ff"></font><p><font color="#0000ff">-1</font></p></td>
+</tr>
+</tbody></table></center>
+
+<p>As you can see, DeltaY is the same, no matter what row you are on. Only DeltaX changes.</p>
+<p>Also, For the Cardinal Directions (North, East, South, and West), DeltaX is the same no matter what row you are on.</p>
+<p>Its only diagonal movement that is tricky.</p>
+<p>So now, let's build a few functions: <tt>IsoDeltaX</tt>, <tt>IsoDeltaY</tt>, <tt>HexDeltaX</tt>, and <tt>HexDeltaY</tt>.</p>
+
+<blockquote><pre class="code">{Pascal}
+{To find out how we should  modify X in order to move a given direction.}
+{Dir is direction of intended movement, and OddRow is whether or not the}
+{current Y position is odd or even. you can feed the expression ((Y and 1)=1}
+Function IsoDeltaX(Dir:byte;OddRow:boolean):integer;
+Var Temp:integer;
+Begin
+    Temp:=0;  {The default change in X is 0.  We'll only modify it if we have to}
+    Case Dir of
+    IsoEast: Temp:=1;
+    IsoWest: Temp:=-1;
+    IsoNorth: Temp:=Temp-2;
+    IsoSouth: Temp:=Temp+2;
+    IsoSouthEast, IsoNorthEast: If OddRow then Temp:=1;{If Not OddRow, then leave as 0}
+    IsoSouthWest, IsoNorthWest: If Not OddRow then Temp:=-1; {If OddRow, the leave as 0}
+    End;
+    IsoDeltaX:=Temp;{Return the Value}
+End;
+
+{To find out how we should modify Y in order to move in a given direction.}
+{Dir is the direction of intended movement}
+Function IsoDeltaY(Dir:byte):integer;
+Var Temp:integer;
+Begin
+    Temp:=0;{Default Value of 0.  We will change it only if we have to}
+    Case Dir of
+    IsoNorth: Temp:=-2;
+    IsoSouth: Temp:=2;
+    IsoNorthWest, IsoNorthEast: Temp:=-1;
+    IsoSouthWest,IsoSouthEast: Temp:=1;
+    End;
+    IsoDeltaY:=Temp;{Return the value}
+End;
+
+Function HexDeltaX(Dir:byte;OddRow:boolean):integer;
+Var Temp:integer;
+Begin
+    Temp:=0;
+    Case Dir of
+    HexEast: Temp:=1;
+    HexWest: Temp:=-1;
+    HexSouthEast, HexNorthEast: If OddRow then Temp:=1;
+    HexSouthWest, HexNorthWest: If Not OddRow then Temp:=-1;
+    End;
+    HexDeltaX:=Temp;
+End;
+
+Function HexDeltaY(Dir:byte):integer;
+Var Temp:integer;
+Begin
+    Temp:=0;
+    Case Dir of
+    HexNorthWest, HexNorthEast: Temp:=-1;
+    HexSouthWest,HexSouthEast: Temp:=1;
+    End;
+    HexDeltaY:=Temp;
+End;
+
+{C}
+int isodeltax(unsigned char dir, BOOL oddrow)
+{
+    int temp=0;
+    switch(dir)
+    {
+        case ISOEAST: temp=1; break;
+        case ISOWEST: temp=-1;break;
+        case ISOSOUTHEAST:
+        case ISONORTHEAST: if (oddrow==TRUE) temp=1; break;
+        case ISOSOUTHWEST:
+        case ISONORTHWEST: if (oddrow==FALSE) temp=-1;break;
+    }
+    return(temp);
+}
+
+int isodeltay(unsigned char dir)
+{
+    int temp=0;
+    switch(dir)
+    {
+        case ISONORTH: temp=-2;break;
+        case ISOSOUTH: temp=2;break;
+        case ISOSOUTHEAST:
+        case ISOSOUTHWEST: temp=1;break;
+        case ISONORTHEAST:
+        case ISONORTHWEST: temp=-1;break;
+    }
+    return(temp);
+}
+
+int hexdeltax(unsigned char dir, BOOL oddrow)
+{
+    int temp=0;
+    switch(dir)
+    {
+        case HEXEAST: temp=1; break;
+        case HEXWEST: temp=-1;break;
+        case HEXSOUTHEAST:
+        case HEXNORTHEAST: if (oddrow==TRUE) temp=1; break;
+        case HEXSOUTHWEST:
+        case HEXNORTHWEST: if (oddrow==FALSE) temp=-1;break;
+    }
+    return(temp);
+}
+
+int hexdeltay(unsigned char dir)
+{
+    int temp=0;
+    switch(dir)
+    {
+        case HEXSOUTHEAST:
+        case HEXSOUTHWEST: temp=1;break;
+        case HEXNORTHEAST:
+        case HEXNORTHWEST: temp=-1;break;
+    }
+    return(temp);
+}
+</pre></blockquote>
+
+<a name="FACING"></a>
+<h1>Facing and Turning</h1>
+<p>In some games, like strategy games, as well as others, the direction
+that something on a tile is facing is just as important as what tile
+they are on. (for things like arc fire, etc.)</p>
+<p>Keeping track of facing is no big deal. It's just a byte (char) that
+keeps track of the unit's direction (0 to 7 for Iso, 0 to 5 for Hex)</p>
+<p>For Turning the unit, we may want to have a function or two, as well as some turning constants.</p>
+<p>In Iso, we turn in increments of 45 degrees, in Hex, we turn in increments of 60.</p>
+
+<blockquote><pre class="code">{Pascal}
+Const
+    {Iso Turning Constants}
+    IsoTurnNone=0;
+    IsoTurnRight45=1;
+    IsoTurnRight90=2;
+    IsoTurnRight135=3;
+    IsoTurnAround=4;
+    IsoTurnLeft135=5;
+    IsoTurnLeft90=6;
+    IsoTurnLeft45=7;
+    {Hex Turning Constants}
+    HexTurnNone=0;
+    HexTurnRight60=1;
+    HexTurnRight120=2;
+    HexTurnAround=3;
+    HexTurnLeft120=4;
+    HexTurnLeft60=5;
+
+Function IsoTurn(Dir,Turn:byte):byte;
+Begin
+    IsoTurn:=(Dir+Turn) AND 7;
+End;
+
+Function HexTurn(Dir,Turn:byte):byte;
+Begin
+    HexTurn:=(Dir+Turn) MOD 6;
+End;
+
+{C}
+/*Iso Turn Constants*/
+#define ISOTURNNONE 0
+#define ISOTURNRIGHT45 1
+#define ISOTURNRIGHT90 2
+#define ISOTURNRIGHT135 3
+#define ISOTURNAROUND 4
+#define ISOTURNLEFT135 5
+#define ISOTURNLEFT90 6
+#define ISOTURNLEFT45 7
+
+/*Hex Turn Constants*/
+#define HEXTURNNONE 0
+#define HEXTURNRIGHT60 1
+#define HEXTURNRIGHT120 2
+#define HEXTURNAROUND 3
+#define HEXTURNLEFT120 4
+#define HEXTURNLEFT60 5
+
+unsigned char isoturn(unsigned char dir, unsigned char turn)
+{
+    return((dir+turn) &amp; 7);
+}
+
+<p>unsigned char hexturn(unsigned char dir, unsigned char turn)
+{
+    return((dir+turn) % 6);
+}
+</p></pre></blockquote>
+
+<a name="MOUSE"></a>
+<h1>Mouse Matters</h1>
+<p>Another major difficulty of Iso/Hex mapping is the mouse cursor.
+This was one of my difficulties for a long time. Then, I took a look at
+one of the GIFs that shipped with Civilization II.</p>
+<p>It had a little picture, kind of like this:</p>
+<p><img src="Isometric%20Rendering%20Howto_soubory/MouseMapIso.gif" height="21" width="40"></p>
+<p>AHA! I said. Then I understood. We don't have to do bizarre
+calculations in order to figure out what tile we're on! We just divide
+the screen (or map) into little rectangles like the one above, figure
+out where in a given rectangle our mouse is, and find the color on the
+picture above that corresponds! This will allow us to figure out which
+tile our mouse is hovering over. (After stumbling on to this epiphany,
+I promptly smacked myself in the forehead and said "DUH!")</p>
+<p>I call the above picture the Isometric MouseMap. Here's how to use it.</p>
+<p>(For Hex Maps, use the same algorithm, but with the following MouseMap: <img src="Isometric%20Rendering%20Howto_soubory/MouseMapHex.gif" height="60" width="40"> )</p>
+<ul>
+    <li>First Step: Find out what region of the map the mouse is in.<p></p>
+        <dir>RegionX=int(MouseX/MouseMapWidth)
+        <br>RegionY=int(MouseY/MouseMapHeight)*2 {The multiplying by two is very important}</dir><p></p>
+    </li><li>Second Step: Find out WHERE in the mousemap our mouse is, by finding MouseMapX and MouseMapY.<p></p>
+        <dir>MouseMapX=MouseX MOD MouseMapWidth
+        <br>MouseMapY=MouseY MOD MouseMapHeight</dir><br>
+    </li><li>Third Step: Determine the color in the MouseMap at (MouseMapX,MouseMapY).<br><br>
+    </li><li>Fourth Step: Find RegionDX and RegionDY in the following table:<br><br>
+        <table cellpadding="7" cellspacing="1" width="70%">
+        <tbody><tr valign="top">
+            <td bgcolor="#666699" width="33%"><font color="#ffffff"><b>Color</b></font></td>
+            <td align="center" bgcolor="#666699" width="33%"><font color="#ffffff"><b>RegionDX</b></font></td>
+            <td align="center" bgcolor="#666699" width="33%"><font color="#ffffff"><b>RegionDY</b></font></td>
+        </tr>
+        <tr valign="top">
+            <td bgcolor="#e0e0e0"><font color="#ff0000">RED</font></td>
+            <td align="center" bgcolor="#e0e0e0"><font color="#ff0000">-1</font></td>
+            <td align="center" bgcolor="#e0e0e0"><font color="#0000ff">-1</font></td>
+        </tr>
+        <tr valign="top">
+            <td bgcolor="#e0e0e0"><font color="#ffff00">YELLOW</font></td>
+            <td align="center" bgcolor="#e0e0e0"><font color="#ff0000">0</font></td>
+            <td align="center" bgcolor="#e0e0e0"><font color="#0000ff">-1</font></td>
+        </tr>
+        <tr valign="top">
+            <td bgcolor="#e0e0e0"><font color="#ffffff">WHITE</font></td>
+            <td align="center" bgcolor="#e0e0e0"><font color="#ff0000">0</font></td>
+            <td align="center" bgcolor="#e0e0e0"><font color="#0000ff">0</font></td>
+        </tr>
+        <tr valign="top">
+            <td bgcolor="#e0e0e0"><font color="#00ff00">GREEN</font></td>
+            <td align="center" bgcolor="#e0e0e0"><font color="#ff0000">-1</font></td>
+            <td align="center" bgcolor="#e0e0e0"><font color="#0000ff">1</font></td>
+        </tr>
+        <tr valign="top">
+            <td bgcolor="#e0e0e0"><font color="#0000ff">BLUE</font></td>
+            <td align="center" bgcolor="#e0e0e0"><font color="#ff0000"></font><p><font color="#ff0000">0</font></p></td>
+            <td align="center" bgcolor="#e0e0e0"><font color="#0000ff"></font><p><font color="#0000ff">1</font></p></td>
+        </tr></tbody></table><br>
+    </li><li>Fifth Step: Use RegionX,RegionY, RegionDX, and RegionDY to find out TileX and TileY<p></p>
+        <dir>TileX=RegionX+RegionDX
+        <br>TileY=RegionY+RegionDY</dir>
+</li></ul>
+<p>Next Time: I will discuss putting Objects onto our Iso/Hex tiles,
+with a minimum of muss and fuss, and proper screen updating, so you
+don't have to draw the whole map every time.</p>
+
+<p align="center"><b><a href="http://www.gamedev.net/community/forums/topic.asp?key=featart&amp;uid=747&amp;forum_id=35&amp;Topic_Title=Isometric+%27n%27+Hexagonal+Maps+Part+I">Discuss this article in the forums</a></b></p>
+<p>
+<br><span class="maintext-2">Date this article was posted to GameDev.net: <b>9/16/1999</b>
+<br>(Note that this date does not necessarily correspond to the date the article was written)</span>
+</p><p><b>See Also:</b><br>
+
+<a href="http://www.gamedev.net/reference/list.asp?categoryid=198">General  </a><br>
+
+</p><p align="center">© 1999-2009 Gamedev.net. All rights reserved. <a href="http://www.gamedev.net/info/legal.htm#copyright"><u>Terms of Use</u></a> <a href="http://www.gamedev.net/info/legal.htm#privacy"><u>Privacy Policy</u></a>
+<br><span class="maintext-1">Comments? Questions? Feedback? <a href="http://www.gamedev.net/info/faq.asp">Click here!</a></span></p>
+
+</td></tr></tbody></table>
+
+
+<!-- start Vibrant Media IntelliTXT Tooltip style sheet -->
+<style type="text/css">
+.iTt{
+    FONT-FAMILY:       Verdana, Arial, Helvetica;
+    FONT-SIZE:         11px;
+    FONT-STYLE:        normal;
+    FONT-WEIGHT:       normal;
+    COLOR:             black;
+    BACKGROUND-COLOR:  lightyellow;
+    BORDER:            black 1px solid;
+    PADDING:           2px;
+}
+.iTt a {
+    COLOR:             0000CC;
+}
+.iTt a:visited {
+    COLOR:             0000CC;
+}
+.iTt a:hover {
+    COLOR:             6666CC;
+}
+.iTt TD {
+   COLOR:              999999;
+}
+</style>
+<!-- end Vibrant Media IntelliTXT style sheet -->
+<!-- start Vibrant Media IntelliTXT script section -->
+<script type="text/javascript" src="Isometric%20Rendering%20Howto_soubory/front.js"></script>
+<!-- end Vibrant Media IntelliTXT script section -->
+
+<script src="Isometric%20Rendering%20Howto_soubory/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-279474-1";
+urchinTracker();
+</script>
+</body></html>

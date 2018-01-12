@@ -1,0 +1,147 @@
+/* Common CSS classes used by Dynawest. v.1.0.1  www.dynawest.cz  */
+/* 1.0.1:  <input type="submit">s hadn't centered text ->  div.UNIcenter input, div.MSIEcenter input { text-align: center; }  */
+
+/* uplne skryta oblast (nezbyde ani misto) */
+.hidden, .display_none, .main_header { display: none; }
+
+/* HR clear:both;  misto HR pouzivat DIV, HR explorer blbne */
+.clearb { clear: both; margin: 0px; padding: 0px; height: 2px; visibility: hidden; margin-top: -2px; }
+div.cistic, hr.clearb { clear: both; margin: 0; border: none; visibility: hidden; margin-top: 0px; }
+
+
+/* margin 0 a padding 0 */
+.mp0 { margin: 0px; padding: 0px; }
+
+/* zarovnani doprava */
+.num, .right, .cislo{ text-align: right }
+/* zarovnani center */
+.center { text-align: center; }
+/* preskrtnuti */
+.strike { text-decoration: line-through; }
+
+/* vlastnosti pisma */
+.ver9, .ver9 TABLE { font-family: "Verdana CE", Verdana, "Helvetica CE", Helvetica, sans-serif; font-size:9pt; }
+.ver10, .ver10 TABLE { font-family: "Verdana CE", Verdana, "Helvetica CE", Helvetica, sans-serif; font-size:10pt; }
+.ver12, .ver12 TABLE { font-family: "Verdana CE", Verdana, "Helvetica CE", Helvetica, sans-serif; font-size:12pt; }
+.bold { font-weight: bold; }
+.small { font-size: 9pt; }
+								
+/* barvy pisma */
+.black { color: black; }
+.gray { color: gray; }
+.silver { color: silver; }
+.white { color: white; }
+.red { color: #DD0000; }
+.green { color: green; }
+.blue { color: #2277ee; }
+
+.hei100p { height:100%; }
+
+/* odstaveni odstavce */
+.odst7  { margin-top: 7px; }
+.odst10 { margin-top: 10px; }
+.odst14 { margin-top: 14px; }
+.odst20top { margin-top: 40px; }
+.odst40top { margin-top: 40px; }
+
+.td_top TD { vertical-align: top; }
+
+/* IMG */
+img.noborder, img.nb { border: none; }
+.black_border { border: 1px solid black; }
+.gray_border { border: 1px solid gray; }
+.marginr10 { margin-right: 10px; }
+img.l, .float_left,  img.fl { float: left; }
+img.r, .float_right, img.fr { float: right; }
+
+/* TABLE */
+table.bc { border-collapse: collapse; }
+table.tight td { border-collapse: collapse; padding: 0; }
+
+/* COLORS */
+.bg_red { background-color: red; }
+
+/* WIDTH */
+.wid250 { width: 250px; }
+.wid220 { width: 220px; }
+.wid200 { width: 200px; }
+.wid170 { width: 170px; }
+.wid120 { width: 120px; }
+.wid110 { width: 110px; }
+.wid100 { width: 100px; }
+.wid90  { width: 90px; }
+.wid80  { width: 80px; }
+.wid70  { width: 70px; }
+.wid60  { width: 60px; }
+.wid50  { width: 50px; }
+.wid50  { width: 50px; }
+.wid40  { width: 40px; }
+.wid30  { width: 30px; }
+.wid20  { width: 20px; }
+.wid100p { width: 100%; }
+.wid80p { width: 80%; }
+.fs10 { font-size: 10px; }
+.fs11 { font-size: 11px; }
+.fs12 { font-size: 12px; }
+.fs14 { font-size: 14px; }
+.fs16 { font-size: 16px; }
+.fs18 { font-size: 18px; }
+.fs20 { font-size: 20px; }
+.fs22 { font-size: 22px; }
+.fs24 { font-size: 24px; }
+
+
+/*** Margin, padding ***/
+.ml10 { margin-left: 10px; }
+.ml20 { margin-left: 20px; }
+.ml30 { margin-left: 30px; }
+.ml40 { margin-left: 40px; }
+.ml50 { margin-left: 50px; }
+.ml60 { margin-left: 60px; }
+.mt10 { margin-top:  10px; }
+.mt20 { margin-top:  20px; }
+.mt30 { margin-top:  30px; }
+.mt40 { margin-top:  40px; }
+.mt50 { margin-top:  50px; }
+.mt60 { margin-top:  60px; }
+
+
+
+/* unordered list - mensi odsazeni listu i prvku */
+.ul_normal { margin-top: 5px; margin-bottom:5px; }
+.ul_normal LI { margin-left:-15px; }
+
+/* --- UL, OL  upraveny  -------- */
+ul.normal,
+ol.normal{
+	margin: 1px 0px 5px 40px;
+	padding-left: 0px;
+	text-indent: -5px;
+	line-height: 16px;
+}
+ul.flat{
+	list-style-type: none;
+	margin-left: 0px;	 /* MSIE */
+	padding-left: 0px; /* Mozilla */
+}
+ul.mezery03em li, ol.mezery03em li { margin-bottom: 0.3em; }
+ul.mezery05em li, ol.mezery05em li { margin-bottom: 0.5em; }
+
+
+/* Shitty MSIE bugs workarounds */
+div.UNIcenter,       div.MSIEcenter       { text-align: center; }
+div.UNIcenter *,     div.MSIEcenter *     { text-align: left; }
+div.UNIcenter input.button, div.MSIEcenter input.button { text-align: center; }
+div.UNIcenter > div, div.CSScenter > div  { margin: auto; }
+
+
+/* debug */
+.foo, .foo * { border: 1px solid red; }
+.foo1        { border: 1px solid green; }
+
+/* noticka o dynawestu */
+.dynawest   { font-size:10pt; }
+.dynawest A { font-size:10pt; }
+
+.error { color: #CC0000; font-size:10pt; font-style:italic; }
+.mysql_error { color: #CC0000; font-size:10pt; font-family: Courier, sans-serif; font-style:normal; }

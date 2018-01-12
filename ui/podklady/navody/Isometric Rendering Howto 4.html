@@ -1,0 +1,673 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1250">
+
+
+
+  <title>GameDev.net - Mouse Maps for Isometric Height Maps</title>
+  <link rel="stylesheet" href="Isometric%20Rendering%20Howto%204_soubory/reference.css" type="text/css">
+  <link rel="icon" href="http://www.gamedev.net/pics/gdicon.png" type="image/png">
+</head><body leftmargin="0" topmargin="0" alink="#000000" background="Isometric%20Rendering%20Howto%204_soubory/watermark.gif" bgcolor="#ffffff" link="#666699" marginheight="0" marginwidth="0" text="#000000" vlink="#666699">
+
+<table border="0" cellpadding="3" cellspacing="0" width="100%">
+  <tbody><tr>
+    <td class="tblhdr">Mouse Maps for Isometric Height Maps</td>
+    <td class="tblhdr" align="right" nowrap="nowrap"><img src="Isometric%20Rendering%20Howto%204_soubory/littleg.gif" align="absbottom" height="16" width="16">&nbsp;<a href="http://www.gamedev.net/"><span style="color: white; text-decoration: none;">GameDev.net</span></a></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+<!-- Begin -  Site: GameDev.net Zone: GameDev.net variable width -->
+<script language="javascript" type="text/javascript">
+<!--
+var browName = navigator.appName;
+var SiteID = 1;
+var browDateTime = (new Date()).getTime();
+if (browName=='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;IFR=False&amp;Browser=NETSCAPE4&amp;PageID=55140&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+if (browName!='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;IFR=False&amp;PageID=55140&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+// --> 
+</script><script language="javascript" src="Isometric%20Rendering%20Howto%204_soubory/a_002.js"></script>
+<noscript> <a
+href="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Click&amp;Mode=HTML&amp;SiteID=1&amp;PageID="
+target="_blank"> <img
+src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;Mode=HTML&amp;SiteID=1&amp;PageID="
+width="728" height="90" border="0" alt=""></a>
+</noscript>
+<!-- End -  Site: GameDev.net Zone: GameDev.net variable width --></td>
+  </tr>
+</tbody></table>
+<table border="0" cellpadding="5" cellspacing="0" width="100%"><tbody><tr><td>
+
+    <p align="center"><span class="title">Mouse Maps for Isometric Height Maps</span>
+    
+          <br><span class="author">by Steven Harrison</span>
+        </p>
+    <table align="right" border="0" cellpadding="5" cellspacing="0" width="310"><tbody><tr><td align="center"><br><span class="maintext-2">ADVERTISEMENT</span>
+<!-- Begin -  Site: GameDev.net Zone: GameDev.net Box -->
+<script language="javascript" type="text/javascript">
+<!--
+var browName = navigator.appName;
+var SiteID = 1;
+var browDateTime = (new Date()).getTime();
+if (browName=='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=26&amp;Task=Get&amp;IFR=False&amp;Browser=NETSCAPE4&amp;PageID=20483&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+if (browName!='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=26&amp;Task=Get&amp;IFR=False&amp;PageID=20483&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+// --> 
+</script><script language="javascript" src="Isometric%20Rendering%20Howto%204_soubory/a.js"></script>
+<noscript> <a
+href="http://www.gamedev.net/banman/a.aspx?ZoneID=26&amp;Task=Click&amp;Mode=HTML&amp;SiteID=1&amp;PageID=20483"
+target="_blank"> <img
+src="http://www.gamedev.net/banman/a.aspx?ZoneID=26&amp;Task=Get&amp;Mode=HTML&amp;SiteID=1&amp;PageID=20483"
+width="300" height="250" border="0" alt=""></a>
+</noscript>
+<!-- End -  Site: GameDev.net Zone: GameDev.net Box -->
+</td></tr></tbody></table>
+  
+
+<p>I'm currently writing a game that uses Isometric tiles to display a
+landscape on the screen. The landscape having hills and valleys is part
+of the game's design.&nbsp; After a search on the Internet for help in
+determining which tile I was on I was presented with the following
+options:</p>
+<ol>
+  <li>Use mouse maps as described in Ernest 'TANSTAAFL' Pazera's book: <a href="http://www.gamedev.net/columns/books/bookdetails.asp?productid=110">Isometric Game Programming with DirectX 7</a>.
+  </li><li>Create
+a second screen and blit each tile on to this second screen in a sort
+of tile map (see the explanation &amp; screen grab below) </li><li>Forget 2D/DirectX 7 and go 3D/DirectX 8 as everyone seems to be going this way
+</li></ol>
+
+<p>The first option is great if you have a flat landscape, but I'm not
+basing my game in Holland or any other area of flat land.&nbsp; The
+second option, which I've tried and it does work, has drawbacks in that
+I've got to blit the map twice onto two different back buffers, and on
+one of the back buffers I've got to blit in one colour per tile - very
+bad for performance.&nbsp; The final option at first seems good, but
+requires learning Direct 3D/DirectX Graphics.</p>
+<p>I'll explain the theory behind my experiments and then I'll provide some sample code afterwards.</p>
+
+<h1>Experiment 1: One colour per tile</h1>
+<p>I first started with the second option and after a couple of days
+playing around had a simple program working that highlighted the
+correct tile.&nbsp; The following screen grab is the tile map that I
+used to see where on the map I was:</p>
+<p><img src="Isometric%20Rendering%20Howto%204_soubory/IsoMap_Color.gif" border="0" height="240" width="320"></p>
+<p>This map was generated initially and then updated every time I moved
+the screen around the map.&nbsp; This caused the system to lose a few
+frames/second as it had to draw the same map twice.&nbsp; I also had
+problems finding where the mouse was as this involved a lock, read and
+finally an unlock which took time. Since this operation was being
+performed every time the mouse/screen moved then it started to add up
+to being a very slow process.</p>
+
+<h1>Experiment 2: Adapting the mouse maps to be tile independent</h1>
+<p>I started to think about the possibilities of using Mouse maps after
+trying to get better performance out of the second option.&nbsp;
+Instead of using the normal isometric tile map:
+</p><p><img src="Isometric%20Rendering%20Howto%204_soubory/IsoMap_NormalTileMap.gif" border="0" height="32" width="64">
+</p><p>I extended the shape to be a square and produced the following new standard iso mouse map for flat terrain
+</p><p><img src="Isometric%20Rendering%20Howto%204_soubory/IsoMap_NewNormalTileMap.gif" border="0" height="64" width="64">.
+</p><p>After a little bit of a play with the new mouse map system, I
+discovered that the original mouse map had to be used to find the tile,
+but the new tile would allow me to use all of my tiles as a base for
+their own mouse map. Thus the following tile set:</p>
+<p><img src="Isometric%20Rendering%20Howto%204_soubory/IsoMap_Tiles.gif" border="0" height="32" width="640"></p>
+<p>became the following mouse map templates:</p>
+<p><img src="Isometric%20Rendering%20Howto%204_soubory/IsoMap_TileMap.gif" border="0" height="32" width="640"></p>
+
+<p>At first glance this seems strange, especially tiles 4-7, 12-14 and
+the last 3 where the cyan colour is not a normal isometric flat tile,
+but this is okay and it works perfectly with the algorithms I'm using.</p>
+<p>By using the first 4 steps in Ernest's book to get to the rough, yet
+flat tile position, I then allowed my system to enter a while loop to
+get to the final tile.&nbsp; The full steps in Ernest's book are:</p>
+
+<ol>
+  <li>Screen -&gt; world coordinates</li>
+  <li>Subtract the world coordinates of map position (0,0)</li>
+  <li>Determine mouse map coordinates</li>
+  <li>Perform a course tile walk</li>
+  <li>Use mouse map lookup table</li>
+</ol>
+<p>It was this final step that I changed into a while loop, and using the following test map I tried a little test:</p>
+<p><img src="Isometric%20Rendering%20Howto%204_soubory/IsoMap_TestMap1.gif" border="0" height="144" width="288"></p>
+<p>As can be seen in the simple map I was using, the game I'm working
+on can have cliffs. The purple area shows where a cliff would go. My
+mouse mapping algorithm was entering an infinite loop moving north east
+and south west whenever my mouse entered this purple area.&nbsp; This
+was not what you would want to happen in a real game. So I've got this
+problem to sort out, and at the moment I think the easiest way would be
+to limit the number of moves the system can make in opposite directions.</p>
+<h1>Explanation of how to use my method</h1>
+<p>The first 4 steps of Ernest's Mouse -&gt; Tile conversion are
+unchanged, except I'm adding a quarter tile height to the fine Y
+position so that the fine co-ordinates are sitting inside of the normal
+mouse map inside of my extended mouse map.&nbsp; The final step (using
+the mouse map) has to be changed slightly.</p>
+<p>In a normal mouse map lookup function you get the direction to
+travel and then exit after performing the movement. With my method you
+keep performing the lookup / movement loop until the lookup returns no
+movement, i.e. the colour is white.</p>
+<p>Using the following image (this is my test map from before, but this time the red lines shows the coarse division of the map):</p>
+<p><img src="Isometric%20Rendering%20Howto%204_soubory/IsoMap_TestMap2.gif" border="0" height="144" width="288"><img src="Isometric%20Rendering%20Howto%204_soubory/IsoMap_TestMap2_lrg.gif" border="0" height="128" width="192"></p>
+<p>If you look at the mouse pointer (the enlarged view on the right)
+then you will notice that using a normal iso mouse map the tile
+returned would be 1,1, whereas the actual tile is 2,2.&nbsp; After
+getting the initial tile number (1,1) we now switch over to the
+extended mouse maps (the following images have been enlarged to aid in
+the explinations):</p>
+<p>The tile at map position 1,1 is:
+</p><p><img src="Isometric%20Rendering%20Howto%204_soubory/IsoMap_Tile11.gif" border="0" height="64" width="64">
+</p><p>and the mouse map for this is :
+</p><p><img src="Isometric%20Rendering%20Howto%204_soubory/IsoMap_Tile11Map.gif" border="0" height="64" width="64"></p>
+<p>If you overlay the mouse pointer onto the mouse map you get :
+</p><p><img src="Isometric%20Rendering%20Howto%204_soubory/IsoMap_Tile11MapMouse.gif" border="0" height="64" width="64">
+</p><p>and as you can see the mouse is in the cyan area, and this means
+to move south by one tile, so we do this and get the following Tile 2,2
+image :
+</p><p><img src="Isometric%20Rendering%20Howto%204_soubory/IsoMap_Tile22.gif" border="0" height="64" width="64">
+</p><p>and mouse map :
+</p><p><img src="Isometric%20Rendering%20Howto%204_soubory/IsoMap_NewNormalTileMap.gif" border="0" height="64" width="64">.</p>
+<p>We also need to update the fine coordinates by a full tile's height
+: tile dimensions are 32 x 16 (64 x 32 for larger tile set) so fy has
+16 (32) subtracted from it, and the new position of the mouse on the
+new mouse map is :
+</p><p><img src="Isometric%20Rendering%20Howto%204_soubory/IsoMap_Tile22MapMouse.gif" border="0" height="64" width="64">
+</p><p>just inside of the white area of the tile. Thus we have found
+the tile we wanted, but not quite yet.&nbsp; Although this is the
+correct tile, the position of the mouse pointer is wrong, if you
+compare the two mouse maps you will notice that the mouse pointer on
+the first mouse map was about a quarter of a tile height down (this is
+the offset I use for the tile's height from ground level), so adding
+this onto the value of fy gives the following final position of the
+mouse map:
+</p><p><img src="Isometric%20Rendering%20Howto%204_soubory/IsoMap_Tile22MapMouse2.gif" border="0" height="64" width="64"></p>
+<p>Here is a table of the changes to the fine X and Y co-ordinates,
+assuming that the tile width is 32, and thus the mouse maps are 32 x 32:</p>
+
+<p><table border="1" cellpadding="3" cellspacing="0">
+  <tbody><tr>
+    <td class="tblhdr" align="center" width="25%">Colour</td>
+    <td class="tblhdr" align="center" width="25%">Direction</td>
+    <td class="tblhdr" align="center" width="25%">Fine X change</td>
+    <td class="tblhdr" align="center" width="25%">Fine Y change</td>
+  </tr>
+  <tr>
+    <td align="center" width="25%">White</td>
+    <td align="center" width="25%">None</td>
+    <td align="center" width="25%">0</td>
+    <td align="center" width="25%">0</td>
+  </tr>
+  <tr>
+    <td align="center" width="25%">Blue</td>
+    <td align="center" width="25%">North West</td>
+    <td align="center" width="25%">+16</td>
+    <td align="center" width="25%">+8</td>
+  </tr>
+  <tr>
+    <td align="center" width="25%">Red</td>
+    <td align="center" width="25%">North</td>
+    <td align="center" width="25%">0</td>
+    <td align="center" width="25%">+16</td>
+  </tr>
+  <tr>
+    <td align="center" width="25%">Yellow</td>
+    <td align="center" width="25%">North East</td>
+    <td align="center" width="25%">-16</td>
+    <td align="center" width="25%">+8</td>
+  </tr>
+  <tr>
+    <td align="center" width="25%">Green</td>
+    <td align="center" width="25%">South West</td>
+    <td align="center" width="25%">+16</td>
+    <td align="center" width="25%">-8</td>
+  </tr>
+  <tr>
+    <td align="center" width="25%">Cyan</td>
+    <td align="center" width="25%">South</td>
+    <td align="center" width="25%">0</td>
+    <td align="center" width="25%">-16</td>
+  </tr>
+  <tr>
+    <td align="center" width="25%">Purple</td>
+    <td align="center" width="25%">South East</td>
+    <td align="center" width="25%">-16</td>
+    <td align="center" width="25%">-8</td>
+  </tr>
+</tbody></table>
+
+</p><h1>The code for the mouse maps</h1>
+<p>In my game you can zoom in and out of the map. Actually there are
+two zoom levels, large and small, so in the following code segments
+m_Size is the current tile size (0 = Large, 1 = Small).</p>
+<p>First define the global mouse map array:</p>
+
+<pre class="code">char g_MouseMap[2][20][64][32];
+</pre>
+
+<p>[2] is for the two mouse maps<br>
+[20] is for the 20 tiles that I use<br>
+[64] is for the height of a large tile (64 x 64)<br>
+[32] is for the width of a large tile (64 x 64). I'm using 7 colours so
+I'm compressing the data down, and saving approx 80K of memory.</p>
+<p>Next the mouse map lookup constants:</p>
+
+<pre class="code">#define MM_NONE 0
+#define MM_NORTHWEST 1
+#define MM_NORTH 2
+#define MM_NORTHEAST 3
+#define MM_SOUTHWEST 4
+#define MM_SOUTH 5
+#define MM_SOUTHEAST 6
+</pre>
+
+<p>These are the same as the ones Ernest uses, but I've added North and South movement.</p>
+<p>A helper function to load the mouse maps in to the array from 256 colour RAW files (produced from PSP without a header):</p>
+
+<pre class="code">bool LoadMouseMaps()
+{
+  FILE *fin;
+  int x, y, o;
+  char c;
+
+  fin = fopen( "smtiles.raw", "rb" );
+
+  if( fin == NULL )
+  {
+    Log( __FILE__, __LINE__, "Unable to open smtiles.raw" );
+    return false;
+  }
+  else
+  {
+    for( y = 0; y &lt; 32; y++ )
+    {
+      for( o = 0; o &lt; 20; o ++ )
+      {
+        for( x = 0; x &lt; 16; x ++ )
+        {
+          c = ((fgetc(fin) &amp; 0x0F) &lt;&lt; 4) + fgetc(fin) &amp; 0x0F;
+
+          g_MouseMap[1][o][y][x] = c;
+        }
+      }
+    }
+
+    fclose( fin );
+
+    fin = fopen( "lgtiles.raw", "rb" );
+
+    if( fin == NULL )
+    {
+      Log( __FILE__, __LINE__, "Unable to open lgtiles.raw" );
+      return false;
+    }
+    else
+    {
+      for( y = 0; y &lt; 64; y++ )
+      {
+        for( o = 0; o &lt; 20; o ++ )
+        {
+          for( x = 0; x &lt; 32; x ++ )
+          {
+            c = ((fgetc(fin) &amp; 0x0F) &lt;&lt; 4) + fgetc(fin) &amp; 0x0F;
+
+            g_MouseMap[0][o][y][x] = c;
+          }
+        }
+      }
+
+      fclose( fin );
+    }
+  }
+
+  return true;
+}
+</pre>
+
+<p>The Log( __FILE__, __LINE__, "***" ) function is my error logging
+code, but the rest of the code is standard C / C++.&nbsp; Please note
+that when exporting a raw file from PSP, reduce the colours down to 16
+and then export, taking note of how the system has re-arranged your
+colours in the palette as this caused a problem in my code at first.</p>
+<p>The following is a little helper to get the mouse map movement number:</p>
+
+<pre class="code">int MM_LookUp( int x, int y, int t )
+{
+  int v;
+
+  x %= ( m_Size == 1 ? 32 : 64 );
+  y %= ( m_Size == 1 ? 32 : 64 );
+
+  v = g_MouseMap[m_Size][t][y][x &gt;&gt; 1];
+
+  if( ( x &amp; 1 ) == 0 )
+    v = v &amp; 0x0F;
+  else
+    v = ( v &gt;&gt; 4 ) &amp; 0x0F;
+
+  return v;
+}
+</pre>
+
+<p>And finally the code for the main mouse map function, please note this code still has the infinite loop in it:</p>
+
+<pre class="code">void MouseMap( int xp, int yp, int &amp;mx, int &amp;my )
+{
+  int m;
+  int cx, cy;
+  int fx, fy;
+  int md, mc;
+
+  // Adjustment for lower left corner offset.
+  yp += ( m_Size == 1 ? 32 : 64 );
+
+  // Step 1 : Screen -&gt; World Co-Ords
+  xp += m_OffX;
+  yp += m_OffY;
+
+  // Step 2 : Offset from world co-ords of tile (0,0)
+
+  xp -= ( ( 0 - 0 ) &lt;&lt; ( 5 - m_Size ) );
+  yp -= ( ( 0 + 0 ) &lt;&lt; ( 4 - m_Size ) );
+
+  // Step 3 : Determine MouseMap Co-ords
+
+  // Course co-ords
+  cx = xp / ( m_Size == 1 ? 32 : 64 );
+  cy = yp / ( m_Size == 1 ? 16 : 32 );
+
+  // Fine co-ords
+  fx = xp % ( m_Size == 1 ? 32 : 64 );
+  fy = yp % ( m_Size == 1 ? 16 : 32 );
+
+  // Adjust for my Unusual mouse maps...
+  fy += ( m_Size == 1 ?  8 : 16 );
+
+  // Adjust for negative co-ords
+  if( fx &lt; 0 )
+  {
+    fx += ( m_Size == 1 ) ? 32 : 64;
+    cx --;
+  }
+  if( fy &lt; 0 )
+  {
+    fy += ( m_Size == 1 ) ? 32 : 64;
+    cy --;
+  }
+
+  // Step 4 : Perform Corse Tile walk
+  mx = 0;
+  my = 0;
+
+  while( cy &lt; 0 )
+  {
+    TileWalk( mx, my, ISO_NORTH );
+    cy ++;
+  }
+
+  while( cy &gt; 0 )
+  {
+    TileWalk( mx, my, ISO_SOUTH );
+    cy --;
+  }
+
+  while( cx &lt; 0 )
+  {
+    TileWalk( mx, my, ISO_WEST );
+    cx ++;
+  }
+
+  while( cx &gt; 0 )
+  {
+    TileWalk( mx, my, ISO_EAST );
+    cx --;
+  }
+
+  // Step 5 : Use the lookup table for final tile walk...
+  m = -1;
+  mc = 4;
+
+  while( ( m != MM_NONE ) &amp;&amp; ( mc &gt; 0 ) )
+  {
+    m = MM_LookUp( fx,
+      fy + (Map[( my &gt;= 0) ? my : 0][(mx &gt;= 0) ? mx : 0].Height &lt;&lt; (3 - m_Size)),
+      Map[(my &gt;= 0) ? my : 0][(mx &gt;= 0) ? mx : 0].Floor);
+
+    switch( m )
+    {
+    case MM_NORTHWEST:
+      {
+        if( md == MM_SOUTHEAST )
+          mc --;
+        else
+          mc = 4;
+        TileWalk( mx, my, ISO_NORTHWEST );
+        fx += ( m_Size == 1 ) ? 16 : 32; // Half x
+        fy += ( m_Size == 1 ) ?  8 : 16; // Quarter y
+        break;
+      }
+    case MM_NORTH:
+      {
+        if( md == MM_SOUTH )
+          mc --;
+        else
+          mc = 4;
+        TileWalk( mx, my, ISO_NORTH );
+        fy += ( m_Size == 1 ) ? 16 : 32; // Half y
+        break;
+      }
+    case MM_NORTHEAST:
+      {
+        if( md == MM_SOUTHWEST )
+          mc --;
+        else
+          mc = 4;
+        TileWalk( mx, my, ISO_NORTHEAST );
+        fx -= ( m_Size == 1 ) ? 16 : 32; // Half x
+        fy += ( m_Size == 1 ) ?  8 : 16; // Quarter y
+        break;
+      }
+    case MM_SOUTHWEST:
+      {
+        if( md == MM_NORTHEAST )
+          mc --;
+        else
+          mc = 4;
+        TileWalk( mx, my, ISO_SOUTHWEST );
+        fx += ( m_Size == 1 ) ? 16 : 32; // Half x
+        fy -= ( m_Size == 1 ) ?  8 : 16; // Quarter y
+        break;
+      }
+    case MM_SOUTH:
+      {
+        if( md == MM_NORTH )
+          mc --;
+        else
+          mc = 4;
+        TileWalk( mx, my, ISO_SOUTH );
+        fy -= ( m_Size == 1 ) ? 16 : 32; // Half y
+        break;
+      }
+    case MM_SOUTHEAST:
+      {
+        if( md == MM_NORTHWEST )
+          mc --;
+        else
+          mc = 4;
+        TileWalk( mx, my, ISO_SOUTHEAST );
+        fx -= ( m_Size == 1 ) ? 16 : 32; // Half x
+        fy -= ( m_Size == 1 ) ?  8 : 16; // Quarter y
+        break;
+      }
+    }
+    md = m;
+  }
+}
+</pre>
+
+<h1>A slight problem with the above techniques</h1>
+<p>Ok so the above would work, as long as you do not go above a height
+of 2.&nbsp; To go above a height of 2, a small change to step 5 of the
+mouse map function is required. Add a new variable declaration (int
+tfy) and you're back in business:</p>
+
+<pre class="code">// Step 5 : Use the lookup table for final tile walk...
+m = -1;
+mc = 4;
+
+while( ( m != MM_NONE ) &amp;&amp; ( mc &gt; 0 ) )
+{
+  m = MM_LookUp( fx,
+    fy + (Map[(my &gt;= 0) ? my : 0][(mx &gt;= 0) ? mx : 0].Height &lt;&lt; (3 - m_Size)),
+    Map[(my &gt;= 0) ? my : 0][(mx &gt;= 0) ? mx : 0].Floor);
+
+  tfy = (fy +
+        (Map[(my &gt;= 0) ? my : 0][(mx &gt;= 0) ? mx : 0].Height &lt;&lt; (3 - m_Size)));
+
+  if( ( fx &gt;= 0 ) &amp;&amp; ( tfy &gt;= 0 ) &amp;&amp; ( fx &lt; ( m_Size == 1 ? 32 : 64 ) ) &amp;&amp;
+      ( tfy &lt; ( m_Size == 1 ? 32 : 64 ) ) )
+  {
+    switch( m )
+    {
+    case MM_NORTHWEST:
+      {
+        if( md == MM_SOUTHEAST )
+          mc --;
+        else
+          mc = 4;
+        TileWalk( mx, my, ISO_NORTHWEST );
+        fx += ( m_Size == 1 ) ? 16 : 32; // Half x
+        fy += ( m_Size == 1 ) ?  8 : 16; // Quarter y
+        break;
+      }
+    case MM_NORTH:
+      {
+        if( md == MM_SOUTH )
+          mc --;
+        else
+          mc = 4;
+        TileWalk( mx, my, ISO_NORTH );
+        fy += ( m_Size == 1 ) ? 16 : 32; // Half y
+        break;
+      }
+    case MM_NORTHEAST:
+      {
+        if( md == MM_SOUTHWEST )
+          mc --;
+        else
+          mc = 4;
+        TileWalk( mx, my, ISO_NORTHEAST );
+        fx -= ( m_Size == 1 ) ? 16 : 32; // Half x
+        fy += ( m_Size == 1 ) ?  8 : 16; // Quarter y
+        break;
+      }
+    case MM_SOUTHWEST:
+      {
+        if( md == MM_NORTHEAST )
+          mc --;
+        else
+          mc = 4;
+        TileWalk( mx, my, ISO_SOUTHWEST );
+        fx += ( m_Size == 1 ) ? 16 : 32; // Half x
+        fy -= ( m_Size == 1 ) ?  8 : 16; // Quarter y
+        break;
+      }
+    case MM_SOUTH:
+      {
+        if( md == MM_NORTH )
+          mc --;
+        else
+          mc = 4;
+        TileWalk( mx, my, ISO_SOUTH );
+        fy -= ( m_Size == 1 ) ? 16 : 32; // Half y
+        break;
+      }
+    case MM_SOUTHEAST:
+      {
+        if( md == MM_NORTHWEST )
+          mc --;
+        else
+          mc = 4;
+        TileWalk( mx, my, ISO_SOUTHEAST );
+        fx -= ( m_Size == 1 ) ? 16 : 32; // Half x
+        fy -= ( m_Size == 1 ) ?  8 : 16; // Quarter y
+        break;
+      }
+    }
+  }
+  else
+  {
+    if( tfy &gt;= ( m_Size == 1 ? 32 : 64 ) )
+    {
+      m = MM_SOUTH;
+      TileWalk( mx, my, ISO_SOUTH );
+      fy -= ( m_Size == 1 ) ? 16 : 32;
+    }
+  }
+  md = m;
+}
+</pre>
+
+<p>I've <a href="http://downloads.gamedev.net/features/programming/mm4ihm/IsoTerrain.zip">included a copy</a> of my test application that uses the above techniques.</p>
+<p align="center"><b><a href="http://www.gamedev.net/community/forums/topic.asp?key=featart&amp;uid=2026&amp;forum_id=35&amp;Topic_Title=Mouse+Maps+for+Isometric+Height+Maps">Discuss this article in the forums</a></b></p>
+<p>
+<br><span class="maintext-2">Date this article was posted to GameDev.net: <b>12/17/2003</b>
+<br>(Note that this date does not necessarily correspond to the date the article was written)</span>
+</p><p><b>See Also:</b><br>
+
+<a href="http://www.gamedev.net/reference/list.asp?categoryid=78">Featured Articles  </a><br>
+
+<a href="http://www.gamedev.net/reference/list.asp?categoryid=198">General  </a><br>
+
+</p><p align="center">© 1999-2009 Gamedev.net. All rights reserved. <a href="http://www.gamedev.net/info/legal.htm#copyright"><u>Terms of Use</u></a> <a href="http://www.gamedev.net/info/legal.htm#privacy"><u>Privacy Policy</u></a>
+<br><span class="maintext-1">Comments? Questions? Feedback? <a href="http://www.gamedev.net/info/faq.asp">Click here!</a></span></p>
+
+</td></tr></tbody></table>
+
+
+<!-- start Vibrant Media IntelliTXT Tooltip style sheet -->
+<style type="text/css">
+.iTt{
+    FONT-FAMILY:       Verdana, Arial, Helvetica;
+    FONT-SIZE:         11px;
+    FONT-STYLE:        normal;
+    FONT-WEIGHT:       normal;
+    COLOR:             black;
+    BACKGROUND-COLOR:  lightyellow;
+    BORDER:            black 1px solid;
+    PADDING:           2px;
+}
+.iTt a {
+    COLOR:             0000CC;
+}
+.iTt a:visited {
+    COLOR:             0000CC;
+}
+.iTt a:hover {
+    COLOR:             6666CC;
+}
+.iTt TD {
+   COLOR:              999999;
+}
+</style>
+<!-- end Vibrant Media IntelliTXT style sheet -->
+<!-- start Vibrant Media IntelliTXT script section -->
+<script type="text/javascript" src="Isometric%20Rendering%20Howto%204_soubory/front.js"></script>
+<!-- end Vibrant Media IntelliTXT script section -->
+
+<script src="Isometric%20Rendering%20Howto%204_soubory/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-279474-1";
+urchinTracker();
+</script>
+</body></html>

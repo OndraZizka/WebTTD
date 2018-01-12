@@ -1,0 +1,235 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"><html><head>
+	<meta http-equiv="Content-Type" content="text/html; charset=windows-1250"/>
+	<meta name="Author" content="Ondra Žižka, ondra at dynawest.cz; Design by Petr Záveský, petr.zavesky@seznam.cz"/>
+	<meta name="Keywords" content=""/>
+	<meta name="Description" content=""/>
+<style type="text/css">
+	body {
+		background-color: #ffffff; color: black;
+		font-family: "Arial CE", "Helvetica CE", "Verdana CE", Arial, Helvetica, Verdana, sans-serif;
+	}
+  
+  
+	/**  Samotná mapa, černé pozadí, nic by ji nemělo přesáhnout.  **/
+  #mapbox     { position: relative; background-color: black; height: 500px; width: 500px; border: 1px solid red; overflow: hidden; }
+	
+	/**  Kontejner obsahující políčka.  **/
+  #map        { position: absolute; height: 450px; width: 450px; border: 1px solid green; }
+  #map img.field { position: absolute; }
+  #map div.field { position: absolute; background: URL("img/ttd/louka-zelena.png") no-repeat left top; width: 64; height: 31; }
+
+  #overlay    { position: absolute;  height: 350px; width: 350px; border: 1px solid magenta;  }
+  
+  textarea#messages { float: right; font-size: 80%; }
+  div.debug_object_info.event { float: right; font-size: 80%; border: 1px solid red; }
+  
+  table.debug_object_info { border-collapse: collapse; font-size: 75%; }
+
+</style>
+<script type="text/javascript" charset="windows-1250" src="fce.js"></script>
+<script type="text/javascript" charset="windows-1250" src="xcom.js"></script>
+<script type="text/javascript">
+
+/*****  DEBUG  *****/
+
+
+// Debug info panel 
+function UpdateDebugObjectInfo( obj, sID ){
+  var eInfoPanel = id( sID );
+  eInfoPanel.innerHTML = "";
+  
+  var eTable = document.createElement("table");
+  eTable.className = "debug_object_info";
+  
+  for(v in obj){
+		var sPad = "";
+		if(typeof(obj[v]) == "function") sVal = "function";
+		else sVal = ""+obj[v];
+    
+    //var eRow = document.createElement("tr");
+    //eRow.innerHTML = "<td>"+v+"</td><td>"+sVal+"</td>";
+    //eTable.appendChild( eRow );
+    
+    //if( sVal.charAt(0) === sVal.charAt(0).toUpperCase() ) continue;
+    eTable.innerHTML += "<tr><td>"+v+"</td><td>"+sVal+"</td></tr>";
+	}
+  eInfoPanel.appendChild( eTable );
+};
+
+
+
+// OSD() 
+function OSD(s){
+  var eOSD = id("messages");
+  eOSD.innerHTML += s + "\n";
+  //eOSD.scrollY( 500 );
+};
+
+
+/*****  /DEBUG  *****/
+
+
+
+
+
+
+
+// UpdateMap()
+function UpdateMap(){
+  this.style.left = this.pos.x + "px";
+  this.style.top  = this.pos.y + "px";
+}
+
+
+// HandleMouseMove() 
+function HandleMouseMove( event ){
+  UpdateDebugObjectInfo( event, "debug_info_event_mousemove" );
+  UpdateDebugObjectInfo( this.oDragStartEvent, "debug_info_event_mousedown" );
+  if( this.IsDragging() ){
+    //OSD(1);
+    var oOffset = {
+      x: event.screenX - this.oDragStartEvent.screenX,
+      y: event.screenY - this.oDragStartEvent.screenY
+    };
+    
+    this.AdjustPosition( oOffset );
+    
+    OSD( "[" + event.screenX + " - " + this.oDragStartEvent.screenX + ","
+             + event.screenY + " - " + this.oDragStartEvent.screenY + "] "
+             + "= [" + oOffset.x + "," + oOffset.y + "]" );
+    
+  }
+};
+
+
+// --- INIT --- //
+function Init(){
+  var eBox = document.getElementById("mapbox");
+  var eMap = document.getElementById("map");
+
+  InitMap( eMap );
+};
+
+
+
+// --- InitMap() --- //
+function InitMap( eMap ){
+
+	// Vytvoříme objekt Land 
+  eMap.land = new Xcom.Land( -2, -2, 2, 2 );
+  
+  
+  alert( eMap.land.toString() );///
+  
+
+  InsertImages( eMap );
+  
+  
+  //DumpObjectEx(eMap, "on");///
+  eMap.addEventListener("mousemove", HandleMouseMove, false );
+  eMap.addEventListener("dragstart", function(){ OSD("ondragstart map"); }, false );
+  eMap.addEventListener("drag", function(){ OSD("ondrag map"); }, false );
+  
+  // eMap 
+  
+  eMap.onmousedown = function(event){
+    this.SetDragging( event );
+    UpdateDebugObjectInfo( event, "debug_info_event_mousedown" );
+  };
+  eMap.onmouseup = function(event){
+    this.SetDragging( null );
+  };
+  
+  eMap.Update = UpdateMap;
+  eMap.AdjustPosition = function(a,b){
+    if( "object" == typeof(a) && a.x && a.y ){ this.pos.x = a.x; this.pos.y = a.y; }
+  };
+  
+  eMap.bDragging = false;
+  eMap.SetDragging = function(event){
+    if( null == event ){
+      this.oDragStartEvent = null;
+    }
+    else {
+      this.oDragStartEvent = event;
+      //DumpObjectEx(event);
+    }
+    OSD(" " + this.IsDragging().toString());
+  };
+  eMap.IsDragging = function(){ return null != this.oDragStartEvent; };
+  
+  /*eMap.onmousemove = function(event){
+    //if(!event) event = window.event;
+    if( this.IsDragging() ){
+      //OSD(event.x);
+    }
+  };/**/
+  
+};
+
+
+
+// --- InsertImages --- //
+function InsertImages( eMap ){
+
+  // Generator 
+  
+  var iHeight = 13; // Počet buněk na výšku 
+  var iWidth  = 13; // Počet buněk na šířku 
+
+	// Travian: 40 x 74;
+	// OpenTTD: 31 x 64;
+  var iFieldHeight = 32; // Buňka px na výšku 
+  var iFieldWidth  = 64; // Buňka px na šířku 
+  
+
+  for( var y = 0; y < iHeight; y++ ){
+    for( var x = 0; x < iWidth; x++ ){
+    
+      // Image 
+      var eImage = new Image();
+      eImage.src = "img/ttd/louka-zelena.png";
+      // Div 
+      var eDiv = document.createElement("div");
+      eImage = eDiv; // switch 
+
+      eImage.className = "field";
+      eImage.style.top  = y * iFieldHeight / 2 - x * iFieldHeight / 2 + 200;
+      eImage.style.left = x * iFieldWidth / 2 + y * iFieldWidth / 2 - 100;
+      eImage.data = { x: x, y: y };
+      eImage.onclick = function(){ OSD( "[" + this.data.x + "," + this.data.y + "]" ); };
+      
+      eImage.addEventListener("dragstart", function(){ OSD("ondragstart image"); return false; }, false );
+      eImage.addEventListener("drag", function(){ OSD("ondrag image"); return false; }, false );
+      
+      eMap.appendChild(eImage);
+    }
+  }
+
+};
+
+
+
+// --- ONLOAD --- //
+window.onload = function(){
+  Init();
+};
+
+</script>
+<title> Izometrický něco </title></head>
+<body>
+
+<textarea id="messages" cols="20" rows="40"></textarea>
+<div id="debug_info_event_mousemove" class="debug_object_info event mousemove"></div>
+<div id="debug_info_event_mousedown" class="debug_object_info event mousedown"></div>
+
+<div id="mapbox">
+  <div id="map">
+  
+  </div>
+  <div id="overlay">
+  
+  </div>
+</div>
+
+</body></html>

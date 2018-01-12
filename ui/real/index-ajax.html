@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"><html><head>
+	<meta http-equiv="Content-Type" content="text/html; charset=windows-1250"/>
+	<meta name="Author" content="Ondra Žižka, ondra at dynawest.cz;"/>
+	<meta name="Keywords" content=""/>
+	<meta name="Description" content=""/>
+	<link rel="stylesheet" type="text/css" href="css/styl.css"/>
+	<link rel="stylesheet" type="text/css" href="css/buildings.css"/>
+	<link rel="stylesheet" type="text/css" href="css/buildings_offsets.css"/>
+	<link rel="stylesheet" type="text/css" href="css/road.css"/>
+<style type="text/css">
+</style>
+<script type="text/javascript" charset="windows-1250" src="lib/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" charset="windows-1250" src="fce.js"></script>
+<script type="text/javascript" charset="windows-1250" src="lib/fce.sprintf.js"></script>
+<script type="text/javascript" charset="windows-1250" src="lib/lib.className_manager.js"></script>
+<script type="text/javascript" charset="windows-1250" src="lib/lib.WeightedRandomGenerator.js"></script>
+<script type="text/javascript" charset="windows-1250" src="xcom.js"></script>
+<script type="text/javascript" charset="windows-1250" src="fce.ajax.js"></script>
+<script type="text/javascript" charset="windows-1250" src="lib/fce.debug.js"></script>
+<script type="text/javascript" charset="windows-1250" src="eMap.js"></script>
+<script type="text/javascript">
+// --- ONLOAD --- //
+window.onload = function(){
+  Init();
+};
+</script>
+<title> Izometric something </title></head>
+<body>
+
+<!-- Debug info areas. -->
+<pre id="messages" onclick="this.innerHTML = '';"></pre>
+<div id="debug_info_event_mousemove" class="debug_object_info event mousemove"></div>
+<div id="debug_info_event_mousedown" class="debug_object_info event mousedown"></div>
+
+<!-- Corner -->
+<div id="corner_bottom_right">
+	<div class="float overlay">
+    <div class="debug_object_info mouse_coords overlay">Overlay:  <span id="debug_info_mouse_coords_overlay">X: N/A, Y: N/A</span></div>
+    <div class="debug_object_info mouse_coords cell_indexes">Cell index:  <span id="debug_info_cell_indexes">X: N/A, Y: N/A</span></div>
+		<div class="debug_object_info mouse_coords drag_offset">Drag offset:  <span id="debug_info_drag_offset">X: N/A, Y: N/A</span></div>
+	</div>
+	<div class="float map">
+		<div id="debug_info_map_margin" class="debug_object_info map_margin">Map margin:  X: N/A, Y: N/A</div>
+	</div>
+	<div class="cistic"><!--  --></div>
+</div>
+
+<!-- Controls -->
+<div id="toolbar">
+  <button>Towns</button>
+  <button>Companies</button>
+  <button>Stations</button>
+
+  <button>Road vehicles</button>
+  <button>Rail vehicles</button>
+
+  <button>Roads</button>
+  <button>Rails</button>
+  <button>Dynamite</button>
+</div>
+
+<!-- Map stuff -->
+<div id="mapbox">  <span class="label">#mapbox</span>
+  <div id="map">  <span class="label">#map</span>
+    <div id="testAnimation" style="width: 20px; height: 20px; background: gold; position: absolute; z-index: 5000;"></div>
+  </div>
+  <div id="overlay"> <span class="label">#overlay</span>
+  
+  </div>
+</div>
+
+
+<!-- Test animation. -->
+<script type="text/javascript">
+  function testAnimation(){
+    //$("#testAnimation").animate({top: "-70px", left: "100px"}, 1000, "swing");
+    //$("#testAnimation").animate({top: "0px", left: "0px"}, 1000, "swing");
+
+    /*$("#testAnimation").click( function(){
+      var from = eMap.TransformFieldXYtoCoords( 1, 1, 1 );
+      var to   = eMap.TransformFieldXYtoCoords( 1, -1, 1 );
+      $("#testAnimation").animate({top: from.y+"px", left: from.x+"px"}, 1000, "swing");
+      $("#testAnimation").animate({top: to.y+"px", left: to.x+"px"}, 1000, "swing");
+    });*/
+
+
+    //var animCells = [{x:1, y:1},{x:1, y:5},{x:3, y:5},{x:3, y:-5},];
+    var animCells = [{x:-3, y:-4},{x:-3, y:-9},{x:-1, y:-9},{x:-1, y:-10},{x:2, y:-10},{x:2, y:-9},{x:6, y:-9},{x:6, y:-14},{x:9, y:-14},];
+
+    var prevCoords = eMap.TransformFieldXYtoCoords( animCells[0].x, animCells[0].y, 1 );
+    for( var i = 0; i < animCells.length; i++ ){
+      var to = eMap.TransformFieldXYtoCoords( animCells[i].x, animCells[i].y, 1 );
+      $("#testAnimation").animate({
+        top: (to.y-18)+"px",
+        left: to.x+"px",
+        zIndex: -100+to.y
+      }, 1000, "swing");
+      prevCoords = to;
+    }
+  }
+
+  //window.addEventListener("load", testAnimation, false);
+  window.addEventListener("load", function(){   $("#btnAnimate").click( testAnimation );   }, false);
+  //$("#btnAnimate").click(testAnimation);
+  //document.body.addEventListener("click", function(){alert(4);}, true);
+  //alert(document.body.addEventListener);
+</script>
+
+
+
+
+<!-- "GUI" - controls for map updates. -->
+<div id="gui">
+  <button id="btnAnimate">Animate</button>
+
+	<form id="load_area" action="#">
+		<h2>Load area</h2>
+		<p>Bounds (by cells coords, included):</p>
+		<input type="Text" name="iLeft"   value="-2"> Levo<br/>
+		<input type="Text" name="iTop"    value="-2"> Hore<br/>
+		<input type="Text" name="iRight"  value="0"> Pravo<br/>
+		<input type="Text" name="iBottom" value="0"> Dole<br/>
+		<input type="Button" value="Pyčo" onclick="eMap.land.LoadCellsForArea( this.form.iLeft.value, this.form.iTop.value, this.form.iRight.value, this.form.iBottom.value );"><br/>
+    <button onclick="with(this.form){ iLeft.value = '-20'; iTop.value = '-20'; iRight.value = '0'; iBottom.value = '0'; } return false;">[-20,-20], [0,0]</button>
+    <button onclick="with(this.form){ iLeft.value = '-20'; iTop.value = '-20'; iRight.value = '20'; iBottom.value = '20'; } return false;">[-20,-20], [20,20]</button>
+    <button onclick="with(this.form){ iLeft.value = '-10'; iTop.value = '-10'; iRight.value = '10'; iBottom.value = '10'; } return false;">[-10,-10], [10,10]</button>
+    <br/>
+    <input type="Button" value="Update" onclick=" with(this.form){
+        eMap.land.LoadCellsForArea( iLeft.value, iTop.value, iRight.value, iBottom.value, iSince.value );
+        iSince.value = Math.floor( new Date().getTime() / 1000 );
+    }">
+    <input type="Text" name="iSince"  value="0"> Since<br/>
+    <br/>
+	</form>
+	
+	
+	<form id="form_update_field" action="#">
+		<h2>Change cells</h2>
+		<p>Bounds (by cells coords, included):</p>
+		<input type="Text" name="x"   value=""> X<br/>
+		<input type="Text" name="y"    value=""> Y<br/>
+		<input type="Text" name="x2"   value=""> X<br/>
+		<input type="Text" name="y2"    value=""> Y<br/>
+
+		<div>
+		<label>Využití</label>
+		<select name="usage">
+			<!-- ENUM('plain','building','industry','rail','road') -->
+			<option value="plain" style="color: green;">Volný terén</option>
+			<option value="building" style="color: blue;">Budova</option>
+			<option value="industry" style="color: magenta;" disabled>Průmysl</option>
+			<option value="rail"  style="color: brown;" disabled>Koleje</option>
+			<option value="road" style="color: gray;">Silnice</option>
+		</select>
+		</div>
+		
+		<div>
+		<label style="color: green;">Terén</label>
+		<select name="ground" style="color: green;">
+			<!-- ENUM('grass','farm','stones','bumpy') -->
+			<option value="grass">Tráva</option>
+			<option value="farm">Pole</option>
+			<option value="stones">Skalnatý terén</option>
+			<option value="bumpy">Kopcovitý terén</option>
+		</select>
+		</div>
+		
+		<div>
+		<label style="color: blue;">Budova</label>
+		<select name="building" style="color: blue;">
+			<script type="text/javascript">
+			var asBuildings = "cinema,cotagge_tall,cottage_small,cottage_small2,cottage_small3,cottage_small4,flats_gray,flats_overhang,flats0,flats1,flats2,flats3,flats4,fountain,hanging,hotel,house_modern,house_modern2,house_pool,house_swiss,houses_2garage,houses_2garden,houses_3,houses_3garden,church,office_tower,offices_block_modern,offices_modern,park1,park2,shop_mall,shop_small,shops_and_offices,shops_and_offices2,shops_modern,stadium_american,stadium_soccer,statue,theater,warehouse".split(",");
+			for( var i in asBuildings ){
+				document.write("<option value='"+asBuildings[i]+"'>"+asBuildings[i]+"</option>");
+			}
+			</script>
+		</select>
+		</div>
+		
+		<div>
+		<label>Silnice</label>
+		<input type="Checkbox" name="roads[N]"><label>N</label>
+		<input type="Checkbox" name="roads[S]"><label>S</label>
+		<input type="Checkbox" name="roads[W]"><label>W</label>
+		<input type="Checkbox" name="roads[E]"><label>E</label>
+		</div>
+
+		<div>
+		<label style="color: brown;">Koleje</label>
+			<script type="text/javascript">
+			var asRails = "NS,NW,NE,SW,SE,WE".split(",");
+			for( var i in asRails ){
+				document.write("<input type='Checkbox' name='rails["+asRails[i]+"]'><label>"+asRails[i]+"</label>");
+			}
+			</script>
+		</div>
+
+		<input type="Button" value="Pyčo" onclick="SubmitUploadFieldForm(this.form);">
+		<p>Měnit jde jen z localhostu...</p>
+		<script type="text/javascript">
+		function SubmitUploadFieldForm( eForm ){
+			// Roads 
+			var asRoads = [];
+			var asIndexes = "N,S,W,E".split(",");
+			for( var i in asIndexes )
+				if( eForm["roads["+asIndexes[i]+"]"].checked )
+					asRoads.push( asIndexes[i] );
+			sRoads = asRoads.join(",");
+			
+			// Calling AJAX 
+			with(eForm){
+				//eMap.land.UploadField( x.value, y.value, usage.value, ground.value, building.value, sRoads /*, roads.value, rails.value*/  );
+				eMap.land.UploadArea( x.value, y.value, x2.value, y2.value, usage.value, ground.value, building.value, sRoads /*, roads.value, rails.value*/  );
+				//eMap.land.LoadCellsForArea( x.value, y.value,  x2.value, y2.value );
+			}
+		};
+		</script>
+	</form>
+</div>
+
+
+</body></html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"><html><head>
+	<meta http-equiv="Content-Type" content="text/html; charset=windows-1250"/>
+	<meta name="Author" content="Ondra Žižka, ondra at dynawest.cz; Design by Petr Záveský, petr.zavesky@seznam.cz"/>
+	<meta name="Keywords" content=""/>
+	<meta name="Description" content=""/>
+	<link rel="stylesheet" type="text/css" href="dw_styles.css"/>
+	<link rel="stylesheet" type="text/css" href="styl.css"/>
+  <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/dojo/1.3/dojo/dojo.xd.js"></script>-->
+  <script type="text/javascript" src="dojo/dojo.js"></script>
+  <script type="text/javascript">      dojo.require("dojo.dnd.Moveable");     </script>
+<style type="text/css">
+	body {
+		background: URL('bg-land-green.png') #306101;
+    color: black;
+		font-family: "Verdana", "Helvetica CE", Verdana, sans-serif;
+	}
+
+
+
+  /* --- TTD --- */
+
+  
+  .outset {
+    border-style: outset;
+    border-width: 1px;
+  }
+  .Dialog *, .Dialog table {
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    font-family: "Verdana";
+    font-weight: bold;
+    font-size: 11px;
+    vertical-align: top;
+    cursor: default;
+  }
+  .Dialog {
+    position: absolute;
+  }
+
+  .Dialog.Vehicle {
+    background-color: #848484;
+    color: black;
+    width: 400px;
+  }
+
+  .Dialog table { border-collapse: separate; empty-cells: show; }
+  .Dialog table td { padding: 0; margin: 0; vertical-align: top; }
+  .Dialog table.buttons { table-layout: fixed; }
+
+  .Dialog .Header {
+    height: 14px;
+  }
+  .Dialog .webdings, .Dialog .webdings * {
+    font-family:  "Webdings" !important;
+    line-height: 11px;
+  }
+
+
+  .Dialog .Header .close,
+  .Dialog .Header .pin   {
+    text-align: center;
+    width: 14px;
+    height: 14px;
+  }
+  .Dialog .Header .title {
+    border-style: ridge;
+    border-width: 2px;
+    color: white;
+    text-align: center;
+  }
+  
+  .Dialog.Vehicle .Header .title {
+    background-color: #C40000;
+  }
+
+  .Dialog .Body .list .items {}
+  .Dialog .Body .list .scrollbar { width: 14px; }
+  .Dialog .Body .list .scrollbar tr.up td div,
+  .Dialog .Body .list .scrollbar tr.down td div { height: 100%; } /* Scrollbar as table. */
+
+
+  /* -- Scrollbar -- */
+
+  .Dialog .scrollbar { position: relative; }
+  .Dialog.Vehicle .scrollbar { background-color: #B0B0B0; }
+
+  .Dialog .scrollbar .up,
+  .Dialog .scrollbar .down {
+    height: 14px;
+    width: 14px;
+  }
+  .Dialog div.scrollbar .down {
+    position: absolute;
+    bottom: 0;
+  }
+  .Dialog .scrollbar .handle {
+    height: 49px;
+  }
+
+  .Dialog.Vehicle .scrollbar .up,
+  .Dialog.Vehicle .scrollbar .down,
+  .Dialog.Vehicle .scrollbar .handle {
+    background: #848484;
+  }
+
+  
+
+  .Dialog .list ul {
+    padding-left: 12px !important;
+    /*line-height: 14px;*/
+    margin: 0;
+  }
+
+  .Dialog .buttons td {
+    border-style: outset;
+    border-width: 1px;
+    text-align: center;
+  }
+
+
+  /** -- Data - Industries etc. -- */
+
+  .Dialog.Data {
+    background-color: #98845C;
+    width: 600px;
+  }
+
+  .Dialog.Data .scrollbar { background-color: #B09871; }
+  .Dialog.Data .scrollbar .up,
+  .Dialog.Data .scrollbar .down,
+  .Dialog.Data .scrollbar .handle { background: #98845C; }
+
+  .Dialog.Data .list span.name { color: #FCB02E; }
+  .Dialog.Data .list span.status { color: #F3EE7D; }
+  .Dialog.Data .list { overflow: hidden; }
+
+  /** -- Toolbox -- */
+  .Dialog.Toolbox {
+    background-color: #677C4C;
+    max-width: 600px;
+  }
+
+
+/** Example data */
+#toolbox_dialog_example { top: 10; left: 180; }
+#vehicle_dialog_example { top: 60; left: 80; }
+#data_dialog_example { top: 220; left: 20; }
+
+</style>
+
+  <script type="text/javascript">
+    //dojo.require("dojo.dnd.move");
+    window.onload = function(){
+      
+      window.maxZIndex = 0;
+
+      var asIDs = [ "toolbox_dialog_example", "vehicle_dialog_example", "data_dialog_example"];
+      for( var id in asIDs ){
+        var node = dojo.byId( asIDs[id] );
+        if( node == null ) continue;
+        new dojo.dnd.Moveable( node );
+        node.onmousedown = function(event){
+          event.currentTarget.style.zIndex = ++window.maxZIndex;
+        }
+      }
+    };
+  </script>
+
+
+<title> TTD Dialog </title></head>
+<body>
+
+
+<!-- Actions toolbox -->
+<div class="Dialog Toolbox Railway" id="toolbox_dialog_example">
+  <table class="header" width="100%" cellspacing="0"><tr>
+    <td class="close outset webdings"><span>&#xF072;</span></td>
+    <td class="title"><span>Railway Construction</span></td>
+    <td class="pin outset webdings"><span>&#xF0EB;</span></td>
+  </tr></table>
+  <div class="Body">
+    <img src="toolbox-railway.png" width="373" height="22" />
+    <!--
+    <table class="buttons" width="100%" cellspacing="0"><tr>
+      <td class="button outset" style="height: 32px"><span></span></td>
+    </tr></table>
+    -->
+  </div>
+</div>
+
+
+<!-- Vehicle dialog -->
+<div class="Dialog Vehicle Train Orders" id="vehicle_dialog_example">
+  <table class="header" width="100%" cellspacing="0"><tr>
+    <td class="close outset webdings"><span>&#xF072;</span></td>
+    <td class="title"><span>Aircraft 4 (Orders)</span></td>
+    <td class="pin outset webdings"><span>&#xF0EB;</span></td>
+  </tr></table>
+  <div class="Body">
+    <table class="list" width="100%" cellspacing="0"><tr>
+        <!-- Data list -->
+        <td class="items outset" style="height: 100px">
+          <ul class="flat">
+            <li>1: Go to Wrunningville Airport</li>
+            <li>2: Go to Fort Frunningbury Airport (Load)</li>
+            <li>-- End of Orders --</li>
+          </ul>
+        </td>
+        <!--  Scrollbar as positioned divs
+        <td class="scrollbar webdings">
+          <div class="up outset">&#xF035;</div>
+          <div class="track">
+            <div class="handle outset"></div>
+          </div>
+          <div class="down outset">&#xF036;</div>
+        </td> -->
+        <!-- Scrollbar as table -->
+        <td class="scrollbar webdings">
+          <table width="100%" height="100%" cellspacing="0">
+            <tr class="up"><td><div class="outset">&#xF035;</div></td></tr>
+            <tr class="track"><td>
+              <div class="handle outset"></div>
+              </td></tr>
+            <tr class="down"><td><div class="outset">&#xF036;</div></td></tr>
+            <!-- To get darker borders, move ` class="outset"` to the div. -->
+          </table>
+        </td>
+    </tr></table>
+  </div>
+  <div class="Footer">
+    <table class="buttons" width="100%" cellspacing="0"><tr>
+        <td><span>Skip</span></td>
+        <td><span>Delete</span></td>
+        <td><span>Go&nbsp;To</span></td>
+        <td><span>Full&nbsp;Load</span></td>
+        <td><span>Unload</span></td>
+    </tr></table>
+  </div>
+</div>
+
+
+<!-- Data dialog -->
+<div class="Dialog Data Industries" id="data_dialog_example">
+  <table class="header" width="100%" cellspacing="0"><tr>
+    <td class="close outset webdings"><span>&#xF072;</span></td>
+    <td class="title"><span>Industries</span></td>
+    <td class="pin outset webdings"><span>&#xF0EB;</span></td>
+  </tr></table>
+  <div class="Body">
+    <table class="list" width="100%" cellspacing="0"><tr>
+        <!-- Content (scrolled) -->
+        <td class="items" style="height: 100px"><!-- TBD dynamically -->
+          <!-- Col headers -->
+          <table class="buttons" width="100%" cellspacing="0"><tr>
+              <td><span>Name</span></td>
+              <td><span>Type</span></td>
+              <td><span>Production</span></td>
+              <td><span>Transported</span></td>
+              <td><span></span></td>
+          </tr></table>
+          <!-- Data list -->
+          <ul class="flat outset">
+            <li>
+              <span class="name">Bonnigworth Food Processing Plant</span>
+              <span class="waiting">(310 tons of food)</span>
+              <span class="status">(60% transported)</span>
+            </li>
+            <li>
+              <span class="name">Fort Fruningbury Factory</span>
+              <span class="waiting">(252 crates of goods)</span>
+              <span class="status">(31% transported)</span>
+            </li>
+            <li>
+              <span class="name">Chonningstone Farm</span>
+              <span class="waiting">(189 tons of maize)</span>
+              <span class="status">(69% transported)</span>
+            </li>
+            <li>
+              <span class="name">Drinburg Springs Oil Wells</span>
+              <span class="waiting">(171,000 litres of oil)</span>
+              <span class="status">(68% transported)</span>
+            </li>
+            <li>
+              <span class="name">Fatfingburg Rubber Plantation</span>
+              <span class="waiting">(171,000 litres of oil)</span>
+              <span class="status">(53% transported)</span>
+            </li>
+
+            <li>
+              <span class="name">Fort Fruningbury Factory</span>
+              <span class="waiting">(252 crates of goods)</span>
+              <span class="status">(31% transported)</span>
+            </li>
+            <li>
+              <span class="name">Chonningstone Farm</span>
+              <span class="waiting">(189 tons of maize)</span>
+              <span class="status">(69% transported)</span>
+            </li>
+            <li>
+              <span class="name">Bonnigworth Food Processing Plant</span>
+              <span class="waiting">(310 tons of food)</span>
+              <span class="status">(60% transported)</span>
+            </li>
+            <li>
+              <span class="name">Fatfingburg Rubber Plantation</span>
+              <span class="waiting">(171,000 litres of oil)</span>
+              <span class="status">(53% transported)</span>
+            </li>
+
+          </ul>
+        </td>
+        <!-- Scrollbar as positioned divs
+        <td>
+          <div class="scrollbar webdings">
+            <div class="up outset">&#xF035;</div>
+            <div class="track">
+              <div class="handle outset"></div>
+            </div>
+            <div class="down outset">&#xF036;</div>
+          </div>
+        </td> -->
+        <!-- Scrollbar as table -->
+        <td class="scrollbar webdings">
+          <table width="100%" height="100%" cellspacing="0">
+            <tr class="up"><td><div class="outset">&#xF035;</div></td></tr>
+            <tr class="track"><td>
+              <div class="handle outset"></div>
+              </td></tr>
+            <tr class="down"><td><div class="outset">&#xF036;</div></td></tr>
+            <!-- To get darker borders, move ` class="outset"` to the div. -->
+          </table>
+        </td>
+    </tr></table>
+  </div>
+</div>
+
+
+
+</body></html>

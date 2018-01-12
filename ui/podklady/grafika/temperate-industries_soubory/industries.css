@@ -1,0 +1,86 @@
+.menu
+{
+	z-index:2;
+	border-color: #6B8E23;
+	border-width: 0px;
+	border-style : solid;
+	overflow: auto;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	margin : 0px 0px 0px 0px;
+	padding : 0px;
+	height: 84px;
+	width:400px;
+}
+h1
+{
+	text-align:center;
+	padding: 8px;
+	margin-right:400px;
+	overflow: visible;
+	vertical-align: middle;
+	height:68px;
+}
+h2
+{
+	margin-top:0px;
+	font-weight: bold;
+	text-align: center;
+	padding: 8px;
+	font-size : large;
+	clear: both;
+}
+table.industry
+{
+	margin-left: auto;
+	margin-right: auto;
+	border-width: 1px;
+	clear: none;	
+}
+table.industry, td, th
+{
+	border-style: solid;
+	border-width: 1px;
+}
+td,th
+{
+	padding: 3px;
+	font-size: medium;
+}
+.hcenter
+{
+	text-align: center;
+	vertical-align: middle;
+}
+.hright
+{
+	text-align: right;
+	vertical-align: top;
+}
+.hleft
+{
+	vertical-align: top;
+	text-align: left;
+}
+caption
+{
+	text-align: center;
+	padding: 2px;
+	font-weight: bold;
+	margin-left: auto;
+	margin-right: auto;
+}
+div.picl
+{
+	padding: 3px 10px 3px 32px;
+}
+.bold
+{
+	font-weight: bold;
+}
+div.sall
+{
+	margin-top:10px;
+}
+

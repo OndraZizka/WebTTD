@@ -1,0 +1,106 @@
+13:11	 	*** OndraZizka joined #openttd
+		0.7.3 | Website: *.openttd.org (BaNaNaS: bananas, translator: translator, server list: servers, nightly-builds: nightly, wiki: wiki, patches & bug-reports: bugs, revision log: vcs, release info: finger) | #openttd.notice for SVN notices | UTF-8 please | No Unauthorised Bots | English only
+		Topic set by glx!glx@2a01:e35:2f59:c7c0:403b:45d8:b2d1:7183 on Thu Oct 01 2009 14:00:55 GMT+0200 (Central Europe Daylight Time)
+13:12	OndraZizka	WebTTD? http://ondra.zizka.cz/stranky/programovani/web_javascript_ajax_canvas/webttd.texy
+13:12	Pikka	Eddi: I'm british/australian, we say aluminium too
+13:13	SmatZ	OndraZizka: good luck :-)
+13:14	OndraZizka	SmatZ: Hereby I'm looking for co-programmers :)
+13:14	SmatZ	hehe ;)
+13:14	SmatZ	good luck with looking for co-programmers :)
+13:15	OndraZizka	Thanks :) Are some devs here? I've just few technical questions
+13:15	SmatZ	some, yes
+13:15	Eddi|zuHause	ask the questions, they don't necessarily require a dev at all
+13:15	Rubidium	I've heard Pikka is some dev :)
+13:16	SpComb	hardly a clone
+13:16	SpComb	perhaps an MMOified version
+13:19	OndraZizka	SpComb: Yes, that's more accurate
+13:19		*** Chris_Booth joined #openttd
+13:19	OndraZizka	"WebTTD - browser-based Transport Tycoon derivate" ;-)
+13:21	Eddi|zuHause	but that abbreviates to "bbTTd" :p
+13:22		*** worldemar quit (Quit: worldemar)
+13:22		*** worldemar joined #openttd
+13:22	SpComb	so change it to 'WebTTD - A Browser-based ...' :P
+13:23	SpComb	hmm, I've seen a couple isometric-2D web frontends some time
+13:23	SpComb	someone on this channel wrote something that had landscape
+13:23	andythenorth	yay, done some more of the stupid boats :P
+13:23	SpComb	can't remember who it was... TrueBrain?
+13:23	Eddi|zuHause	i believe that was TrueBrain
+13:23	Pikka	hooray for stupid boats!
+13:24	TrueBrain	I never wrote that; I did it for WebDUNE. The one you refer to had a very nice prototype
+13:24	SpComb	well, I recall something that looked very much like TTD
+13:25		*** Lakie joined #openttd
+13:25	TrueBrain	wasn't me :)
+13:26	TrueBrain	Well, all I did once was push via PNGs to a web screenshots of the game ... but I never published any screenshots of it :p (as it failed badly)
+13:26	SpComb	I had the realtime scrolly-tiles thing, but it was just a hack
+13:27	SmatZ	hmmm... directory called "P"... I wonder what it contains...
+13:27	TrueBrain	I did that for Webdune ;) Ghehe :) It even had a Quad running in the map :p
+13:27	SmatZ	OH GOD!
+13:28		Rubidium wonders what SmatZ's rambling about
+13:28	SmatZ	content of that directory was quite explicit and hardcore :-p
+13:29	TrueBrain	so you found your porn back on your own disk?
+13:29	TrueBrain	good for you!
+13:29	SmatZ	not my disk :-p
+13:29	TrueBrain	isn't that what they all say?
+13:29		SmatZ is gone for few hours... this notebook needs detailed examination...
+13:30	TrueBrain	enjoy
+13:30	Rubidium	*too* much detail
+13:30	TrueBrain	Rubidium: no, that would be when he gives the link to his webcam
+13:30	Eddi|zuHause	by examination i hope you mean "dd"
+13:30	SmatZ	;-)
+13:33	TrueBrain	Eddi|zuHause: rsync is more useful in this case
+13:34	SpComb	storing porn in a TrueCrypt volume is good for society as a whole
+13:35	OndraZizka	SpComb: realtime scrolly-tiles thing, that sounds interesting, do you still have it?
+13:35	SmatZ	-"in a TrueCrypt volume "
+13:36	OndraZizka	TrueBrain: Do you still have that prototype?
+13:36	SpComb	OndraZizka: I mean, it was just tiled screenshots from OpenTTD, nothing more
+13:36	OndraZizka	SpComb: Aha :)
+13:36	SpComb	but there has been prior work on actually constructing the isometric tiles with javascript/HTML, I can distinctly remember at least two instances
+13:39	OndraZizka	SpComb: I have coded that already,
+13:39	OndraZizka	even with elevations
+13:40	OndraZizka	but, I can't figure out how to tell which tile was clicked...
+13:40	OndraZizka	(for that elevated model)
+13:40	SpComb	well, math :)
+13:41	OndraZizka	Well, not math :) rather a pixel depth-map
+13:41	OndraZizka	There are buildings etc...
+13:41	OndraZizka	generally, sprites.
+13:43	andythenorth	hmmm....I could really use a collaborator for FISH :|
+13:43		*** thepalm quit (Quit: ChatZilla 0.9.85 [Firefox 3.5.3/20090824101458])
+13:43	Pikka	to do what, andy?
+13:43	andythenorth	a little bit of drawing, and a little bit of coding
+13:43	andythenorth	example: I've added ferries.
+13:44	andythenorth	They could do with a loaded state. Buses for example
+13:44	andythenorth	Which can be had from eGRVTS
+13:44	andythenorth	but the ferries also refit to other cargos
+13:44	Eddi|zuHause	OndraZizka: there is a calculation for which tile is clicked in the game code
+13:44	andythenorth	so I need alternatives sprites with trucks
+13:44	andythenorth	that's 20 minutes of drawing and 20 mins of code
+13:44	andythenorth	I guess without a collaborator FISH will never have all the little tweaks that make a lovely set
+13:45	Pikka	I dunno, it seems to be coming along quite nicely :)
+13:46	TrueBrain	[13:36] <OndraZizka> TrueBrain: Do you still have that prototype? <- I have my working prototype somewhere, but it is based on a older version of Django, so it doesn't want to boot :p Besides, because it used Python to access a 2D array, it was DEAD slow :p
+13:46	OndraZizka	Eddi|zuHause: Well, that's what I wanted to ask, how it's done in OpenTTD. Are you sure it's a calculation, not a pixel map?
+13:47	Eddi|zuHause	i'm fairly sure it's a calculation
+13:47	OndraZizka	Eddi|zuHause: Ok, and by any chance, do you know which code does this?
+13:47	OndraZizka	(svn link at best)
+13:48	Eddi|zuHause	no, but there can't be that many places that do screen<->map coordinate transformations
+13:48	TrueBrain	it depends on the object ... you can never press on a tile, that has no action
+13:48	TrueBrain	clicking vehicles, labels, .. have effect
+13:49	Eddi|zuHause	TrueBrain: it's not about the actions, for example tile highlighting needs this transformation, too
+13:49	OndraZizka	TrueBrain: Has an action, if you're e.g. in railway building mode, right?
+13:49	OndraZizka	So then you need to know the tile
+13:49	andythenorth	oops my nfo crashed the game
+13:50	andythenorth	(embarassed)
+13:50	Alberth	OndraZizka: simplest approach may be to follow the terrain tile by tile towards the coords of the mouse
+13:50	TrueBrain	tilehighlight_* might help you with highlights
+13:50		*** Lakie quit (Quit: bbl)
+13:51	OndraZizka	Alberth: Perhaps, but if it was not a bunch of <div>s
+13:51	OndraZizka	...thus, rectangles
+13:51	Alberth	2 triangles
+13:52	OndraZizka	hm, that sounds promisingly
+13:52	TrueBrain	for OpenTTD, most of the conversion is done in VpSelectTilesWithMethod() I believe
+13:52	OndraZizka	Well I could actually ignore buildings etc, store a set of triangles upon drawing, and then compute the tile from the coords
+13:52	OndraZizka	(by searching these triangles0
+13:52	OndraZizka	)
+13:53	TrueBrain	I would suggest to put a <div> at a very high z, and record mousemovement on that (and make it transparent, of course)
+13:53	TrueBrain	that makes it simple javascript to calculate placement
+13:53	OndraZizka	TrueBrain: That's what I do
+13:53	OndraZizka	I thing google maps and similar do that too.

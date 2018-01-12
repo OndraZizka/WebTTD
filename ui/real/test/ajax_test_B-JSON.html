@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"><html><head>
+	<meta http-equiv="Content-Type" content="text/html; charset=windows-1250"/>
+	<meta name="Author" content="Ondra Žižka, ondra at dynawest.cz; Design by Petr Záveský, petr.zavesky@seznam.cz"/>
+	<meta name="Keywords" content=""/>
+	<meta name="Description" content=""/>
+	<link rel="stylesheet" type="text/css" href="dw_styles.css"/>
+	<link rel="stylesheet" type="text/css" href="styl.css"/>
+	<script type="text/javascript" charset="windows-1250" src="fce.js"></script>
+	<script type="text/javascript" charset="windows-1250" src="fce.ajax.js"></script>
+<style type="text/css">
+	body {
+		background-color: #ffffff; color: black;
+		font-family: "Arial CE", "Helvetica CE", "Verdana CE", Arial, Helvetica, Verdana, sans-serif;
+	}
+</style>
+<script type="text/javascript">
+function CreateDataRequest( eForm ){
+
+	// Vstupní data
+	var sURL = "ajax.LandData.php?" + serialize( [eForm.minX, eForm.maxX, eForm.minY, eForm.maxY] );
+	
+	// Vytvoříme objekt požadavku.
+	var xml = new XMLHttpRequest();
+	xml.open("POST", sURL, true);
+	xml.onreadystatechange = function(){
+    if ( xml.readyState == 4 ) {    // Kompletní načtení dat.
+
+			//document.getElementById("pre").innerHTML = xml.responseText;
+			eval("oApp.oData = " + xml.responseText + ";");
+			//alert( oApp.oData );
+			oApp.ShowData();
+			
+			// Uklidíme po sobě, abychom předešli úniku paměti.
+			xml = null;
+    }
+	};
+	xml.send( null );
+	
+}
+
+var oApp = {
+	oData: null,
+	ShowData: function(){
+
+		//var eTable = new HTMLTableElement();
+		var eTable = document.getElementById( "land_table" );
+		DumpObjectEx( eTable.insertRow );
+
+		// Insert cells;
+		for( y in this.oData ){
+			var eRow = eTable.insertRow(-1);
+			for( x in this.oData[y] ){
+				var eCell = eRow.insertCell(-1);
+				eCell.innerHTML = "x: "+x+" y: "+y+" type: "+this.oData[y][x].type;
+			}// x
+		}// y
+	}
+};
+</script>
+<title> Ajax Test - JSON </title></head>
+<body>
+<form id="form1">
+	<input type="Text" name="minX" value="2"/> minX<br/>
+	<input type="Text" name="maxX" value="6"/> maxX<br/>
+	<input type="Text" name="minY" value="1"/> minY<br/>
+	<input type="Text" name="maxY" value="5"/> maxY<br/>
+	<button onclick="CreateDataRequest(this.form); return false;">Stáhnout</button>
+</form>
+<pre id="pre"></pre>
+
+<table id="land_table" border="1">
+	<tbody>
+	<!-- <tr><td>XX</td></tr> -->
+	</tbody>
+</table>
+
+</body></html>

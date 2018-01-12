@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"><html><head>
+	<meta http-equiv="Content-Type" content="text/html; charset=windows-1250"/>
+	<meta name="Author" content="Ondra Žižka, ondra at dynawest.cz; Design by Petr Záveský, petr.zavesky@seznam.cz"/>
+	<meta name="Keywords" content=""/>
+	<meta name="Description" content=""/>
+	<link rel="stylesheet" type="text/css" href="../css/dw_styles.css"/>
+	<link rel="stylesheet" type="text/css" href="../css/styl.css"/>
+	<script type="text/javascript" charset="windows-1250" src="../js/fce.js"></script>
+	<script type="text/javascript" charset="windows-1250" src="../js/fce.ajax.js"></script>
+<style type="text/css">
+	body {
+		background-color: #ffffff; color: black;
+		font-family: "Arial CE", "Helvetica CE", "Verdana CE", Arial, Helvetica, Verdana, sans-serif;
+	}
+</style>
+<script type="text/javascript">
+function AjaxTest( eButton ){
+	
+	// Vytvoříme objekt požadavku.
+	var xml = new XMLHttpRequest();
+	
+	// Otevřeme asynchronní požadavek typu POST.
+	xml.open("GET", "test_data.txt", true);
+	
+	// Hlídáme změny stavu požadavku.
+	xml.onreadystatechange = function(){
+    // Čekáme na kompletní načtení dat.
+    if ( xml.readyState == 4 ) {
+
+			// xml.responseXML  obsahuje XML dokument (pokud byl nějaký vrácen).
+			// xml.responseText obsahuje text odpovědi (pokud nebyl vrácen XML dokument).
+			eButton.innerHTML = xml.responseText;
+			
+			// Uklidíme po sobě, abychom předešli úniku paměti.
+			xml = null;
+    }
+	};
+	
+	// Navážeme spojení se serverem.
+	xml.send( null );
+	
+}
+</script>
+<title> Ajax Test </title></head>
+<body>
+<button onclick="AjaxTest(this)">Ahoj</button>
+</body></html>

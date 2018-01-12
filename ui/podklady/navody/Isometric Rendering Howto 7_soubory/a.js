@@ -1,0 +1,1 @@
+document.write('<a href=\"http://www.gamedev.net/banman/a.aspx?Task=Click&ZoneID=13&CampaignID=713&AdvertiserID=135&BannerID=769&SiteID=1&RandomNumber=1320631855&Keywords=\" target=\"_Blank\"><img src=\"http://members.gamedev.net/dave/ads/GIS_728x90.png\"  width=\"728\" height=\"90\" alt=\"\" align=\"Center\" border=\"0\"></a><br>'); adcode=' '

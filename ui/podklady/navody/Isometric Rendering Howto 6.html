@@ -1,0 +1,559 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1250">
+
+
+
+  <title>GameDev.net - Axonometric Projections - A Technical Overview</title>
+  <link rel="stylesheet" href="Isometric%20Rendering%20Howto%206_soubory/reference.css" type="text/css">
+  <link rel="icon" href="http://www.gamedev.net/pics/gdicon.png" type="image/png">
+</head><body leftmargin="0" topmargin="0" alink="#000000" background="Isometric%20Rendering%20Howto%206_soubory/watermark.gif" bgcolor="#ffffff" link="#666699" marginheight="0" marginwidth="0" text="#000000" vlink="#666699">
+
+<table border="0" cellpadding="3" cellspacing="0" width="100%">
+  <tbody><tr>
+    <td class="tblhdr">Axonometric Projections - A Technical Overview</td>
+    <td class="tblhdr" align="right" nowrap="nowrap"><img src="Isometric%20Rendering%20Howto%206_soubory/littleg.gif" align="absbottom" height="16" width="16">&nbsp;<a href="http://www.gamedev.net/"><span style="color: white; text-decoration: none;">GameDev.net</span></a></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+<!-- Begin -  Site: GameDev.net Zone: GameDev.net variable width -->
+<script language="javascript" type="text/javascript">
+<!--
+var browName = navigator.appName;
+var SiteID = 1;
+var browDateTime = (new Date()).getTime();
+if (browName=='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;IFR=False&amp;Browser=NETSCAPE4&amp;PageID=55140&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+if (browName!='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;IFR=False&amp;PageID=55140&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+// --> 
+</script><script language="javascript" src="Isometric%20Rendering%20Howto%206_soubory/a.js"></script>
+<noscript> <a
+href="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Click&amp;Mode=HTML&amp;SiteID=1&amp;PageID="
+target="_blank"> <img
+src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;Mode=HTML&amp;SiteID=1&amp;PageID="
+width="728" height="90" border="0" alt=""></a>
+</noscript>
+<!-- End -  Site: GameDev.net Zone: GameDev.net variable width --></td>
+  </tr>
+</tbody></table>
+<table border="0" cellpadding="5" cellspacing="0" width="100%"><tbody><tr><td>
+
+<p align="center"><span class="title">Axonometric Projections - A Technical Overview</span>
+<br><span class="author">by Thiadmer Riemersma</span></p>
+
+<h1>Abstract</h1>
+<p>This paper discusses how axonometric projections may be used in
+computer graphics, multimedia applications and computer games. It
+compares the axonometric projection, or <i>parallel perspective</i>, to the linear perspective, lists the major properties and tackles some implementation details.
+</p><p>The focus of this paper is on the isometric and dimetric
+projections, the most widely used varieties of the axonometric
+projection. This paper also presents two dimetric projections that are
+suitable for (tiled) computer graphics.
+</p><h1>Introduction -- first attempt</h1>
+<p>In the Western world, we are accustomed to the linear perspective,
+which tries to achieve visual realism in paintings of 3-dimensional
+environments. The linear perspective, which was perfected throughout
+the 17th century in Europe, is based on Euclidean optics: the eye as a
+point object that catches straight light rays and that senses only the
+colour, the intensity and the angle of the rays, not their length.
+</p><p>Another perspective had developed in oriental art: the "Chinese
+perspective" was an intrinsic part of the classical scroll painting
+(actually, "Chinese perspective" is a bit of a misnomer because the
+same perspective was also used in Japanese art and that of other
+oriental countries). A typical Chinese scroll painting had a size of
+approximately 40 centimetres high by several meters wide. One views the
+painting was viewed by unrolling it (from right to left) on a table in
+segments of about 60 centimetres wide. The Chinese scroll paintings
+show a development in time --a form of "narrative art", in contrast to
+the paintings that were made in Europe at the time, which show a
+"situation" rather than a development.
+</p><p>For these scroll paintings, the Chinese painters needed a
+perspective that had no explicit vanishing points; every scene of the
+scroll painting would be seen individually and a vanishing point that
+lies outside the viewport creates a disoriented view of the scene. (For
+the same reason, the Chinese scroll paintings usually do not have an
+explicit light source or cast shadows.) The Chinese painters solved the
+problem by drawing the lines along the z-axis as parallel lines in the
+scroll painting. This has the effect of placing the horizon at an
+imaginary line, infinitely high above the painting. The axonometric
+projection is a technical term for a class of perspectives to which the
+Chinese parallel perspective also belongs. These perspectives are not
+only lacking a vanishing point, they also have a few other, mostly
+useful, characteristics. These are discussed below.
+</p><h1>Introduction -- second attempt</h1>
+<p>Technical drawings need to be precise, accurate and unambiguous.
+Technical drawings are for engineers and fitters. National institutes
+formally standardize technical drawings, so that a carpenter will build
+the particular chair that the furniture designer imagined. Technical
+drawings are a means of communication, for those who can understand it.
+</p><p>If the world were populated by engineers, nothing else would
+matter -- but it isn't and engineers (and fitters and carpenters alike)
+need to communicate with managers and customers. The problem is, of
+course, that technical drawings are difficult to decipher for the
+uninitiated. Although they show an object from up to six angles, all of
+those angles are unrealistic: directly from the front, directly from
+above, etc. What is needed to convey the general shape of the object is
+a perspective drawing that shows three sides of a cube at once.
+</p><p>At this point, the next issue is: how? Engineers being as they
+are, they want a simple technique that does not loose much of the
+accuracy of the original drawings and that does not require artistic
+skills. Also note that in most cases the object that you must draw does
+not yet exist, so usually you cannot take a look at the object to get a
+sense for its proportions. That makes it nearly undoable to adequately
+position the vanishing points and to estimate the foreshortening.
+</p><p><img src="Isometric%20Rendering%20Howto%206_soubory/axometr1.gif" align="right" height="113" width="101">The
+compromise, that became to be known as axonometry, is a drawing
+technique where the orthogonal x-, y- and z-axes of the (3-dimensional)
+world space are projected to (non-orthogonal) axes on paper. In the
+projection, the y-axis usually remains the vertical axis, the z-axis is
+skewed and the x-axis may either be horizontal, as in the figure at the
+right, or be skewed as well. A more important property of axonometry is
+its fixed relation between sizes of objects in world space and those on
+projected space, independent of the positions of the objects in
+projected space. In linear perspective, objects become smaller when
+they move farther away; not so in axonometric perspective. This means
+that you can measure the size of an object of a axonometric drawing and
+know how big the real object is (you need to know the scale of the
+drawing and the properties of the projection, but nothing else),
+something that cannot be done with linear perspective. This leads to
+the name of the projection: the word "axonometry" means "measurable
+from the axes".
+</p><p>Although there are countless possible axonometric projections,
+only two are standardized for technical drawings. These are described
+in detail below.
+</p><h1>Introduction -- third attempt</h1>
+<p>Computer games have traditionally been brimming with graphics and
+animation. In fact, games are categorized according to the kind of
+graphics they used. Two popular types of games are "platform games"
+where you look from the side, and "board games" where you look mostly
+from above. These games also have in common that they often use tiles
+to build the "world" from. Given these similarities, and given the
+dullness of the unrealistic viewpoints of both platform games and board
+games, the attempt to make a compromise between these extreme
+viewpoints is a logical next step.
+</p><p>So what one does is take a board of a board game, scale its
+height (the z-axis) and skew it so that the z-axis on the computer
+display is a diagonal line. For a better appearance, you can also skew
+the x-axis. The y-axis remains vertical. This is all that is needed,
+provided that you get the proportions (for scaling and skewing) right.
+</p><p>Due to the coarseness of digital coordinates and the
+requirement that the edges of (checkerboard) tiles should match
+precisely, without any pixel overlaps or gaps, the skewing angles and
+scaling factors that game designers use are an approximation of the
+visually optimal proportions. One of the simplifications that game
+designers have made is to use an axonometric projection where a unit
+along an axis is equally long for all of the three axes. That is, every
+axis has the same metric; hence, the projection is named "isometric".
+Axonometric projections and tile-based images are not necessarily
+related. But most computer games that use an isometric perspective also
+use tile-based images.
+</p><h1>And now for something completely different...</h1>
+<p>The three questions that occupied me when planning this paper were:
+</p><ul>
+  <li>What are common (or well-proportioned) axonometric projections, and how persuasive does each look?
+  </li><li>At
+what angles does one look at board in an axonometric projection? It is
+tempting to use rendered 3-D objects on an axonometric map, as sprites.
+To specify the position and orientation of the "camera" in relation to
+the object, you will need to know the intrinsic angles of the
+axonometric map that you are using. </li><li>What does one write in an introduction anyway?
+</li></ul>
+
+<p>The goal of this paper is to present two common axonometric
+projections, the isometric projection (briefly introduced above) and
+the dimetrical projection and to provide answer to the questions above.
+</p><p>I am intentionally neglecting the proper definitions of terms
+and categories; axonometric projections and "oblique parallel"
+projections are so similar that I just lumped them under the term
+"axonometry". In any case, an oblique parallel projection should be
+seen as just a special case of a dimetric (or sometimes isometric)
+projection. Oblique parallel projections, cavalier projections, cabinet
+projections, military projections, axonometric projections,... plus ça
+change, plus c'est la męme chose.
+</p><p>To recapitulate, the main properties of axonometric projections are:
+
+</p><ul>
+  <li>No vanishing points. This allows you to scroll a large
+image below a viewport and to have the same perspective at any point.
+In the case of tile-based images, an image is constructed on the fly
+and need not to have physical bounds or edges. </li><li>Lines that are parallel in the 3-dimensional space remain parallel in the 2-dimensional picture. This is in contrast with the <i>linear perspective</i>,
+where parallel lines along the z-axis in the 3-dimensional space
+collapse to a single vanishing point at the horizon in the
+2-dimensional picture. </li><li>Objects that are distant have the same size as objects
+that are close; objects do not get smaller as they move away from the
+viewer. If you know the scale of the axes, you can measure the size
+(width, height, length, depth) of an object directly from the picture,
+regardless of its position on the z-axis; hence the name <i>axonometry</i>.
+  </li><li>The
+axonometric projections are standardized for technical drawings. These
+standards are optimized for ease of use versus visual realism. Even if
+you choose to deviate from the standards, use them as an inspiration.
+The two projections standardized by the Dutch standardization institute
+are presented in this paper.
+</li></ul>
+
+<p>One word of caution for any of the figures below and the projection
+angles that these figures present: the angles are only approximate. I
+calculated the angles based on the shapes of the rhombuses of one or
+two sides of the projected cube. These calculations would be valid if
+the perspective projections had not distored the original cube. Now,
+especially the the projections standardized for technical drawings were
+chosen to minimize the distortion, but they are nevertheless not <em>exact</em>. The angles that I give are likewise a good approximation, but no more than that.
+
+</p><h1>The isometric projection</h1>
+<p>In an isometric projection, the x-, y- and z-axes have the same
+metric: a unit (say, a centimetre) along the x-axis is equally long
+along the y- and z-axes. In other words, if you render a wire frame
+cube, all edges in the 2-dimensional picture are equally long. Another
+property of the isometric projection is that the projected wire frame
+cube is also symmetric. All sides of the projected cube are rhombuses.
+</p><p><a href="#NEN2536">NEN 2536</a> describes an isometric
+projection that is symmetric with regards to the vertical axis; the
+angle between the x- and y-axes, and between the z- and y-axes, is 60
+degrees. The projection shows three sides of a cube, and the surfaces
+of each side are equal. The 30° angle between the x- and z-axes and the
+"horizon" is convenient for technical drawings, because the sine of 30°
+is ˝. This projection is attributed to William Farish who published a
+treatise about it in 1822 (reference: <a href="#KRIKKE1">Jan Krikke</a>).
+</p><p>The figure below shows a cube in the isometric projection as
+defined by NEN 2536.The first object from the left in the figure is the
+cube unadorned; the second object is the same cube with angles and
+measures annotated around it. The third and fourth graphics are the top
+and side views of the perspective scene and they give the camera
+position that fits the perspective view. The camera position is what
+you would feed into a 3D renderer (or ray tracer) to create the sprites
+or tiles for the isometric projection.
+</p><center><p><img src="Isometric%20Rendering%20Howto%206_soubory/axometr2.gif" alt="Cube in 120 degree degree isometric projection" height="180" width="500">
+<br><span class="maintext-2"><b>The 30° isometric projection</b></span></p></center>
+
+<p>Computer games with isometric maps are often tile-based. To make
+tiles match, the game designer must take into account how diagonal
+lines are plotted in discrete steps (Bresenham and all that). As it
+turns out, a line at 30 degrees (sine is 0.5) produces steps that are
+too irregular. A line at an angle where the tangent is 0.5 <i>does</i>
+have a nice regular pattern: two steps to the right, one step up. Thus,
+the isometric projection used by most games tilt the x- and z-axes with
+approximately 27 degrees (the exact angle is "arctangent(0.5)"). By the
+way, because the tangent of the angle of the rhombus is 0.5, the
+rhombus is twice as wide as it is high. This is why many sources
+mention a 1:2 scale for isometric perspectives. (To make the edges of
+the rhombuses match, the width of the rhombus should be a multiple of
+four pixels and the height should be one pixel less than ˝ width. In
+other words, the height:width ratio of a rhombus is usually not <i>exactly</i>
+1:2, but rather near 1:2.1. This makes no difference for the principles
+of the isometric perspective. I mention it here, because some sources
+make a big deal of it.)
+</p><p>Again, the figure below shows what this isometric projection looks like.
+
+</p><center><p><img src="Isometric%20Rendering%20Howto%206_soubory/axometr3.gif" alt="Cube in 1:2 isometric projection" height="180" width="500">
+<br><span class="maintext-2"><b>The 1:2 isometric projection</b></span></p></center>
+
+<p>The two isometric projections mentioned above "skew" all faces of
+the example cube. In applications where the most important faces are
+the horizontal ones, for example in applications where maps or floor
+plans are paramount, another isometric projection is common. It is
+called the "military" projection, probably because of its origin or
+use.
+</p><center><p><img src="Isometric%20Rendering%20Howto%206_soubory/axometr9.gif" alt="Cube in military projection" height="180" width="500">
+<br><span class="maintext-2"><b>The "military" projection</b></span></p></center>
+
+<p>In the military projection, the angles of the x- and z-axes are at 45°, meaning that the angle <em>between</em> the x-axis and the z-axis is 90°. That is, the x-z plane is <em>not</em> skewed. It <em>is</em> rotated over 45°, though.
+</p><p>In the side view of the military projection (the graph at the
+right), I have indicated that the viewing angle downwards onto the
+object (the cube) is <em>approximately</em> 45°. The military
+projection gives a quite inaccurate perspective --numerically speaking,
+and the scheme that I used to calculate the angles does not work on
+this projection. This angle is therefore just an estimate, based on a
+concept of symmetry rather than visual accuracy.
+</p><h1>The dimetric projection</h1>
+<p>In the dimetric projection, one of the three axes has a different
+scale than the other two. In practice, the scaled axis is the z-axis
+and, hence, a cube drawn in a dimetric projection is not a symmetrical
+graphic (like in the isometric projection).
+</p><p>Dimetric projections are more flexible than the isometric
+projections, as you vary the scale factor (and adjust other parameters
+in accordance). The asymmetry in the dimetric projection also provides
+you with an additional angle to play with. From an artistic viewpoint,
+I also like dimetric projections better than isometric projections,
+because of the asymmetry. Or rather, the symmetry of an isometric
+projection makes the scene look "artificial" or surrealistic. Another
+advantage is, in a computer game, that if you mirror the graphics of a
+dimetric projection, you are looking at a scene in a new, "<i>fresh</i>", perspective, while the basic computations for the coordinate system stay the same.
+</p><p><a href="#NEN2536">NEN 2536</a> also presents a dimetric
+projection for technical drawings. It is summarized in the figure
+below. Any distance along the z-axis (drawn at 42°) is scaled at a
+factor ˝.
+</p><center><p><img src="Isometric%20Rendering%20Howto%206_soubory/axometr4.gif" alt="Cube in 42/7 degrees dimetric projection" height="180" width="500">
+<br><span class="maintext-2"><b>The 42°/7° projection</b></span></p></center>
+
+<p>The introduction mentioned Chinese scroll paintings, and I took some
+time taking the metrics of (reproductions of) two scroll paintings. The
+projection is different in these two paintings, and I assume that more
+variations exist. Noticeable in all scroll paintings that I have seen
+so far, is that the x-axis stays horizontal.
+</p><p>The first scroll painting projects the z-axis to quite a low
+angle (approximately 30 degrees). As a result, the perspective view is,
+computationally, far from accurate. The reasons that we still see a
+3-dimensional cube, rather than some kind of flat polygon, is that the
+angle in the "side view" of the perspective view is also low and
+because our visual system is quite forgiving for errors in perspective
+correction.
+</p><p>The scale of the z-axis could not be accurately determined from
+the scroll painting. My estimate is that the z-axis on the painting
+(with a 30° projected z-axis) is scaled by half (50%).
+</p><center><p><img src="Isometric%20Rendering%20Howto%206_soubory/axometr5.gif" alt="Cube in Chinese perspective" height="180" width="500">
+<br><span class="maintext-2"><b>The "Chinese perspective"</b></span></p></center>
+
+<p>Also note (again) that the perspective is distorted and that the
+angles of the top view and the side view should be taken as a "rule of
+thumb"; I calculated these angles in the same way as the angles in the
+dimetric projection presented in <a href="#NEN2536">NEN 2536</a>, but these calculations are, actually, no longer applicable.
+</p><p>The other painting, reproduced below, has the projected z-axis
+at a bit less than 40 degrees, but slanted in the other direction. On
+the one hand, I could say that the z-axis is slanted to approximately
+130° (90° + 40°), but on the other hand the the direction of the slant
+is insignificant for the discussion of axonometric projection.
+</p><center><p><img src="Isometric%20Rendering%20Howto%206_soubory/axometr10.jpg" alt="a City of Cathay" height="391" width="770">
+<br><span class="maintext-2"><b>"A City of Cathay" -- an 11-meter handscroll by artists of the Qing court</b></span></p></center>
+
+<p>I can give only a <em>rough</em> estimate of the scaling of the
+z-axis in this scroll painting ("a City of Cathay"): between 0.6 and
+0.7 (but probably closer to 0.6).
+</p><h1>Dimetric projections for computer graphics and games</h1>
+<p>As was the case with the isometric projection, in computer graphics
+some angles are preferable to others. The first dimetric projection
+that I propose for (tiled) computer graphics is very similar to the
+projection of Chinese scroll paintings. The difference is the scale of
+the z-axis, and the angle that it makes with the x-axis. To start with
+the angle, the z-axis is slanted with approximately 27 degrees (the
+exact angle is "arctangent(0.5)"). This is the same angle as the
+isometric projection for computer graphics uses. The scale is such that
+the width of the side view of a cube, when measured along the x-axis,
+is half of the width of the front face. The key phrase in the previous
+sentence is "when measured along the x-axis". In the two former
+projections, the scale factor applied to distances measured along the
+z-axis.
+</p><center><p><img src="Isometric%20Rendering%20Howto%206_soubory/axometr7.gif" alt="Cube in dimetric 1:2 projection" height="180" width="500">
+<br><span class="maintext-2"><b>Dimetric 1:2 projection "side-view"</b></span></p></center>
+
+<p>The above projection gives a perspective that is viewed mostly from
+the side. I might be useful to add some depth to a side-scrolling (or
+"platform") game. For board-like games, a perspective that is viewed
+from a greater height is more appropriate. The second proposed dimetric
+projection for games serves this end.
+</p><center><p><img src="Isometric%20Rendering%20Howto%206_soubory/axometr6.gif" alt="Cube in dimetric 1:2 projection" height="180" width="500">
+<br><span class="maintext-2"><b>Dimetric 1:2 projection "top-view"</b></span></p></center>
+
+<p>Again, note that the perspective of the two projections suggested above is distorted. The angles in the top and side views are <i>really</i>
+approximate. For example, in the second projection the angle at which
+one looks from above at the scene is given as 24 degrees. However,
+using an angle of 30 degrees may actually look better. In addition, a
+30-degree angle lets you use the same objects for both the dimetric and
+the isometric projections for games.
+</p><p>Other dimetric projections are summarized in the table below. These projections were taken from the <a href="#CARTESIO">CARTESIO</a>
+program. For each projection, I give the name that the program gives to
+the projection, the slant for the x- and z-axes and the scale for the
+z-axis. In all the projections presented here, the the y-axis remains
+vertical and the x- and y-axes have the same scale.
+</p><p></p><center><table border="1" cellpadding="4" cellspacing="0">
+  <tbody><tr valign="top">
+    <td class="tblhdr">projection name</td>
+    <td class="tblhdr">x-axis angle</td>
+    <td class="tblhdr">z-axis angle</td>
+    <td class="tblhdr">z-axis scale</td>
+  </tr>
+  <tr valign="top">
+    <td>130, 130, 100</td><td>10</td><td>40</td><td>0.59</td>
+  </tr>
+  <tr valign="top">
+    <td>1, 1, 2/3</td><td>12.8</td><td>38.6</td><td>0.667</td>
+  </tr>
+  <tr valign="top">
+    <td>1, 1, 3/4</td><td>16.3</td><td>36.8</td><td>0.75</td>
+  </tr>
+</tbody></table></center>
+
+<p>The CARTESIO program lists more projections than the few above, including those of the <a href="#NEN2536">NEN 2536</a> standard and a few ones that are so distorted that I see no practical use for them.
+
+</p><h1>Moving across an axonometric projection</h1>
+<p>Converting from space coordinates (x,y,z) to a pixel coordinate
+(x',y') in the projection requires only trivial geometry. The table
+below presents the formulae for completeness (also refer to the
+coordinate system in the figure near the top of this paper for my
+definition of the x-, y- and z-axes).
+</p><p></p><center><table border="1" cellpadding="4" cellspacing="0">
+  <tbody><tr>
+    <td rowspan="2" class="tblhdr" valign="top">Isometric</td>
+    <td><a href="#NEN2536">NEN 2536</a></td>
+    <td>x' = (x - z)·cos(30°)<br>y' = y + (x + z)·sin(30°)</td>
+  </tr>
+  <tr>
+    <td>Computer games</td>
+    <td>x' = x - z<br>y' = y + ˝ (x + z)</td>
+  </tr>
+  <tr>
+    <td rowspan="4" class="tblhdr" valign="top">Dimetric</td>
+    <td><a href="#NEN2536">NEN 2536</a></td>
+    <td>x' = x·cos(7°) + ˝ z·cos(42°)<br>y' = y + ˝ z·sin(42°) - x·sin(7°)</td>
+  </tr>
+  <tr>
+    <td>Chinese scroll paintings</td>
+    <td>x' = x + <i><b>n</b></i>·z·cos(<i><b>T</b></i>)<br>y' = y + <i><b>n</b></i>·z·sin(<i><b>T</b></i>)<br>where <i><b>n</b></i> is 0.5 to 0.7 and <i><b>T</b></i> is 30° to 40°</td>
+  </tr>
+  <tr>
+    <td>Computer games: side view</td>
+    <td>x' = x + ˝ z<br>y' = y + Ľ z</td>
+  </tr>
+  <tr>
+    <td>Computer games: top view</td>
+    <td>x' = x + Ľ z<br>y' = y + ˝ z</td>
+  </tr>
+</tbody></table></center>
+
+<p>Converting coordinates in the projection to space coordinates is a
+different matter. In its general form, it simply cannot be done: you
+cannot calculate three independent output parameters from two input
+parameters. If you can "fix" one of the output parameters, the other
+two can be calculated from the input parameters. An example: if the
+axonometric projection represents a map and you can assume that the
+area on the map has little or no relief, then you can fix the position
+on the y-axis to zero (ground level), and you only have to calculate x
+and z from x' and y'.
+</p><p>A refinement of the above is to support some amount of relief.
+The calculation of the output coordinates starts as before, only now
+the y-coordinate is an estimate, rather than a "known" value. After
+calculating the x- and z-coordinates, you can look up the corresponding
+"height" value at the position (x,z). Typically, they will not match
+with the y-coordinate that you guessed when calculating the x- and
+z-coordinates. Now you can adjust you estimate of the y-coordinate and
+calculate the matching x- and z-coordinates again. This iteration
+continues until the estimated y-coordinate (before calculating x and z)
+comes close enough to the looked-up value (after calculating x and z).
+</p><p>The principal question in following this iterative procedure
+is: "does it converge?" Following intuition, the procedure is
+considered to converge if no spot on the project surface obscures
+another location in 3D space. That is, if the slopes of the surface
+relief stays below the viewing angle (in the "view direction"), every
+location on the map in 3D space has a unique "sibling" location in the
+axonometric projection, which is visible from the view point.
+</p><center><p><img src="Isometric%20Rendering%20Howto%206_soubory/axometr8.gif" height="225" width="320"></p></center>
+<p>In the above image, the viewing angle from the horizontal plane is
+30 degrees and the steepest slope in the view direction is
+approximately half of that.
+</p><p>If you have extreme relief, or overlapping "ground levels" such
+as bridges or buildings, I suggest that you separate the projected map
+into parts that, themselves, adhere to the limitation of no steeper
+angles than the viewing angle. These parts can be separate "layers" or
+"sprites" and you build the full map by combining them. To calculate
+(x,y,z) from (x',y') you first decide on what layer/sprite the location
+(x',y') is and then use the iterative procedure to find the values of
+x, y and z.
+</p><h1>Further information</h1>
+<dl>
+  <dt><a name="FOLEY"></a>Foley, James D. [<em>et al.</em>]; "Computer Graphics: Principles and Practice"; Addison-Wesley; second edition, 1990; ISBN 0-201-121107.
+  </dt><dd><i>This encyclopedic book covers perspective projections in chapter five.</i>
+  </dd><dt><a name="KRIKKE1"></a>Krikke, J.; "Axonometry: A Matter of Perspective"; IEEE Computer Graphics and Applications; July/August 2000.
+  </dt><dd><i>A
+(historic) overview of axonometric projections from the viewpoints of
+oriental art, technical drawings and computer games --in the same
+spirit as the three introductions to this paper, but in a more detailed
+and coherent article.<br> &nbsp;&nbsp;&nbsp;&nbsp;The article argues
+that the word "axonometry" should refer only to the particular
+projection used by oriental artists (the so-called "Chinese
+perspective") whereas the generic term is "orthographic projections".
+Citing <a href="#NEN2536">NEN 2536</a> and <a href="#FOLEY">Foley [et al.]</a>
+as a reference, I treat axonometric projections and parallel
+projections as synonyms, while an orthographic projection is one where
+the viewing direction is perpendicular to a plane, showing no
+perspective at all.</i>
+
+  </dd><dt><a name="NEN2536"></a>NEN 2536; "Engineering drawing. Axonometric projection"; Nederlands Normalisatie Instituut; August 1966.
+  </dt><dd><i>A Dutch standard for axonometric projections for technical drawings.</i>
+
+  </dd><dt>The <a href="http://isometrix.tsx.org/">IsometriX homepage</a>.
+  </dt><dd><i>This
+site contains a lot of links to pages with background information on
+isometric projections, games using isometric projections, some source
+code, etc.</i>
+
+  </dd><dt><a name="CARTESIO"></a>Trevisan, Camillo; the <a href="http://www.iuav.unive.it/dpa/ricerche/trevisan/intern01.htm">CARTESIO</a> program; version 3.03e.
+  </dt><dd><i>An educational and interactive application that features many geometric projections. It is free for personnal use.</i>
+</dd></dl>
+
+<!-- to do:
+  o  sorting sprites
+  o  collision detection (see UseNet posts in Agent; use y'-level sorting
+     for quick collision rejection; use span sorting; use sprite coherence
+     catagories)
+  o  jankrikke@visto.com
+  
+[This same perspective can be seen in the wooden planks of the wharf in]
+Two Actors by Shumpusha [image: e:\internet\umaxi007.jpg]
+
+Source: cartesio (freeware version)
+        dimetric projection     x-axis angle    y-axis angle    y-axis scale
+        --------------------------------------------------------------------
+        1, 1, 0.5               7.2             41.4            0.5
+        130, 130, 100           10              40              0.59
+        1, 1, 2/3               12.8            38.6            0.667
+        1, 1, 3/4               16.3            36.8            0.75
+-->
+
+<p>© Thiadmer Riemersma, ITB CompuPhase, 1999-2001, The Netherlands
+<br>http://www.compuphase.com
+</p><p align="center"><b><a href="http://www.gamedev.net/community/forums/topic.asp?key=featart&amp;uid=1269&amp;forum_id=35&amp;Topic_Title=Axonometric+Projections+%2D+A+Technical+Overview">Discuss this article in the forums</a></b></p>
+<p>
+<br><span class="maintext-2">Date this article was posted to GameDev.net: <b>1/2/2001</b>
+<br>(Note that this date does not necessarily correspond to the date the article was written)</span>
+</p><p><b>See Also:</b><br>
+
+<a href="http://www.gamedev.net/reference/list.asp?categoryid=198">General  </a><br>
+
+</p><p align="center">© 1999-2009 Gamedev.net. All rights reserved. <a href="http://www.gamedev.net/info/legal.htm#copyright"><u>Terms of Use</u></a> <a href="http://www.gamedev.net/info/legal.htm#privacy"><u>Privacy Policy</u></a>
+<br><span class="maintext-1">Comments? Questions? Feedback? <a href="http://www.gamedev.net/info/faq.asp">Click here!</a></span></p>
+
+</td></tr></tbody></table>
+
+
+<!-- start Vibrant Media IntelliTXT Tooltip style sheet -->
+<style type="text/css">
+.iTt{
+    FONT-FAMILY:       Verdana, Arial, Helvetica;
+    FONT-SIZE:         11px;
+    FONT-STYLE:        normal;
+    FONT-WEIGHT:       normal;
+    COLOR:             black;
+    BACKGROUND-COLOR:  lightyellow;
+    BORDER:            black 1px solid;
+    PADDING:           2px;
+}
+.iTt a {
+    COLOR:             0000CC;
+}
+.iTt a:visited {
+    COLOR:             0000CC;
+}
+.iTt a:hover {
+    COLOR:             6666CC;
+}
+.iTt TD {
+   COLOR:              999999;
+}
+</style>
+<!-- end Vibrant Media IntelliTXT style sheet -->
+<!-- start Vibrant Media IntelliTXT script section -->
+<script type="text/javascript" src="Isometric%20Rendering%20Howto%206_soubory/front.js"></script>
+<!-- end Vibrant Media IntelliTXT script section -->
+
+<script src="Isometric%20Rendering%20Howto%206_soubory/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-279474-1";
+urchinTracker();
+</script>
+</body></html>

@@ -1,0 +1,299 @@
+body, a, div, ol, ul, dl, li, h1, h2, h3, h4, h5, h6, h7, td, th, caption
+{
+	font-family : Arial, Helvetica, sans-serif;
+}
+body, div, ol, li, h1, h2, h3, h4, h5, h6, h7, td, th, caption
+{
+	font-size: medium;
+}
+body, div
+{
+	margin : 0px;
+	padding : 0px;
+}
+a
+{
+	text-decoration: none;
+}
+a:hover
+{
+	text-decoration: underline;
+}
+a.small
+{
+	font-weight:bold;
+	font-size: small;
+	white-space : nowrap;
+}	
+ul, dl, ol, h1, h2, h3, h4, h5, h6, h7
+{
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+ol.text, ul.text
+{
+	text-indent: 0px;
+	margin-left: 8px;
+	text-align: justify;
+	padding: 2px 8px 2px 30px;
+}
+h1
+{
+	font-size : x-large;
+	clear : left;
+	display : block;
+}
+h2
+{
+	margin-top: 10px;
+	font-size : large;
+	clear : left;
+	display : block;
+}
+h3
+{
+	margin-top: 5px;
+	clear : left;
+	display : block;
+}
+h1, h2, h3, h4, h5, h6, h7
+{
+	padding : 5px;
+}
+div.sall, div.all
+{
+	text-align: center;
+	vertical-align: bottom;
+	border-style : solid;
+	padding : 4px 6px 4px 6px;
+	margin : 0px;
+	clear:both;
+}	
+div.all
+{
+	border-width: 0px 0px 1px 0px;
+}	
+div.sall
+{
+	border-width: 1px 0px 0px 0px;
+	margin-top: 4px;
+}	
+.text, .fulltext
+{
+	text-indent: 25px;
+	padding: 2px 8px 2px 8px;
+	text-align: justify;
+	display: block;
+}
+.fulltext
+{
+	clear: both;
+}
+div.picl, div.picll
+{
+	float: left;
+	text-align: center;
+	padding: 3px 10px 3px 0px;
+	vertical-align: bottom;
+	display: block;
+	width: auto;
+}
+div.picl
+{
+	clear: left;
+}
+div.picr, div.picrr
+{
+	float: right;
+	text-align: center;
+	padding: 3px 0px 3px 10px;
+	vertical-align: bottom;
+	display: block;
+	width: auto;
+}
+div.picr
+{
+	clear: right;
+}
+img.picl
+{
+	display: block;
+	padding: 2px 2px 2px 0px;
+}
+img.picr
+{
+	display: block;
+	padding: 2px 0px 2px 2px;
+}
+img.pictop
+{
+	padding: 2px 5px 2px 5px;
+	vertical-align : top;
+}
+img.intext
+{
+	vertical-align: middle;
+}
+.mag
+{
+	font-weight: bold;
+}
+.att
+{
+	font-weight: bold;
+}
+table
+{
+	clear: both;
+	empty-cells : show;
+	border-spacing: 0px;
+	border-collapse:collapse;
+}
+th, thead
+{
+	text-align: center;
+	vertical-align: middle;
+}
+td,th
+{
+	text-indent: 0px;
+}
+dl
+{
+	padding: 2px 8px 2px 8px;
+}
+.town, .updown, .downup
+{
+	background-repeat : repeat-x;
+	overflow: visible;
+	background-position : left top;
+}
+.down
+{
+}
+.small
+{
+	font-size: small;
+}
+ol.small li
+{
+	font-size: small;
+}
+.smaller
+{
+	font-size: x-small;
+	white-space:nowrap;
+}
+.left
+{
+	float : left;
+}
+.right
+{
+	float : right;
+}
+.bold
+{
+	font-weight: bold;
+}
+.italic
+{
+	font-style: italic;
+}
+input
+{
+	text-indent: 0px;
+	padding: 2px;
+}
+auto
+{
+	width:auto;
+}
+.center
+{
+	text-align:center;
+	margin-left:auto;
+	margin-right:auto;
+}
+.centred
+{
+	text-align:center;
+	margin-left:6px;
+	margin-right:6px;
+}
+div.picl div.centred, div.picr div.centred
+{
+	font-size: smaller;
+}
+div.small
+{
+	font-size:xx-small;
+	color:white;
+	margin-top:10px;
+	margin-bottom:10px;
+}
+.w80
+{
+	width: 80%;
+}
+.wa
+{
+	width: auto;
+}
+.leftwa
+{
+	width: auto;
+	float: left;
+}
+sup
+{
+	font-size:x-small;
+}
+sub
+{
+	font-size:x-small;
+}
+.sea
+{
+	background-image : url(/common/sea.png);
+	background-color: Blue;
+	color: white;
+}
+.white
+{
+	color: white;
+}
+.ID
+{
+	font-weight: bold;
+	background-image : url(/common/tropical.png);
+	background-color: #B87818;
+	color: white;
+	text-align:center;	
+}	
+td.ID
+{
+	border-bottom-color:#B87818;
+	border-top-color:#B87818;
+}
+.SecondRow
+{
+	background-image : url(/common/subtropical.png);
+}
+.selectch
+{
+	background-image : url(/common/arctic.png);
+	font-weight : bold;
+	white-space : nowrap;
+	color : Black;
+}	
+tr.selectch td
+{
+	color : Black;
+}
+
+tr.selectch td.ID
+{
+	color : White;
+}
+

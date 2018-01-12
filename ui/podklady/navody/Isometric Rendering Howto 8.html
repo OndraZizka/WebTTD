@@ -1,0 +1,274 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1250">
+
+
+
+  <title>GameDev.net - Smooth Scrolling a Tile Map</title>
+  <link rel="stylesheet" href="Isometric%20Rendering%20Howto%208_soubory/reference.css" type="text/css">
+  <link rel="icon" href="http://www.gamedev.net/pics/gdicon.png" type="image/png">
+</head><body leftmargin="0" topmargin="0" alink="#000000" background="Isometric%20Rendering%20Howto%208_soubory/watermark.gif" bgcolor="#ffffff" link="#666699" marginheight="0" marginwidth="0" text="#000000" vlink="#666699">
+
+<table border="0" cellpadding="3" cellspacing="0" width="100%">
+  <tbody><tr>
+    <td class="tblhdr">Smooth Scrolling a Tile Map</td>
+    <td class="tblhdr" align="right" nowrap="nowrap"><img src="Isometric%20Rendering%20Howto%208_soubory/littleg.gif" align="absbottom" height="16" width="16">&nbsp;<a href="http://www.gamedev.net/"><span style="color: white; text-decoration: none;">GameDev.net</span></a></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+<!-- Begin -  Site: GameDev.net Zone: GameDev.net variable width -->
+<script language="javascript" type="text/javascript">
+<!--
+var browName = navigator.appName;
+var SiteID = 1;
+var browDateTime = (new Date()).getTime();
+if (browName=='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;IFR=False&amp;Browser=NETSCAPE4&amp;PageID=55140&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+if (browName!='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;IFR=False&amp;PageID=55140&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+// --> 
+</script><script language="javascript" src="Isometric%20Rendering%20Howto%208_soubory/a.js"></script>
+<noscript> <a
+href="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Click&amp;Mode=HTML&amp;SiteID=1&amp;PageID="
+target="_blank"> <img
+src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;Mode=HTML&amp;SiteID=1&amp;PageID="
+width="728" height="90" border="0" alt=""></a>
+</noscript>
+<!-- End -  Site: GameDev.net Zone: GameDev.net variable width --></td>
+  </tr>
+</tbody></table>
+<table border="0" cellpadding="5" cellspacing="0" width="100%"><tbody><tr><td>
+
+
+<p align="center"><span class="title">Smooth Scrolling a Tile Map</span>
+<br><span class="author">by Jim Adams</span></p>
+
+<p></p><address>Copyright © 1998 by Jim Adams.  All Rights Reserved</address>
+
+<p>&lt; disclaimer &gt;
+
+</p><p>No part of this article may be reprinted or duplicated in any
+manner without prior written permission by the Author, Jim Adams with
+one exception- You may display it unmodified on your Web Page for free
+public viewing. It must include credits to author, Jim Adams.
+</p><p>The author, Jim Adams, will not to be held resposible for any
+damages, directly or indirectly, resulting from the use of this file or
+it's information.
+</p><p>&lt; /disclaimer &gt;
+</p><p></p><hr>
+
+<p><font color="#00983e" size="4"><b>Introduction</b></font>
+</p><p>Well, here's another attempt at bringing a little information
+into the world that seems to be a problem for some of you out there.
+This article will quickly go over scrolling a map view using a tile
+engine.
+</p><p>I will not be showing how to make a tile blitting routine. If
+you're reading this, I'm assuming you already have one. What I will be
+showing is a way to use your tile blitter to render a view, and a very
+simple one at that. It will consist of one layer.
+</p><p>Also - I didn't have time to add some graphics, but if I get some response, I'll put it in html format and add some pictures.
+</p><p>With that all said, let's get on with it, shall we?
+</p><p align="right">Jim Adams<br>tcm@pobox.com</p>
+<p></p><hr>
+
+<p><font color="#00983e" size="4"><b>Map Structure</b></font>
+</p><p>As I mentioned, we'll use a very simple one layered map. It will
+consist of one thing - the tile number to draw at that location. Let's
+say you have 256 tiles, numbered 0-255.
+</p><blockquote><pre class="code">typedef struct {
+   unsigned char tile_number;
+} MAP_INFO;
+</pre></blockquote>
+
+<p>Now comes the map structure array that actually holds the map. Also
+comes the dimensions of the map in memory through a couple of
+definitions. The example one will be 128x128.
+</p><blockquote><pre class="code">#define  MAP_HEIGHT    128
+#define  MAPWIDTH      128
+
+MAP_INFO map[MAP_HEIGHT][MAP_WIDTH];
+</pre></blockquote>
+
+<p>Since we are using just the tile number, we could have just created
+an array, but I'm leaving it open for you to play with by adding to the
+structure.
+</p><p>Our map can be stored inside a PCX file, with a 128x128 image
+representing it. Each color palette entry (0-255) would represent the
+tile number to draw. If you have a standard PCX reader, just load a map
+like:
+</p><blockquote><pre class="code">signed short map_load(char *pcx_filename)
+{
+   char *pcxmapbuf;
+   short i, j;
+
+   if(pcx_loadimage(pcx_filename, pcxmapbuf) == -1)
+      return -1;
+
+   for(i = 0; i &lt; 128; i++) {
+      for(j = 0; j &lt; 128; j++)
+         map[i][j] = get_pixel(pcxmapbuf, j, i);
+   }
+
+   free(pcxmapbuf);
+
+   return 1;
+}
+</pre></blockquote>
+
+<p><font color="#00983e" size="4"><b>Rendering a Simple View</b></font>
+</p><p>From there you should have a map in memory along with your
+tiles. I'll assume you have your tiles in an array. I'll use a
+structure array for example. You should be able to follow along.
+</p><blockquote><pre class="code">#define NUM_TILES        256
+
+TILE_INFO tiles[NUM_TILES];
+</pre></blockquote>
+
+<p>To render a simple view, with no scrolling, you simply start at the
+top-left of the screen and render across and down until the screen is
+full. Let's say we're using 16x16 tiles and a screen res of 320x240.
+That means we will fit (320/16) 20 tiles across and (240/16) 15
+vertically. That means we will draw 300 tiles a screen.
+</p><blockquote><pre class="code">void map_draw(short mapx, short mapy)
+{
+   short i, j;
+
+   for(i = 0; i &lt; 15; i++) {
+      for(j = 0; j &lt; 20; j++)
+         tile_draw(map[mapy + i][mapx + j].tile_number, j * 16, i * 16);
+   }
+}
+</pre></blockquote>
+
+<p>The above doesn't correct for bounds checking, I'll leave that up to
+you. Also, you'll see the two variables passed represent what map
+coordinate to use to start drawing at the top-left of the screen. For
+us, that runs from 0-127.
+</p><p>If you draw with the above increasing a coordinate, like X,
+every time, you'll see it scrolls by the size of the tile, or 16 pixels
+at a time. We need it smoother.
+</p><p><font color="#00983e" size="4"><b>Smooth Scrolling</b></font>
+</p><p>As a matter of fact, it's extremely easy to change this to
+smooth scrolling. First thing we have to do is ensure our tile sizes
+are in the power of 2 (2, 4, 8, 16, 32, 64, etc). This helps the math.
+There are ways to do other sizes, but I'm dealing with those as they
+are most popular.
+</p><p>We now create a fine coordinate system for the map. The fine
+coordinates are simply the size of the tiles, or 16x16. So each map
+coordinate now is 16x16 in size. That means a map 128x128 is 2048x2048
+in fine coordinates.
+</p><p>When we render a map from now on, we tell it to draw from those
+coordinates. For the rendering function to deal with it, it must decide
+how much to scroll all the tiles we draw left and up.
+</p><p>So basically, we're now making the map seem like a huge bitmap.
+We pick an exact coordinate from that to start drawing in the top-left
+of the screen. To do that from tiles, we have to decided how the tiles
+align into that large area.
+</p><p>That's why we use tile sizes with the power of 2. First of all,
+when we want to render the map, say at 100,126 , we have to find the
+coordinate in the map array.
+</p><p>Since the fine coordinates run off the tile size, we just
+divide the numbers by 16, coming up with (100/16) 6, (126/16) 7. That
+tile will be first draw at the top-left of the screen.
+</p><blockquote><pre class="code">mapx = map_drawx / 16;
+mapy = map_drawy / 16;
+</pre></blockquote>
+
+<p>Now comes the fine scroll. If you look, there is actually a
+remainder from the divisions. 100/16 = 6.25 and 126/16 = 7.88. Those
+are the fine scroll parts. If we take the coordinates to draw and AND
+them by the size of the tile -1, we have those remainders. In our case
+that's (100 &amp; 15) = 4, (126 &amp; 15) = 14.
+</p><blockquote><pre class="code">map_xoff = map_drawx &amp; 15;
+map_yoff = map_drawy &amp; 15;
+</pre></blockquote>
+
+<p>So we now start drawing the tiles 4 pixels to the left and 14 pixels
+up from where you normally would. Note that because of this, we will
+have to draw one more row and column of tiles or the right and bottom
+edge but mess up because we are not drawing enough. It's too easy to
+understand why, so I'll let you play with it to see what I mean.
+</p><p>So our new rendering function looks like:
+
+</p><blockquote><pre class="code">void map_draw(short map_drawx, short map_drawy)
+{
+   short i, j;
+   short mapx, mapy;
+   short map_xoff, map_yoff;
+
+   mapx = map_drawx / 16;
+   mapy = map_drawy / 16;
+
+   map_xoff = map_drawx &amp; 15;
+   map_yoff = map_drawy &amp; 15;
+
+   for(i = 0; i &lt; 16; i++) {
+      for(j = 0; j &lt; 21; j++)
+         tile_draw(map[mapy + i][mapx + j].tile_number, j * 16 - map_xoff, i * 16 - map_yoff);
+   }
+}
+</pre></blockquote>
+
+<p><font color="#00983e" size="4"><b>The End</b></font>
+</p><p>Hope it helps!
+
+</p><p>Jim Adams
+<br>the Collective Mind
+<br>tcm@pobox.com
+<br>tcm.lv@worldnet.att.net
+
+</p><p align="center"><b><a href="http://www.gamedev.net/community/forums/topic.asp?key=featart&amp;uid=743&amp;forum_id=35&amp;Topic_Title=Smooth+Scrolling+a+Tile+Map">Discuss this article in the forums</a></b></p>
+<p>
+<br><span class="maintext-2">Date this article was posted to GameDev.net: <b>9/16/1999</b>
+<br>(Note that this date does not necessarily correspond to the date the article was written)</span>
+</p><p><b>See Also:</b><br>
+
+<a href="http://www.gamedev.net/reference/list.asp?categoryid=198">General  </a><br>
+
+</p><p align="center">© 1999-2009 Gamedev.net. All rights reserved. <a href="http://www.gamedev.net/info/legal.htm#copyright"><u>Terms of Use</u></a> <a href="http://www.gamedev.net/info/legal.htm#privacy"><u>Privacy Policy</u></a>
+<br><span class="maintext-1">Comments? Questions? Feedback? <a href="http://www.gamedev.net/info/faq.asp">Click here!</a></span></p>
+
+</td></tr></tbody></table>
+
+
+<!-- start Vibrant Media IntelliTXT Tooltip style sheet -->
+<style type="text/css">
+.iTt{
+    FONT-FAMILY:       Verdana, Arial, Helvetica;
+    FONT-SIZE:         11px;
+    FONT-STYLE:        normal;
+    FONT-WEIGHT:       normal;
+    COLOR:             black;
+    BACKGROUND-COLOR:  lightyellow;
+    BORDER:            black 1px solid;
+    PADDING:           2px;
+}
+.iTt a {
+    COLOR:             0000CC;
+}
+.iTt a:visited {
+    COLOR:             0000CC;
+}
+.iTt a:hover {
+    COLOR:             6666CC;
+}
+.iTt TD {
+   COLOR:              999999;
+}
+</style>
+<!-- end Vibrant Media IntelliTXT style sheet -->
+<!-- start Vibrant Media IntelliTXT script section -->
+<script type="text/javascript" src="Isometric%20Rendering%20Howto%208_soubory/front.js"></script>
+<!-- end Vibrant Media IntelliTXT script section -->
+
+<script src="Isometric%20Rendering%20Howto%208_soubory/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-279474-1";
+urchinTracker();
+</script>
+</body></html>

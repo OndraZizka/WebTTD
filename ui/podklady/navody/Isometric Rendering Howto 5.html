@@ -1,0 +1,643 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1250">
+
+
+
+  <title>GameDev.net - Tile Graphics Techniques</title>
+  <link rel="stylesheet" href="Isometric%20Rendering%20Howto%205_soubory/reference.css" type="text/css">
+  <link rel="icon" href="http://www.gamedev.net/pics/gdicon.png" type="image/png">
+</head><body leftmargin="0" topmargin="0" alink="#000000" background="Isometric%20Rendering%20Howto%205_soubory/watermark.gif" bgcolor="#ffffff" link="#666699" marginheight="0" marginwidth="0" text="#000000" vlink="#666699">
+
+<table border="0" cellpadding="3" cellspacing="0" width="100%">
+  <tbody><tr>
+    <td class="tblhdr">Tile Graphics Techniques</td>
+    <td class="tblhdr" align="right" nowrap="nowrap"><img src="Isometric%20Rendering%20Howto%205_soubory/littleg.gif" align="absbottom" height="16" width="16">&nbsp;<a href="http://www.gamedev.net/"><span style="color: white; text-decoration: none;">GameDev.net</span></a></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+<!-- Begin -  Site: GameDev.net Zone: GameDev.net variable width -->
+<script language="javascript" type="text/javascript">
+<!--
+var browName = navigator.appName;
+var SiteID = 1;
+var browDateTime = (new Date()).getTime();
+if (browName=='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;IFR=False&amp;Browser=NETSCAPE4&amp;PageID=55140&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+if (browName!='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;IFR=False&amp;PageID=55140&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+// --> 
+</script><script language="javascript" src="Isometric%20Rendering%20Howto%205_soubory/a.js"></script>
+<noscript> <a
+href="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Click&amp;Mode=HTML&amp;SiteID=1&amp;PageID="
+target="_blank"> <img
+src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;Mode=HTML&amp;SiteID=1&amp;PageID="
+width="728" height="90" border="0" alt=""></a>
+</noscript>
+<!-- End -  Site: GameDev.net Zone: GameDev.net variable width --></td>
+  </tr>
+</tbody></table>
+<table border="0" cellpadding="5" cellspacing="0" width="100%"><tbody><tr><td>
+
+<font face="Verdana, Tahoma, Arial" size="2">
+
+<font color="#003e98" size="5"><b>Tile Graphics Techniques 1.0<br></b></font><b></b>
+</font><p><font face="Verdana, Tahoma, Arial" size="2"><b>April 1996
+<br>by Jason McIntosh</b>
+
+</font></p><hr align="left" size="2" width="400">
+
+<h5><font face="Verdana, Tahoma, Arial" size="2">Re-Formated and Ilustrated by Greg Breland</font></h5>
+<hr size="2" width="100%">
+
+
+<font face="Verdana, Tahoma, Arial" size="2">Techniques 1.0 is copyright 1996 Jason McIntosh. All rights reserved. Freely distributable if unmodified and in its entirety.<br>
+
+</font><hr size="2" width="100%">
+<font face="Verdana, Tahoma, Arial" size="2"><br>To contact the author via email:
+</font><ul>
+<font face="Verdana, Tahoma, Arial" size="2">  <a href="mailto:jmcintosh@iclub.org">
+     jmcintosh@iclub.org
+  </a>
+</font></ul>
+
+<font face="Verdana, Tahoma, Arial" size="2">Though this text is not
+shareware, if you find it worthy of a donation, I will gladly accept
+any amount of money you offer (since I am a starving programmer looking
+for an employer).
+</font><ul>
+<font face="Verdana, Tahoma, Arial" size="2">  1427 Fairlane Dr.<br>
+  Richmond, KY 40475<br>
+  USA <br>
+</font></ul>
+
+<font face="Verdana, Tahoma, Arial" size="2">This is my mother's address, since it is effectively permanent.<br>
+<br>
+</font><hr size="2" width="100%">
+
+<p><font face="Verdana, Tahoma, Arial" size="2"><font color="#00983e" size="4"><b>What's This Document (Not) About?</b></font>
+
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">I wrote a
+CRPG for my Amiga and got about 85% finished when I bought my PC and
+dropped the Amiga project to learn PC programming. The point is that
+while that game was/is really cool, I have learned and developed much
+since then. Here's my (partial) full disclosure :)
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">This
+document will cover graphics in the style of Ultima 6 (presumably
+Ultima 7 as well, but I have never played it-- read on). I will also
+discuss many of the same techniques that Greg Taylor covered in his
+Tile-Based Games FAQ. That is one reason that I have composed this
+document, because I found the information in Greg's FAQ to be somewhat
+disappointing. I hope to present some ideas that will advance those he
+overviewed. Granted, he covered lots of things I won't cover here (roof
+tiles, hidden map areas, palette shifting), but there are so many
+fundamentals that could be implemented in a better way, I had to put
+out an alternate solution. Oh yeah, it is presumed that the reader has
+a solid understanding of C programming.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">While Mr.
+Taylor tended to emphasize the 640K barrier, I think that everyone
+should get a 32-bit, protected mode compiler. Let's face it, the small
+overhead of running a DOS extender with your protected mode program is
+negligible in the face of the benefits gained. I feel it's a fair
+assertion to assume that people who play games have at least 4 megs in
+their machine. Catering to the lowest common denominator (i.e.,
+286/640K) is a good thing as long as that denominator isn't too low. I
+think nowadays, a 486-33/4meg is a decent denominator. The hassles of
+EMS and conventional memory simply disappear when protected mode is
+used. I've never been more frustrated by this situation than when I
+couldn't get Ultima 7 to run on my snappy Pentium because I had to
+create a boot disk and still couldn't free the conventional memory
+required (without purchasing a commercial memory manager). I own U7,
+but I've never played it. That kind of annoyance can be avoided by
+simply using a "modern" compiler, with the added bonus that most of the
+time, it will run in the increasingly popular environment, Windows 95.
+(Sorry to be ranting but that's another reason I'm writing this
+document :)
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">Note: I am
+assuming that you are interested in CRPGs since they are the most
+common game genre to employ this sort of graphics. Of course, the
+techniques can be applied to any game or genre (ie, a strategy game).
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2"><font color="#00983e" size="4"><b>Vocabulary</b></font>
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">For the uninitiated, here's a list of some terms I use and their meanings relative to my conceptions of them.</font></p>
+
+<table align="center" cellpadding="2" width="80%">
+<tbody><tr valign="top"><td width="90"><font face="Verdana" size="2"><b>Clipping</b></font></td><td><font face="Verdana" size="2">This
+is limiting the plotting of a tile to within an arbitrary boundary (the
+screen edge, for example). If the tile's graphic imagery crosses this
+boundary, it is "clipped"or trimmed so that only the area within the
+boundary gets drawn.</font></td></tr>
+<tr valign="top"><td><font face="Verdana" size="2"><b>Masking</b></font></td><td><font face="Verdana" size="2">When
+a tile is draw to the screen with masking, all pixels of a
+predetermined color are not plotted so that the tile will only cover
+the background where the shape of the graphic dictates. No big, blank
+boxes around the graphic imagery.</font></td></tr>
+<tr valign="top"><td><font face="Verdana" size="2"><b>NPC</b></font></td><td><font face="Verdana" size="2">Stands for Non-Player Character, or anyone that the player cannot directly control.</font></td></tr>
+<tr valign="top"><td><font face="Verdana" size="2"><b>Object</b></font></td><td><font face="Verdana" size="2">I
+refer to these in this document not in the sense of OOP, but as an
+independently defined data structure that describes something in your
+game universe (a person, an item, or a map entity).</font></td></tr>
+<tr valign="top"><td><font face="Verdana" size="2"><b>Tile</b></font></td><td><font face="Verdana" size="2">Also called an icon, a bob, a sprite. It is, simply, an arbitrarily sized bitmap (though commonly 16x16 pixels).</font></td></tr>
+</tbody></table>
+
+<p><font face="Verdana, Tahoma, Arial" size="2"><font color="#00983e" size="4"><b>Plotting Tiles</b></font>
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">The first
+task to creating a tile-based game is plotting the landscape and its
+inhabitants. Well, I will assume that you have several routines
+already:
+</font></p><ul type="A">
+<font face="Verdana, Tahoma, Arial" size="2"><li>Plot a 16x16 tile, without masking (which is faster than with masking).
+</li><li>Plot an arbitrarily sized tile, with masking.
+</li><li>Either of the above routines with clipping (though this is optional).
+</li></font></ul>
+
+<font face="Verdana, Tahoma, Arial" size="2">I won't waste time getting
+detailed about how to plot tiles, as there are many good tutorials
+available on the subject (get XLib and don't worry about the nuts and
+bolts of it).
+</font><p><font face="Verdana, Tahoma, Arial" size="2"><font color="#00983e" size="4"><b>Maps and the Lay of the Land</b></font>
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">Greg Taylor
+mentions multiple layered maps. He's absolutely right: you will need
+multiple layers to get any kind of complex graphics in your world. But,
+he didn't take the idea far enough.
+</font></p><p><table align="right" bgcolor="#555555"><tbody><tr><td><img src="Isometric%20Rendering%20Howto%205_soubory/3dimarrays.gif" alt="Three Dimensional Arrays" align="right"></td></tr></tbody></table>
+
+</p><p><font face="Verdana, Tahoma, Arial" size="2">Let's look at a
+typical way of implementing a map: arrays. Good ole arrays. When we all
+programmed in BASIC and arrays were all we had, sure, use them for your
+maps. Simply declare map[100][100] and there you have it. Want multiple
+layers? Okay, map[3][100][100]. There!
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">Well,
+here's what I suggest. Keep the first declaration. But what we want to
+achieve is massive flexibility. We don't want to be limited to 3 layers
+or waste memory when we need less. (Side note: efficiency is _always_
+of utmost concern! I don't care if your target platform has 32
+terabytes of memory, always optimize for space and speed!) So how do we
+get unlimited layers while using only as much memory as required at any
+given moment?
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">About the
+time you take Pascal in your CS cirriculum, they'll teach you about a
+thing called a linked-list. Perhaps already you can guess what I'm
+about to explain...
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">If we
+define our _entire_ map as map[100][100], then for each element in that
+array, we define a list header. Yep, each element is a linked-list. You
+might be thinking, "But what about space optimization? Won't 10,000
+linked lists be wasted memory?" Below we'll talk about ways to access
+the map incrementally, which will solve this huge array problem. As it
+stands, the answer to your question is still "No."
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">Remember
+that we had map[3][100][100], which (at minimum) is 30,000 bytes.
+Granted, a linked list header may be 8 bytes itself which means
+map[100][100] is 80,000 bytes. Yes, it's bigger, but even without
+special techniques for accessing only part of the map at once, the
+payoff in flexibility and graphic enhancement makes it worth the size.
+This is another reason for using a protected mode compiler-- when you
+absolutely have to, you can have these huge structures without worry of
+hitting any stupid 640K limit.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">Okay, so
+you accept what I've said so far? Okay, then, on to the map
+representation. How do we use these linked lists to achieve multiple
+layers? This will require some sort of map "object" definition.
+</font></p><blockquote><pre><font face="Verdana, Tahoma, Arial" size="2"><font color="#000088" face="Courier New, fixedsys" size="2">
+struct map_tile {
+  struct map_tile  *next;   // pointer to next in list
+  struct tile_gfx  *tile;   // pointer to graphic imagery object
+  char             type;    // keep reading...
+  char             bitflags;
+};
+
+For example:
+
+map[0][0]
+        LIST_HEADER -&gt; map_tile -&gt; map_tile -&gt; NULL<br>
+map[1][0]
+        LIST_HEADER -&gt; map_tile-&gt; NULL
+
+</font></font></pre></blockquote>
+
+<p><font face="Verdana, Tahoma, Arial" size="2">...and so on. Using
+this setup, the first map_tile is the bottom-most layer in your map.
+Each successive layer simply adds another map_tile to that specific map
+position (ie, map element, ie, list). This way, you could stack twenty
+tiles on one map position, while having only two on a tile nearby--
+with no memory wasted on empty spaces! That is the big payoff for this
+technique.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">I would advise that you follow some conventions.
+
+</font></p><ol type="A">
+<font face="Verdana, Tahoma, Arial" size="2">    <li>The first map_tile
+in a list should be a ground layer (ie, grass, sand). It should also be
+a constant 16x16 tile that should be plotted without masking. </li><li>All map_tiles after the first can be variant sized (up
+to 32x32) and should be plotted with masking. These successive layers
+will be trees, rocks, walls, people, monsters, swords, treasures, and
+anything else.
+</li></font></ol>
+
+<p><font face="Verdana, Tahoma, Arial" size="2">If you're wondering how
+I intend to handle a 32x32 tile in a 16x16 tile world, keep reading.
+Let's get the basics down first. In fact, let's drop this for the
+moment and discuss some fundamental ideas about representing NPCs and
+items for a game. </font></p><p><font face="Verdana, Tahoma, Arial" size="2"><font color="#00983e" size="4"><b>The Flesh of a Soul</b></font>
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">I should
+explain that I delineate objects from their graphics. That is, there
+are separate structures for objects and for their graphic imagery. For
+example:
+</font></p><blockquote><pre><font face="Verdana, Tahoma, Arial" size="2"><font color="#000088" face="Courier New, fixedsys" size="2">
+struct npc_object {
+     struct npc_object      *next;    // keep a pointer handy for later
+     struct tile_gfx        *tile;    // pointer to the graphic imagery for this guy
+     struct attributes      atts;     // str, dex, hp, inventory, etc.
+     char                   x_loc;    // location on map
+     char                   y_loc;    // may need to be an unsigned short if the map
+                                      // is bigger than 255x255 squares
+};
+
+struct tile_gfx {
+     struct tile_gfx      *next;        // always
+     char                 *imagery;     // pointer to the actual bitmap data
+     char                 x_size;       // size in pixels
+     char                 y_size;
+     char                 x_offset;     // for handling those 32x32 tiles
+     char                 y_offset;
+     char                 bitflags;     // 8 bitflags (ie, masked?, animated?, etc)
+     char                 align;        // align to dword boundary
+};
+
+</font></font></pre></blockquote>
+
+<p><font face="Verdana, Tahoma, Arial" size="2">So when a person or
+monster is plotted to the screen, the tile information for each
+character can be totally different and referenced through the NPC
+structure. Likewise for items. Remember that these graphics will be
+drawn with masking so that the map background can still show through.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">With this in mind, we commence with map specifics.
+
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2"><font color="#00983e" size="4"><b>Plotting Map Layers</b></font>
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">struct linked_list map[100][100];
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">This is our map definition. We have a separate linked list holding all NPCs that are active and their relevant information.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">In Ultima 6,
+if a character went in a doorway, the character appeared under the
+archway. The characters were further obscured by tall signs, and the
+like. This is a very cool and realistic effect. (Though I haven't done
+benchmarks on any of the mapping techniques here, I suspect that what
+I'm building up to will require a fair amount of horsepower. Hopefully
+our common denominator 486-33 will suffice.)
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">To achieve
+this obscuring effect, I would flag each map_tile as either "under" or
+"over" (thus, the need for the bitflags field in the map_tile
+structure). The bottom layer (ground) will definitely be "under" since
+all tiles get plotted over these regardless. Things like trees, walls
+and open doorways should be "over" since the player could potentially
+appear obscured by such objects. For best efficiency, sort all these
+tile lists so that "under" tiles come before "over" tiles.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">Here's how the plotting algorithm should work:
+
+</font></p><ul>
+<font face="Verdana, Tahoma, Arial" size="2">  A) Plot all ground tiles (ie, the first tile in each list).<br>
+  B) Plot all tiles flagged "under."<br>
+  C) Plot all NPCs and items.<br>
+  D) Plot all tiles flagged "over."<br>
+</font></ul>
+
+<font face="Verdana, Tahoma, Arial" size="2">The plotting should go from upper-left to lower-right to appear correct.
+
+</font><p><font face="Verdana, Tahoma, Arial" size="2"><font color="#00983e" size="4"><b>The 32 Pixel Question</b></font>
+</font></p><p><table align="right" bgcolor="#555555"><tbody><tr><td><img src="Isometric%20Rendering%20Howto%205_soubory/tilealign.gif" alt="32x32 Tile alignment" align="right"></td></tr></tbody></table>
+</p><p><font face="Verdana, Tahoma, Arial" size="2">Now that the basic
+map structure and function is understood (it is, isn't it?), we can get
+to the 32x32 tile question. Since all tiles have a 16x16 "base"
+anything over this size will simply be plotted with an offset. The
+offset should force the lower-right corner of the tile to align with
+the 16x16 pixel base.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">A tile that
+is 20x17 would have an x_offset of -4, y_offset of -1. This is
+calculated with (16 - x_size), (16 - y_size). If a tile is smaller than
+16x16 (a knife, for example), then it will have a positive offset.
+Look: a 7x10 tile has +8 x_offset, +6 y_offset.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">That is, unless you want to center small tiles in the 16x16 pixel space. That's easy enough.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">So now we
+see how a larger tile can obscure those in adjacent locations. A very
+tall tree would do this. This ain't Ultima 4 anymore! Let's get out of
+the 80's technology and at least catch up to early 90's.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">With this
+outline, hopefully you can exploit the possibilities yourself. Imagine
+the flexibility over the "old" array technique. Instead of drawing
+millions of tiles for each piece of scenery like a plain wall, another
+wall with a torch on it, etc, you simply draw the plain wall, draw the
+torch, then stack the picture tile on the wall tile. You can reuse the
+torch for different wall types without drawing a new wall with a torch
+on it. Again, this saves storage space by having fewer graphics but
+with more variety.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2"><font color="#00983e" size="4"><b>Material Objects and Possessions</b></font>
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">Handling
+item objects, if you want Ultima-level technology, requires that each
+object be defined in a detailed way and managed much like NPCs-- with a
+linked list. This is a little more complicated, but the enrichment of
+the game environment is incredible. In my Amiga implementation, for
+example, I defined objects that can be moved, carried, used, contain
+other objects, etc, just like Ultima 6. This allows your universes to
+really come to life.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">All you
+really have to do is have a main item list, call it all_items. This
+list will hold each and every item that exists in your world from a
+bedroll to a candle to a ration of food. It's handling this list safely
+and cleanly that presents the major problem. And if you have a solid
+knowledge of lists this is not much of a problem. I suggest that you
+build a list library of common functions (ie, insertion, deletion,
+creation, destruction) or find a library that already exists and works
+reliably. Then apply these concepts.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">But now, let us aside to something else of relevance to our all_items linked list.
+
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2"><font color="#00983e" size="4"><b>Accessing the World Map Incrementally</b></font>
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">Since I've
+mentioned Greg Taylor's FAQ previously, I will come to it again. He
+suggests holding the entire map on disk and "paging" in only the areas
+that are close by. That's exactly what I suggest. The only hairy part
+is the nature of my maps. They are linked lists and this makes for a
+complication when accessing them bits at a time.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">The main
+barrier, then, is the storage format. How do we store a map when it's a
+huge array of linked lists and link nodes? Well, there are many
+possibilities. One is to encode the data with "identifier" bytes. There
+are several variations of this.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">For each
+map location (map[x][y]), we write to disk the number of nodes in each
+list at that location (minimum 1, because we have to have a ground
+tile). This is very simple. To retrieve it is the tricky part.
+</font></p><ol type="A">
+<font face="Verdana, Tahoma, Arial" size="2">    <li>Read one byte. If
+it is zero, then we have no more nodes for the current x:y position. If
+it is non-zero, we have to read that many nodes from disk, building the
+list on the fly. Keep reading nodes until the Nth node is finally read.
+</li><li>Repeat step A until the entire section of map we want is read into memory.
+</li></font></ol>
+
+<font face="Verdana, Tahoma, Arial" size="2">In code:
+
+</font><blockquote><pre><font face="Verdana, Tahoma, Arial" size="2"><font color="#000088" face="Courier New, fixedsys" size="2">
+char c, i, x, y;
+struct map_tile *mt;
+
+x = current_x_position;              // these will probably be assigned by a loop
+y = current_y_position;
+while (1) {                          // loop infinitely, so be careful!
+
+  c = fgetc(filehandle);             // read our encoding byte
+  if (feof(filehandle)) break;       // end the loop, we are out of data
+                                     // you'll also check to see if you've read all 
+                                     // neccessary data and use break to exit the loop
+  for (i=0; i&lt;&lt; c; i++) {            // read as many nodes as encoded
+
+    mt = newnode();                  // remember to do failure checks and handle errors!
+    fread(mt, sizeof(struct map_tile), 1, filehandle);
+    addnode(map[x][y], mt);          // put the new node in the map lists
+  }
+                                     // continue reading nodes until all map data is in memory
+}
+
+</font></font></pre></blockquote>
+
+<p><font face="Verdana, Tahoma, Arial" size="2">This code fragment
+leaves out quite a bit, like list details and deciding what map
+coordinate range you need to read. At least you get to see the
+principles in action. There is _lots_ of linked list juggling. You must
+be very, very careful about memory leaks and such when programming
+this. Take your time, comment your code, and <u>know what you're doing</u>! With this sort of code, you need to plan out exactly what to do.  Some more than others, but everyone needs a plan.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">Another method would require that you add two new fields to the map_tile structure:
+
+</font></p><blockquote><pre><font face="Verdana, Tahoma, Arial" size="2"><font color="#000088" face="Courier New, fixedsys" size="2">
+struct map_tile {
+     struct map_tile         *next;
+     struct tile_gfx         *tile;
+     char                    type;
+     char                    bitflags;
+     char                    x_loc;     // store each tile's location here
+     char                    y_loc;
+};
+
+</font></font></pre></blockquote>
+
+<p><font face="Verdana, Tahoma, Arial" size="2">Now, when you read a
+tile, it has the location information in it. You simply insert the read
+node into the according list in memory. I like the first method better,
+though, because it uses less disk space since the encoding only
+requires one byte, especially for maps &gt; 255x255 that will need a
+short for index reference. I leave the final decision with you, because
+there are better ways to implement this, I'm sure.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">Now that we
+can access the map at arbitrary points from disk, how do we decide what
+to store in memory and when to load more? As Greg states, look at the
+current map "chunk" as a set of 9 small areas, theoretical boundaries
+actually...<br>
+<br>
+<table align="right" bgcolor="#555555"><tbody><tr><td><img bgcolor="#FFFFFF" src="Isometric%20Rendering%20Howto%205_soubory/mapstructure.gif" alt="Structure of the map" align="right"></td></tr></tbody></table>
+<br>
+Each small area might represent a 10x10 map chunk. As the player moves
+across the middle boundaries, the map data is shifted (scrolled) and
+whatever areas are "blank" afterward will be the ones we load from
+disk. Refer to Greg's FAQ for more explanation, if you need it.
+Hopefully, it is self-evident.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">I will only
+say that you must remember to deallocate all nodes no longer needed.
+This cannot be over-stated. You will find many, many bugs lurking in
+this section of your program if you are not an alert programmer. I
+learned this through tedious hours of memory leak chasing. Tedious
+hours.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2"><font color="#00983e" size="4"><b>And What of Our Possessions</b></font>
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">We come back
+to our discussion of the all_items linked list. Since your world may be
+exceedingly large (my project included over 400 items at 85%
+completion), you will not want to keep this whole list all the time. If
+memory allows, sure, keep it in memory for speed. If not, then access
+it from disk when needed. Elaboration follows.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">Like the
+huge map, which only comes into memory in chunks, we only need parts of
+the all_items list in memory at any one time. Two reasons: 1) it is far
+less space consuming than keeping 1000 items in memory all the time, 2)
+it is much quicker when performing operations on the items (ie,
+searches, etc).
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">Point 2) is
+particularly of interest since we will be dealing with those items
+closest to the player the most often. Doesn't it make sense to keep
+only the necessary items in another list, a "local" list? Of course it
+does.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">Each time
+the player wants to manipulate an item (say, picking up a sword), the
+program will have to find the item in question by searching the list.
+Then it will have to perform some operation(s) on it (ie, place the
+sword in the players possession). This is not to mention the fact that
+each graphic update will require searching the list of items to
+determine which are visible and which are not. Now this makes perfect
+sense, right?
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">So we
+establish a secondary linked list: local_items. This list will grow and
+shrink as the player moves through the landscape. Items will get moved
+to and from this list and the all_items list. all_items will hold items
+not currently used. I would recommend holding all_items in memory when
+possible for speed issues and issues of altering the game state-- that
+is, as related to saved games.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">You see, if
+you want to save a game in progress, all object lists must be written
+to disk. But if you are constantly writing over the all_items list, and
+the computer crashes, that game state is ruined because part of
+all_items was in memory, and not all of it was on disk since item in
+local_items are literally removed from all_items. Follow?
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">The
+solution is to simply store all_items, for game use, in a temporary
+copy of the initial game state. That way, all previous information is
+preserved and you safely work with a copy. But to avoid all this hocus,
+keep the lists in memory at all times, only updating the disk image
+when a game is saved. I hope all that soaked in. If not, re-read it in
+a couple days.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2"><font color="#00983e" size="4"><b>Straying From the Path</b></font>
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">I seem to
+have gone off on a few tangents here. But I think that they are all an
+integral part of the big picture. Now I would like to address some of
+the problems from Greg's FAQ that this framework fixes (I'm not picking
+on him, but I am hopefully building on his information), with direct
+references to his work.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2"><font color="#00983e" size="4"><b>III: Walkability</b></font>
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">To create a
+map space that cannot be crossed by the player, simply use the bitflags
+to denote a barrier object. This can be either a map_tile, a
+npc_object, or an item_object. If any one of these appears in the
+location that the player is about to move into, then movement is
+restricted. Simple and clean, and no need to make any limitations on
+the map or objects.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">In fact, I
+divide barriers into several classes. One is a total barrier. Another
+only restricts movement-- but not things like arrows or spells flying
+across them. Another only restricts arrows and such, but not movement
+(for magical sanctuaries). This can all be achieved by using those
+simple bitflags in each object structure.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">For those of you who want to see code...
+
+</font></p><blockquote><pre><font face="Verdana, Tahoma, Arial" size="2"><font color="#000088" face="Courier New, fixedsys" size="2">
+#define flag_BARRIER      (1)            // this blocks movement and missiles
+#define flag_MOVEBARRIER  (1&lt;&lt;1)         // block movement only
+#define flag_MISSLEBAR    (1&lt;&lt;2)         // block missiles only
+
+</font></font></pre></blockquote>
+
+<font face="Verdana, Tahoma, Arial" size="2"><br>Then, wherever your code handles movement...
+
+</font><blockquote><pre><font face="Verdana, Tahoma, Arial" size="2"><font color="#000088" face="Courier New, fixedsys" size="2">
+if (map[x][y].bitflags &amp; flag_BARRIER)     // this checks for the bitflag
+    player_cant_move();
+
+</font></font></pre></blockquote>
+
+<font face="Verdana, Tahoma, Arial" size="2"><br>Of course, accessing
+the map data will involve checking each object in the x,y location list
+in question for these flags, but you get the idea.
+</font><p><font face="Verdana, Tahoma, Arial" size="2"><font color="#00983e" size="4"><b>VI: the OBJECT layer</b></font>
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">Greg has no
+autonomous objects. His maps hold object information, much like Ultima
+4 probably did. With my system, there is no such restriction and no
+limitations. You can stack gobs of objects and hordes of people, too,
+since they all exist independent of the map data.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2"><font color="#00983e" size="4"><b>So Close, Yet So Far</b></font>
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">I could go
+on typing about different areas of CRPG making for hours, but I want to
+limit this document to tile graphics related problems. I should
+probably work all of this up into a book and include a demo and tons of
+source code, but who would publish it? :) Potential future
+installments...
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">Using event
+flags to trigger changes in the game world (ie, when a quest is
+completed or a decisive action made), the writing of "data compilers"
+to create attributes for your objects in a script file (as I did with
+my Amiga project), creating a map/object/graphics editor, implementing
+a system of spells and using "reagents" to create them, character
+creation routines, NPC speech system, NPC artificial intelligence--
+especially combat where NPCs intelligently arm themselves based on
+circumstances and resources at hand (ie, close range weaponry, spells,
+abilities, etc), animating objects. The list goes on. I have experience
+programming all of these things, and I plan to put that experience to
+use and create a CRPG for the PC. I am in college, so it will come
+slowly, but one will emerge. Why don't you explore these subjects with
+me, and let's create some good games.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">If there is
+sufficient interest, I might write up more technique documents. That
+all remains to be seen. Give me your feedback. I want to discuss these
+things with people, because nobody seems to want to. I suspect they
+fear that people will rip-off their ideas. Let me state a fact,
+everyone: technical achievement does not make a great game. If
+everything I said here you can do better, you are at no particular
+advantage of making a better game than me. The quality lies in content.
+So quit worrying about someone stealing your techniques and algorithms,
+because even if they did, that doesn't mean they will undermine your
+success as a game designer.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">SPEAK UP! I would love to hear alternate/better solutions to these programming puzzles.
+
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2"><font color="#00983e" size="4"><b>And Now I'm Off, Dear Patsy</b></font>
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">Please
+spread this to any technical forum and medium (unmodified, of course)
+that you see fit. I don't have access to any commercial nets, so
+uploading there would be appreciated. Spread me on the internet as
+well.
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">Happy creating!
+
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">Jason McIntosh
+<br><a href="mailto:jmcintosh@iclub.org">jmcintosh@iclub.org</a>
+
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">Greets to Ed Mackey and Roy Millican(both Amiga guys who probably won't ever see this).
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">And hello-nice-to-meet-you to Mark Feldman: where's PCGPE 2? I'm a willing contributor. :)
+</font></p><p><font face="Verdana, Tahoma, Arial" size="2">It's after 4am! I've got to go to bed!
+
+</font>
+</p><p align="center"><b><a href="http://www.gamedev.net/community/forums/topic.asp?key=featart&amp;uid=727&amp;forum_id=35&amp;Topic_Title=Tile+Graphics+Techniques">Discuss this article in the forums</a></b></p>
+<p>
+<br><span class="maintext-2">Date this article was posted to GameDev.net: <b>9/15/1999</b>
+<br>(Note that this date does not necessarily correspond to the date the article was written)</span>
+</p><p><b>See Also:</b><br>
+
+<a href="http://www.gamedev.net/reference/list.asp?categoryid=198">General  </a><br>
+
+</p><p align="center">© 1999-2009 Gamedev.net. All rights reserved. <a href="http://www.gamedev.net/info/legal.htm#copyright"><u>Terms of Use</u></a> <a href="http://www.gamedev.net/info/legal.htm#privacy"><u>Privacy Policy</u></a>
+<br><span class="maintext-1">Comments? Questions? Feedback? <a href="http://www.gamedev.net/info/faq.asp">Click here!</a></span></p>
+
+</td></tr></tbody></table>
+
+
+<!-- start Vibrant Media IntelliTXT Tooltip style sheet -->
+<style type="text/css">
+.iTt{
+    FONT-FAMILY:       Verdana, Arial, Helvetica;
+    FONT-SIZE:         11px;
+    FONT-STYLE:        normal;
+    FONT-WEIGHT:       normal;
+    COLOR:             black;
+    BACKGROUND-COLOR:  lightyellow;
+    BORDER:            black 1px solid;
+    PADDING:           2px;
+}
+.iTt a {
+    COLOR:             0000CC;
+}
+.iTt a:visited {
+    COLOR:             0000CC;
+}
+.iTt a:hover {
+    COLOR:             6666CC;
+}
+.iTt TD {
+   COLOR:              999999;
+}
+</style>
+<!-- end Vibrant Media IntelliTXT style sheet -->
+<!-- start Vibrant Media IntelliTXT script section -->
+<script type="text/javascript" src="Isometric%20Rendering%20Howto%205_soubory/front.js"></script>
+<!-- end Vibrant Media IntelliTXT script section -->
+
+<script src="Isometric%20Rendering%20Howto%205_soubory/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-279474-1";
+urchinTracker();
+</script>
+</body></html>

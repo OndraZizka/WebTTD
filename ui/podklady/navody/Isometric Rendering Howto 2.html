@@ -1,0 +1,398 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1250">
+
+
+
+  <title>GameDev.net - Isometric 'n' Hexagonal Maps Part II</title>
+  <link rel="stylesheet" href="Isometric%20Rendering%20Howto%202_soubory/reference.css" type="text/css">
+  <link rel="icon" href="http://www.gamedev.net/pics/gdicon.png" type="image/png">
+</head><body leftmargin="0" topmargin="0" alink="#000000" background="Isometric%20Rendering%20Howto%202_soubory/watermark.gif" bgcolor="#ffffff" link="#666699" marginheight="0" marginwidth="0" text="#000000" vlink="#666699">
+
+<table border="0" cellpadding="3" cellspacing="0" width="100%">
+  <tbody><tr>
+    <td class="tblhdr">Isometric 'n' Hexagonal Maps Part II</td>
+    <td class="tblhdr" align="right" nowrap="nowrap"><img src="Isometric%20Rendering%20Howto%202_soubory/littleg.gif" align="absbottom" height="16" width="16">&nbsp;<a href="http://www.gamedev.net/"><span style="color: white; text-decoration: none;">GameDev.net</span></a></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+<!-- Begin -  Site: GameDev.net Zone: GameDev.net variable width -->
+<script language="javascript" type="text/javascript">
+<!--
+var browName = navigator.appName;
+var SiteID = 1;
+var browDateTime = (new Date()).getTime();
+if (browName=='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;IFR=False&amp;Browser=NETSCAPE4&amp;PageID=55140&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+if (browName!='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;IFR=False&amp;PageID=55140&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+// --> 
+</script><script language="javascript" src="Isometric%20Rendering%20Howto%202_soubory/a.js"></script>
+<noscript> <a
+href="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Click&amp;Mode=HTML&amp;SiteID=1&amp;PageID="
+target="_blank"> <img
+src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;Mode=HTML&amp;SiteID=1&amp;PageID="
+width="728" height="90" border="0" alt=""></a>
+</noscript>
+<!-- End -  Site: GameDev.net Zone: GameDev.net variable width --></td>
+  </tr>
+</tbody></table>
+<table border="0" cellpadding="5" cellspacing="0" width="100%"><tbody><tr><td>
+
+
+<p align="center"><span class="title">Isometric 'n' Hexagonal Maps Part II</span>
+<br><span class="author">Putting People, Creatures, Items, etc on Iso/Hex Maps, and still having it come out correctly
+<br>by <a href="mailto:tanstaafl@gamedev.net">TANSTAAFL</a></span>
+<br>04APR1998
+
+</p><p><a href="#INTRO">Introduction</a>
+
+</p><ol type="A">
+  <li>li&gt;<a href="#ZORDER">Z Order</a>
+  </li><li><a href="#OUTOFBOUNDS">Objects That Go Out of a Tile's Bounds</a>
+  </li><li><a href="#SPEED">The Need For Speed</a>
+  </li><li><a href="#CONFUSION">Resolving Confusion from Part I</a>
+</li></ol>
+
+
+<a name="INTRO"></a><h1>Introduction</h1>
+
+<p>Hi! Welcome back to Iso/Hex maps. In this tutorial, we will be
+discussing how to place objects (creatures, items, whatever) onto a
+Iso/Hex map. There won't be too much code in this tutorial, because
+most of it deals with the actual blitting of the images, and I'm trying
+to make these tutorials essentially language independent.</p>
+<p>Again, I will be using 40x40 pixel bitmaps.</p>
+<p>Also, I will explain by using Bitmasks. However, it has been brought
+to my attention that transparency bitmaps and RLE bitmaps will also
+work (and really, this only makes sense, because RLEs and Transparency
+were created as shortcuts to using bitmasks).</p>
+
+<a name="ZORDER"></a><h1>Z Order</h1>
+
+<p>The first topic that we need to discuss is that of Z Ordering, or Map Layering.</p>
+<p>Here is my schematic for Z Ordering:</p>
+<p><img src="Isometric%20Rendering%20Howto%202_soubory/ZOrder.gif" height="299" width="457"></p>
+<p>I've only put three layers into my example… you may require more for your game.</p>
+<p>An explanation of the layers, and what goes into them:</p>
+<p><font color="#800040"><b>Background</b></font>: This layer consists of the tiles themselves, and any image that will always be BEHIND anything else.</p>
+<p><font color="#800040"><b>Intermediate</b></font>: This layer
+consists of the objects in the game… creatures, items, etc. Sometimes,
+it is a good idea to split this layer into two: an Item Layer, and a
+Creature Layer, with items below the creatures.</p>
+<p><font color="#800040"><b>Foreground</b></font>: This layer consists
+of the foreground images (walls, trees, etc). Sometimes, I split this
+layer into two: foreground obstacles (trees, pillars), and foreground
+walls.</p>
+<p>The way that Z Ordered Iso/Hex tiles get blitted is as follows:</p>
+
+<ol type="A">
+   <li>Bitmask for Background Layer is ANDed to the screen.
+   </li><li>Bitmap for Background Layer is XORed to the screen.
+   </li><li>Bitmask for Intermediate Layer is ANDed to the screen.
+   </li><li>Bitmap for Intermediate Layer is XORed to the screen.
+   </li><li>Bitmask for Foreground Layer is ANDed to the screen.
+   </li><li>Bitmap for Foreground Layer is XORed to the screen.
+</li></ol>
+
+<p>This is applied to each TILE separately, not the entire layer. If
+you do the entire layer in one step instead of each tile, you will get
+a bizarre looking final picture (character's heads chopped off, etc.)</p>
+
+<a name="OUTOFBOUNDS"></a><h1>Objects That Go Out of a Tile's Bounds</h1>
+<p>This problem is more prevalent in Iso Maps than it is in Hex Maps,
+due to the uses of the two different types. Hex Maps are usually for
+top-down views, and Iso Maps are usually used for 3/4 views.</p>
+<p>So, how to we get our "Dude": <img src="Isometric%20Rendering%20Howto%202_soubory/Dude.gif" height="40" width="40"></p>
+<p>Onto our Iso tile: <img src="Isometric%20Rendering%20Howto%202_soubory/GreenIso.gif" height="40" width="40"></p>
+<p>So that he looks like THIS: <img src="Isometric%20Rendering%20Howto%202_soubory/GreenIsoDude.gif" height="40" width="40"></p>
+<p>(See. He sticks out the top of the tile.)</p>
+<p>Before we get to that, we need to set down a guideline, so that we don't draw funky maps.</p>
+
+<h3>Isometric Forbidden Zones:</h3>
+<p><img src="Isometric%20Rendering%20Howto%202_soubory/IsoForbidden.gif" height="40" width="40"></p>
+
+<h3>Hexagonal Forbidden Zones:</h3>
+<p><img src="Isometric%20Rendering%20Howto%202_soubory/HexForbidden.gif" height="40" width="40"></p>
+
+<p>The white zones in these pictures are the Iso/Hex tiles themselves,
+and are ALWAYS okay to blit onto (in fact, if your images stay within
+the white--usually the case when Hex maps are used--then you can blit
+entire layers instead of each tile's layers separately).</p>
+<p>The green zones can have image information in them, but you will have to Z Order by tile, not by layer.</p>
+<p>The red zones can never have image information in them; if they do, they will either screw up your map, or never be seen.</p>
+<p>Background images should take up at least all of the white region,
+and may spill into the green region. All other layers may take up as
+much or as little of the white and green regions as you wish.</p>
+<p>Back to blitting our "Dude":</p>
+<p>First, we blit the bitmask <img src="Isometric%20Rendering%20Howto%202_soubory/MaskIso.gif" height="40" width="40">and the bitmap<img src="Isometric%20Rendering%20Howto%202_soubory/GreenIso.gif" height="40" width="40"> of our tile onto our map.</p>
+<p>So that we have: <img src="Isometric%20Rendering%20Howto%202_soubory/GreenIso.gif" height="40" width="40">.</p>
+<p>Now, we AND the bitmask<img src="Isometric%20Rendering%20Howto%202_soubory/DudeMask.gif" height="40" width="40"> of the dude onto the tile:<img src="Isometric%20Rendering%20Howto%202_soubory/GreenIsoDudeMask.gif" height="40" width="40">.</p>
+<p>Finally, we XOR the bitmap<img src="Isometric%20Rendering%20Howto%202_soubory/Dude.gif" height="40" width="40"> of the dude onto the tile: <img src="Isometric%20Rendering%20Howto%202_soubory/GreenIsoDude.gif" height="40" width="40">.</p>
+<p>And then we repeat these steps for each of the tiles in the map.
+(Additional Layers are blitted in the same way our dude was). The
+process is the same for Hexagonal Maps, but Dude doesn't stick out.</p>
+
+<a name="SPEED"></a><h1>The Need for Speed</h1>
+<p>Okay, so you DON'T want to be blitting the entire map each game cycle. That would be too SLOW.</p>
+<p>BUT! If you just re-blit the tiles in your map that change, your picture gets screwed up.</p>
+<p>The solution is this: You update the tile in question, and a few
+surrounding tiles. While this is a little more work done to update the
+picture, at least your map will look right, and it beats the hell out
+of reblitting the ENTIRE map.</p>
+<p>Here is my Update Map (for demonstrating methods of quick updating):</p>
+<p>Iso: <img src="Isometric%20Rendering%20Howto%202_soubory/IsoUpdate.gif" height="40" width="40"></p>
+<p>Hex: <img src="Isometric%20Rendering%20Howto%202_soubory/HexUpdate.gif" height="40" width="40"></p>
+<p>The white zone represents the tile that we are updating. The other
+colored zones represent the tiles close enough to be affected by our
+tile.</p>
+<p>So, we take a space on our double buffer (or hidden bitmap that we
+use for updating) that is 40x40, and to it we do the following:</p>
+
+<h3>Iso Maps:</h3>
+<p>This is the order in which we blit the tiles:</p>
+<p><b><font color="#ff0000">Red</font>, <font color="#ffff00">Yellow</font>, <font color="#00ff00">Green</font>, <font color="#00ffff">Cyan</font>, <font color="#0000ff">Blue</font>, White, <font color="#ff00ff">Magenta</font>, <font color="#808080">Grey</font>.</b></p>
+<p>Here is how to find WHICH tiles these are (the X,Y locations), based off of the white tile.</p>
+<p>(unfortunately, this depends on whether or not the white tile has an odd or even Y value)</p>
+
+<p></p><center><table border="1" cellpadding="7" cellspacing="1">
+  <tbody><tr bgcolor="#666699" valign="top">
+    <td width="25%"><font color="white"><b>Color</b></font></td>
+    <td align="center" width="25%"><font color="white"><b>DX(Y is Even)</b></font></td>
+    <td align="center" width="25%"><font color="white"><b>DX(Y is Odd)</b></font></td>
+    <td align="center" width="25%"><font color="white"><b>DY</b></font></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#ff0000"><b>Red</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>-1</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>0</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>-3</b></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#ffff00"><b>Yellow</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>0</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>1</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>-3</b></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#00ff00"><b>Green</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>0</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>0</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>-2</b></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#00ffff"><b>Cyan</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>-1</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>0</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>-1</b></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#0000ff"><b>Blue</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>0</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>1</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>-1</b></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#000000"><b>White</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>0</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>0</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>0</b></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#ff00ff"><b>Magenta</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>-1</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>0</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>1</b></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#808080"><b>Grey</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>0</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>1</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>1</b></td>
+  </tr>
+</tbody></table></center>
+
+<p>Then, you plot them on your buffer with the following X Offsets, and Y Offsets:</p>
+
+<p></p><center><table border="1" cellpadding="7" cellspacing="1">
+  <tbody><tr bgcolor="#666699" valign="top">
+    <td width="33%"><font color="white"><b>Color</b></font></td>
+    <td align="center" width="33%"><font color="white"><b>X Offset</b></font></td>
+    <td align="center" width="33%"><font color="white"><b>Y Offset</b></font></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#ff0000"><b>Red</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>-20</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>-33</b></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#ffff00"><b>Yellow</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>20</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>-33</b></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#00ff00"><b>Green</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>0</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>-22</b></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#00ffff"><b>Cyan</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>-20</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>-11</b></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#0000ff"><b>Blue</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>20</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>-11</b></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#000000"><b>White</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>0</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>0</b></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#ff00ff"><b>Magenta</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>-20</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>+11</b></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#808080"><b>Grey</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>20</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>+11</b></td>
+  </tr>
+</tbody></table></center>
+
+<p>Here's the X Offset/Y Offset values for <b>Hex maps</b> (Hex maps use the same DX/DY values as Iso maps):</p>
+
+
+<p></p><center><table border="1" cellpadding="7" cellspacing="1" width="638">
+  <tbody><tr valign="top">
+    <td bgcolor="#666699" width="33%"><font color="white"><b>Color</b></font></td>
+    <td align="center" bgcolor="#666699" width="33%"><font color="white"><b>X Offset</b></font></td>
+    <td align="center" bgcolor="#666699" width="33%"><font color="white"><b>Y Offset</b></font></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#00ffff"><b>Cyan</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>-20</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>-30</b></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#0000ff"><b>Blue</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>20</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>-30</b></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#000000"><b>White</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>0</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>0</b></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#ff00ff"><b>Magenta</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>-20</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>+30</b></td>
+  </tr>
+  <tr valign="top">
+    <td><font color="#808080"><b>Grey</b></font></td>
+    <td align="center" bgcolor="#ccccdd"><b>20</b></td>
+    <td align="center" bgcolor="#ccccdd"><b>+30</b></td>
+  </tr>
+</tbody></table></center>
+
+<p>For each of the tiles in the Update Map, each layer (for added
+speed, you may want to clip the images that you are blitting onto the
+buffer).</p>
+<p>Once you have blitted all of the necessary tiles onto the buffer,
+you can blit the buffered image onto the map using MOV (also called
+Copy).</p>
+<p>There you go. You get better speed, and your picture doesn't get messed up.</p>
+<p>(P.S. If you are using Visual Basic, I would like to suggest that
+you use the API function BitBlt rather than VB's PaintPicture Method.
+It's SOOOO much faster.)</p>
+
+<a name="CONFUSION"></a><h1>Resolving Confusion from Part I</h1>
+<p>Somebody sent me some E-Mail saying that I should explain how I
+arrived at the Y Offsets for my Iso/Hex tiles, because not all of you
+are going to be using 40x40 bitmaps. (although I know for sure that at
+least ONE of you has switched to using them).</p>
+<p>So, here is the method I used to figure out the Y Offsets for my Iso and Hex maps:</p>
+<p>(To more easily show this, I have blown up my Iso and Hex tiles)</p>
+<p>Iso:</p>
+<p><img src="Isometric%20Rendering%20Howto%202_soubory/GreenIsoBig.gif" height="200" width="200"></p>
+<p>The determining factors for figuring out the X and Y offsets for a
+rhombus or a hex start with picking any point and figuring out where it
+will be when on an adjacent tile. In the above picture, the red dot
+corresponds to the Magenta dot on another tile. The coordinates of the
+red dot are (19,19), and the magenta dot is at (39,30). From this,
+calculating the X Offset and Y Offset are easy:</p>
+
+<blockquote><pre class="code">X Offset=39-19=20
+<br>Y Offset=30-19=11
+</pre></blockquote>
+
+<p>Hex:</p>
+<p><img src="Isometric%20Rendering%20Howto%202_soubory/GreenHexBig.gif" height="200" width="200"></p>
+
+<p>In this case, the red dot is at (19,0), and the magenta dot is at (39,30).</p>
+
+<blockquote><pre class="code">X Offset=39-19=20
+<br>Y Offset=30-0=30
+</pre></blockquote>
+
+<p>I hope this clears up any confusion, and helps you when you go about
+designing your own, differently sized or shaped Iso/Hex tiles.</p>
+
+<p align="center"><b><a href="http://www.gamedev.net/community/forums/topic.asp?key=featart&amp;uid=748&amp;forum_id=35&amp;Topic_Title=Isometric+%27n%27+Hexagonal+Maps+Part+II">Discuss this article in the forums</a></b></p>
+<p>
+<br><span class="maintext-2">Date this article was posted to GameDev.net: <b>9/16/1999</b>
+<br>(Note that this date does not necessarily correspond to the date the article was written)</span>
+</p><p><b>See Also:</b><br>
+
+<a href="http://www.gamedev.net/reference/list.asp?categoryid=198">General  </a><br>
+
+</p><p align="center">© 1999-2009 Gamedev.net. All rights reserved. <a href="http://www.gamedev.net/info/legal.htm#copyright"><u>Terms of Use</u></a> <a href="http://www.gamedev.net/info/legal.htm#privacy"><u>Privacy Policy</u></a>
+<br><span class="maintext-1">Comments? Questions? Feedback? <a href="http://www.gamedev.net/info/faq.asp">Click here!</a></span></p>
+
+</td></tr></tbody></table>
+
+
+<!-- start Vibrant Media IntelliTXT Tooltip style sheet -->
+<style type="text/css">
+.iTt{
+    FONT-FAMILY:       Verdana, Arial, Helvetica;
+    FONT-SIZE:         11px;
+    FONT-STYLE:        normal;
+    FONT-WEIGHT:       normal;
+    COLOR:             black;
+    BACKGROUND-COLOR:  lightyellow;
+    BORDER:            black 1px solid;
+    PADDING:           2px;
+}
+.iTt a {
+    COLOR:             0000CC;
+}
+.iTt a:visited {
+    COLOR:             0000CC;
+}
+.iTt a:hover {
+    COLOR:             6666CC;
+}
+.iTt TD {
+   COLOR:              999999;
+}
+</style>
+<!-- end Vibrant Media IntelliTXT style sheet -->
+<!-- start Vibrant Media IntelliTXT script section -->
+<script type="text/javascript" src="Isometric%20Rendering%20Howto%202_soubory/front.js"></script>
+<!-- end Vibrant Media IntelliTXT script section -->
+
+<script src="Isometric%20Rendering%20Howto%202_soubory/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-279474-1";
+urchinTracker();
+</script>
+</body></html>

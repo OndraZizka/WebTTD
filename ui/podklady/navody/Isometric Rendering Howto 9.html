@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1250">
+
+
+
+  <title>GameDev.net - Tile/Map-Based Game Techniques: Handling Terrain Transitions</title>
+  <link rel="stylesheet" href="Isometric%20Rendering%20Howto%209_soubory/reference.css" type="text/css">
+  <link rel="icon" href="http://www.gamedev.net/pics/gdicon.png" type="image/png">
+</head><body leftmargin="0" topmargin="0" alink="#000000" background="Isometric%20Rendering%20Howto%209_soubory/watermark.gif" bgcolor="#ffffff" link="#666699" marginheight="0" marginwidth="0" text="#000000" vlink="#666699">
+
+<table border="0" cellpadding="3" cellspacing="0" width="100%">
+  <tbody><tr>
+    <td class="tblhdr">Tile/Map-Based Game Techniques: Handling Terrain Transitions</td>
+    <td class="tblhdr" align="right" nowrap="nowrap"><img src="Isometric%20Rendering%20Howto%209_soubory/littleg.gif" align="absbottom" height="16" width="16">&nbsp;<a href="http://www.gamedev.net/"><span style="color: white; text-decoration: none;">GameDev.net</span></a></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+<!-- Begin -  Site: GameDev.net Zone: GameDev.net variable width -->
+<script language="javascript" type="text/javascript">
+<!--
+var browName = navigator.appName;
+var SiteID = 1;
+var browDateTime = (new Date()).getTime();
+if (browName=='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;IFR=False&amp;Browser=NETSCAPE4&amp;PageID=55140&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+if (browName!='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;IFR=False&amp;PageID=55140&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+// --> 
+</script><script language="javascript" src="Isometric%20Rendering%20Howto%209_soubory/a.js"></script>
+<noscript> <a
+href="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Click&amp;Mode=HTML&amp;SiteID=1&amp;PageID="
+target="_blank"> <img
+src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;Mode=HTML&amp;SiteID=1&amp;PageID="
+width="728" height="90" border="0" alt=""></a>
+</noscript>
+<!-- End -  Site: GameDev.net Zone: GameDev.net variable width --></td>
+  </tr>
+</tbody></table>
+<table border="0" cellpadding="5" cellspacing="0" width="100%"><tbody><tr><td>
+
+<center><span class="title">Tile/Map-Based Game Techniques: Handling Terrain Transitions</span>
+<br><span class="author">by <a href="http://www.samugames.com/">David Michael</a></span></center>
+
+<p>This article is another in my series of Tile/Map-based Game
+Techniques. In this article I discuss a method for handling terrain
+transitions on your main map display.</p>
+<p>First off, by "terrain" I am referring to the background or base
+layer of graphics for the map display. Terrain might refer to normal
+terrain types, such as grasslands or forests, but it is not limited to
+this. In a science-fiction game, for instance, the terrain could be
+bare metal or even the landscape features of another planet.</p>
+
+<h1>The Problem</h1>
+
+<p>The problem of terrain transitioning grows out of the need for a
+single type of terrain to be able to mesh with itself and still look
+good when placed next to another terrain. A forest tile should fit
+together with other forest tiles so that the forest proceeds seamlessly
+from one map cell to the next. But what happens when the forest tile is
+placed next to another type of terrain, such as mountains or grassland?
+Without some form "transitioning" the map looks very blocky and
+artificial.</p>
+<p><span class="maintext-1"><b>Figure 1: Terrain Without Transitions</b>
+<br><dir><img src="Isometric%20Rendering%20Howto%209_soubory/TerrainTransitionExample.gif" border="0" height="148" width="148"></dir><br></span>
+</p><p>One solution to the problem is to create specialized transition
+tiles that "blend" sections of each terrain into a single tile.
+However, the need for all terrains to transition into any other means
+that the number of specialized tiles escalates quickly. It may not be
+obvious at first glance, but the number of transitions required even
+between just 2 terrain types is quite large. On a square grid, there
+are 8 possible points of transition: one for each side and one for each
+corner. Even the simple forest-to-grassland transition would require
+256 transitions, and this would have to be done for each terrain
+transition combination. If you have 9 or 10 terrain types, the amount
+of graphics this approach would require is unworkable.</p>
+<p>This can be refined some by using transitions with a transparent
+element, allowing for more variety with fewer tiles. The forest
+transitions would then be able to overlap any terrain. But 256
+transition variations for each terrain type still seems pretty
+excessive.</p>
+<p>So how do you trim down the number of required transition graphics to a number that is more manageable? This is how we did it.</p>
+
+<h1>Our Solution</h1>
+<p>The first part of our solution was to assign a "precedence" to the
+various terrain types. By precedence, I mean that when two different
+terrain types meet, one of them invariably "overlaps" the other. In the
+example of forest meeting grassland, if forest has a higher precedence
+(and it should) then it will always overlap the grassland.</p>
+<p>In Artifact, we used the following terrain precedence (listed
+highest to lowest): jungle, forest, mountain, hill, swamp, deserts,
+grassland, water (open water or river). Please note that this
+precedence does not reflect the relative elevations of the terrain but
+is instead based on which terrains looks best when overlapping other
+terrains.</p>
+<p><span class="maintext-1"><b>Figure 2: Artifact Terrain Precedence</b>
+<br><dir><img src="Isometric%20Rendering%20Howto%209_soubory/TerrainTransitionPrecedence.gif" border="0" height="48" width="432"></dir><br></span>
+
+</p><p>The next step was to reduce the number of terrain transition
+variations from 256. This number can be cut drastically by separating
+the "edge" transitions and the "corner" transitions. As it was pointed
+out above, a single terrain cell has 8 points of transition: one for
+each side and one for each corner. Thus, there are only 16 possible
+edge transitions, and 16 possible corner transitions. By using
+combinations of edge and corner transitions you can create all of the
+necessary 256 variations with only 32 total tiles. This is a huge
+reduction in graphics required.</p>
+<p>The template we used followed a binary format. For the edges, west
+was considered "bit 0", north was "bit 1", and east and south were "bit
+2" and "bit 3", respectively. Similarly for the corners, the northwest
+corner was "bit 0", the northeast corner "bit 1", and so on. How we
+arranged the actual terrain transition graphics is demonstrated in
+Figure 3. If you think of the covered edges as 1 and the non-covered
+edges as 0, you can see that the columns proceed in normal binary
+manner: 0000, 0001, 0010, 0011, 0100, and so on.</p>
+<p><span class="maintext-1"><b>Figure 3: Terrain Transition Template</b>
+<br><dir><img src="Isometric%20Rendering%20Howto%209_soubory/TerrainTransitionTemplate.gif" border="0" height="63" width="483"></dir><br></span>
+</p><p>Figure 4 shows how this was applied to create the grassland transitions in Artifact.</p>
+<p><span class="maintext-1"><b>Figure 4: Artifact Grassland Transitions</b>
+<br><dir><img src="Isometric%20Rendering%20Howto%209_soubory/ArtifactGrasslandTransitions.gif" border="0" height="75" width="593"></dir><br></span>
+</p><p>With this method drawing the map is now a 2-step process. For
+each map cell, the base terrain must be drawn, and then any transitions
+that overlay it in reverse order of precedence (lowest precedence drawn
+first). However, the reduction in graphics required more than makes up
+for the additional work. Also, since the transition graphics are mostly
+transparent, the actual "work" involved is less than it might seem.</p>
+<p>Using the precedence established earlier, and the bit assignments
+for the edges and corners, calculating which transitions you need in a
+particular map cell is relatively straightforward. Essentially, for
+each map cell, you check all adjacency possibilities for terrain types
+that overlap the terrain of the cell. The transition information for a
+single terrain type need only use 8-bits of data (4 bits for the edges
+and 4 bits for the corners) which fits conveniently into a single byte.
+Thus, the total terrain transition information for Artifact's 9 terrain
+types requires only 9 bytes per map cell.</p>
+<p>You can pre-calculate the transition information and store it with
+the map, or you can calculate it "on the fly" at runtime. For rendering
+Artifact's map display, I calculate the transitions for the visible
+portion of the map only. This reduces the amount of storage required
+since only a small portion of the map is visible at one time.</p>
+<p>A quick example: To calculate the transitions needed for a hill
+terrain, you need only consider any adjacent jungles, forests, and
+mountains, since those are the only terrain types that have a higher
+precedence. Figure 5 demonstrates the overlapping of transitions on the
+base terrain graphics, with a hill as the center terrain.</p>
+<p><span class="maintext-1"><b>Figure 5: Artifact Terrains, Before and After</b><br><dir><img src="Isometric%20Rendering%20Howto%209_soubory/TerrainsBefore.gif" border="0" height="111" width="111"> <img src="Isometric%20Rendering%20Howto%209_soubory/TerrainsAfter.gif" border="0" height="111" width="111"></dir><br></span></p><p></p>
+
+<h1>Conclusion</h1>
+<p>With a bit of preparation in the graphics and a few tricks during
+the rendering, you can achieve professional-looking terrain transitions
+in your game. While drawing the map becomes a bit more complicated, the
+reduction in graphics required and the flexibility of the system more
+than make up for that.</p>
+<p><a href="mailto:davidrm@busprod.com">David Michael</a> is co-owner of <a href="http://www.samugames.com/">Samu Games</a> and has produced several online games, including <a href="http://www.samugames.com/artfact">Artifact</a> and <a href="http://www.paintball-net.com/">Paintball NET</a>.</p>
+<p><span class="maintext-1">Copyright © 1999 by David Michael. All Rights Reserved.<br>All Artwork Copyright © 1999 by Samu Games. All Rights Reserved.</span></p>
+
+
+<p align="center"><b><a href="http://www.gamedev.net/community/forums/topic.asp?key=featart&amp;uid=934&amp;forum_id=35&amp;Topic_Title=Tile%2FMap%2DBased+Game+Techniques%3A+Handling+Terrain+Transitions">Discuss this article in the forums</a></b></p>
+<p>
+<br><span class="maintext-2">Date this article was posted to GameDev.net: <b>2/23/2000</b>
+<br>(Note that this date does not necessarily correspond to the date the article was written)</span>
+</p><p><b>See Also:</b><br>
+
+<a href="http://www.gamedev.net/reference/list.asp?categoryid=198">General  </a><br>
+
+</p><p align="center">© 1999-2009 Gamedev.net. All rights reserved. <a href="http://www.gamedev.net/info/legal.htm#copyright"><u>Terms of Use</u></a> <a href="http://www.gamedev.net/info/legal.htm#privacy"><u>Privacy Policy</u></a>
+<br><span class="maintext-1">Comments? Questions? Feedback? <a href="http://www.gamedev.net/info/faq.asp">Click here!</a></span></p>
+
+</td></tr></tbody></table>
+
+
+<!-- start Vibrant Media IntelliTXT Tooltip style sheet -->
+<style type="text/css">
+.iTt{
+    FONT-FAMILY:       Verdana, Arial, Helvetica;
+    FONT-SIZE:         11px;
+    FONT-STYLE:        normal;
+    FONT-WEIGHT:       normal;
+    COLOR:             black;
+    BACKGROUND-COLOR:  lightyellow;
+    BORDER:            black 1px solid;
+    PADDING:           2px;
+}
+.iTt a {
+    COLOR:             0000CC;
+}
+.iTt a:visited {
+    COLOR:             0000CC;
+}
+.iTt a:hover {
+    COLOR:             6666CC;
+}
+.iTt TD {
+   COLOR:              999999;
+}
+</style>
+<!-- end Vibrant Media IntelliTXT style sheet -->
+<!-- start Vibrant Media IntelliTXT script section -->
+<script type="text/javascript" src="Isometric%20Rendering%20Howto%209_soubory/front.js"></script>
+<!-- end Vibrant Media IntelliTXT script section -->
+
+<script src="Isometric%20Rendering%20Howto%209_soubory/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-279474-1";
+urchinTracker();
+</script>
+</body></html>

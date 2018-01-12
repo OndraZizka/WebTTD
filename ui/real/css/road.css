@@ -1,0 +1,15 @@
+#map .field.road.N                    .img_holder { background-image: URL(../img/ttd_web/road/N.png); }
+#map .field.road.W                    .img_holder { background-image: URL(../img/ttd_web/road/W.png); }
+#map .field.road.E                    .img_holder { background-image: URL(../img/ttd_web/road/E.png); }
+#map .field.road.NSE                  .img_holder { background-image: URL(../img/ttd_web/road/NSE.png); }
+#map .field.road.NSW                  .img_holder { background-image: URL(../img/ttd_web/road/NSW.png); }
+#map .field.road.NW                   .img_holder { background-image: URL(../img/ttd_web/road/NW.png); }
+#map .field.road.NE                   .img_holder { background-image: URL(../img/ttd_web/road/NE.png); }
+#map .field.road.SE                   .img_holder { background-image: URL(../img/ttd_web/road/SE.png); }
+#map .field.road.SW                   .img_holder { background-image: URL(../img/ttd_web/road/SW.png); }
+#map .field.road.NS                   .img_holder { background-image: URL(../img/ttd_web/road/NS.png); }
+#map .field.road.NSWE                 .img_holder { background-image: URL(../img/ttd_web/road/NSWE.png); }
+#map .field.road.SWE                  .img_holder { background-image: URL(../img/ttd_web/road/SWE.png); }
+#map .field.road.NWE                  .img_holder { background-image: URL(../img/ttd_web/road/NWE.png); }
+#map .field.road.S                    .img_holder { background-image: URL(../img/ttd_web/road/S.png); }
+#map .field.road.WE                   .img_holder { background-image: URL(../img/ttd_web/road/WE.png); }

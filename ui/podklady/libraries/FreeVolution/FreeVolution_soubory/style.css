@@ -1,0 +1,102 @@
+#map img, #cursor img  {
+	border:0;
+}
+#cursor, #watercursor{
+	position:absolute;
+	left:10px;
+	top:10px;
+	z-index:300;
+	cursor:url(cursor.cur), url(cursor.csr);
+}
+#watercursor{	
+	z-index:209;
+}
+#cursorimage, #watercursorimage, .tile, obj{
+	border:0;
+	padding:0;
+	margin: 0;
+	cursor:url(cursor.cur), url(cursor.csr);
+}
+ .obj {
+	position:absolute;
+	left:10px;
+	top:10px;
+	z-index:200;
+}
+#WindowModalForcer{
+	position:absolute;
+	width:100%;
+	height:100%;
+	background-color:#000000;
+	top:0;
+	left:0;
+}
+.alertbox{
+	border: 2px solid #000000;
+	background-color:#FFFFFF;
+	padding:8px;
+	position:absolute;
+	top:0;
+	left:0;
+	margin:20% 0;
+}	
+li label{
+	display:block;
+	float:left;
+	width:150px;
+	clear:both;
+}
+#viewport{	
+	overflow:hidden;
+	position:absolute;	
+	border:1px dashed #C0C0C0;
+}
+#map {
+	position:relative;
+	top:0;
+	left:0;
+	cursor:url(cursor.cur), url(cursor.csr);
+}
+#gui_button_top{
+	position:absolute;
+	height:15px;	
+	z-index:1500;
+}
+#gui_button_bottom{
+	position:absolute;
+
+	height:15px;	
+	z-index:1500;
+}
+#gui_button_left{
+	position:absolute;
+	width:15px;	
+	z-index:1500;
+}
+#gui_button_right{
+	position:absolute;
+	width:15px;
+	z-index:1500;
+}
+.gui_action_button{
+	width:100px;
+	height:20px;
+	border:1px solid #FF0000;
+	background-color:#FFFFFF;
+	color:#FF0000;
+	font-family:verdana,arial,sans-serif;
+}
+.circlemenubutton{
+	border:1px solid #C0C0C0;
+	background-color:#FFFFFF;
+
+	color:#FF0000;
+	height:20px;
+}
+
+.message{
+	border:1px solid #FF0000;
+	background-color:#C0C0C0;
+	padding:8px;
+	-moz-border-radius-topleft:10px;	
+}

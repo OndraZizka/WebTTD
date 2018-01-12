@@ -1,0 +1,29 @@
+/* Alle neuen CSS Eigentschaften, die nicht in der aktuellen GP Version enthalten sind */
+/*
+deaktivierte Elemente:
+
+Oberer Layer mit Mindestbreite fuer IE6
+#ltop3 {width:777px;}
+
+Oberer Layer mit Mindestbreite fuer IE6 bei Skyscraper
+#ltop4 {width:911px;}
+
+Abstand der oberen Navigation von Links
+#navileft {margin-left:231px;}
+
+
+*/
+
+
+
+/* Oberer Layer mit Mindestbreite fuer IE6 */
+#ltop5 {position:absolute; left:231px; width:546px;}
+
+/* Oberer Layer mit Mindestbreite fuer IE6 bei Skyscraper */
+#ltop6 {position:absolute; left:231px; width:680px;}
+
+/* Abstand vom Plus Button zum Menue */
+#lplus1 {position:relative; left:115px;}
+
+/* Abstand vom Plus Button zum Menue mit Skysraper */
+#lplus2 {position:relative; left:249px;}

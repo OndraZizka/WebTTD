@@ -1,0 +1,252 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1250">
+
+
+
+  <title>GameDev.net - Isometric Tiles</title>
+  <link rel="stylesheet" href="Isometric%20Rendering%20Howto%203_soubory/reference.css" type="text/css">
+  <link rel="icon" href="http://www.gamedev.net/pics/gdicon.png" type="image/png">
+</head><body leftmargin="0" topmargin="0" alink="#000000" background="Isometric%20Rendering%20Howto%203_soubory/watermark.gif" bgcolor="#ffffff" link="#666699" marginheight="0" marginwidth="0" text="#000000" vlink="#666699">
+
+<table border="0" cellpadding="3" cellspacing="0" width="100%">
+  <tbody><tr>
+    <td class="tblhdr">Isometric Tiles</td>
+    <td class="tblhdr" align="right" nowrap="nowrap"><img src="Isometric%20Rendering%20Howto%203_soubory/littleg.gif" align="absbottom" height="16" width="16">&nbsp;<a href="http://www.gamedev.net/"><span style="color: white; text-decoration: none;">GameDev.net</span></a></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+<!-- Begin -  Site: GameDev.net Zone: GameDev.net variable width -->
+<script language="javascript" type="text/javascript">
+<!--
+var browName = navigator.appName;
+var SiteID = 1;
+var browDateTime = (new Date()).getTime();
+if (browName=='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;IFR=False&amp;Browser=NETSCAPE4&amp;PageID=55140&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+if (browName!='Netscape')
+{
+document.write('<s'+'cript lang' + 'uage="jav' + 'ascript" src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;IFR=False&amp;PageID=55140&amp;SiteID=' + SiteID + '&amp;Random=' + browDateTime + '">'); document.write('</'+'scr'+'ipt>');
+}
+// --> 
+</script><script language="javascript" src="Isometric%20Rendering%20Howto%203_soubory/a.js"></script>
+<noscript> <a
+href="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Click&amp;Mode=HTML&amp;SiteID=1&amp;PageID="
+target="_blank"> <img
+src="http://www.gamedev.net/banman/a.aspx?ZoneID=13&amp;Task=Get&amp;Mode=HTML&amp;SiteID=1&amp;PageID="
+width="728" height="90" border="0" alt=""></a>
+</noscript>
+<!-- End -  Site: GameDev.net Zone: GameDev.net variable width --></td>
+  </tr>
+</tbody></table>
+<table border="0" cellpadding="5" cellspacing="0" width="100%"><tbody><tr><td>
+
+<center><span class="title">Isometric Tiles</span>
+<br><span class="author">Revision 1.0
+<br>by <a href="mailto:dmgmbone@yahoo.com">Dino M. Gambone</a></span></center>
+
+<h1>What are Isometric Tiles?</h1>
+<p>Isometric tiles are diamond shaped pictures that can be combined
+with other isometric tiles to form a seamless landscape for tile-based
+games. Due to its diamond shape, the isometric tile gives the illusion
+of depth.
+</p><p><table width="100%">
+   <tbody><tr>
+      <td align="center"><img src="Isometric%20Rendering%20Howto%203_soubory/man_on_tile.gif"></td>
+      <td align="center"><img src="Isometric%20Rendering%20Howto%203_soubory/single_plane.gif"></td>
+   </tr>
+   <tr>
+       <td align="center"><span class="maintext-1">A single isometric tile</span></td>
+       <td align="center"><span class="maintext-1">A map using isometric tiles</span></td>
+   </tr>
+</tbody></table>
+
+</p><h1>Isometric Tile Dimensions</h1>
+
+<p>At first glance of a normal isometric tile image, you think that
+there are only two dimension, a width and a height. This is not totally
+true. Although the image does actually have only 2 dimensions (width
+and height) the tile image represents a 3 dimensional space and thus it
+needs to be described using 3 dimensions: Length, Width, and Height. A
+first this will be a bit confusing to remember. Don't worry. It will
+eventually become more natural as you work with isometric tiles.
+</p><p>The picture to the right shows the isometric tile with its dimensions described.<br>
+<img src="Isometric%20Rendering%20Howto%203_soubory/tile_dimensions.gif" align="right">
+</p><ul>
+   <li>Length:  The leftmost point of the tile to the rightmost point of the tile.</li>
+   <li>Width:
+The farthest point of the tile from the screen to the closest point of
+the tile to the screen. This is probably the most confusing dimension
+of isometric tiles.</li>
+   <li>Height:  The 'altitude' or thickness of the tile.</li>
+</ul>
+<p></p>
+
+<h1>Drawing isometric tiles</h1>
+<p>Since an isometric tile isn't a nice rectangular shape, a simple
+bitblt will not work. What needs to be done is a transparent bitblt
+needs to be performed. If the method you are using to bitblt the tile
+does not support transparent bitblt'ing, then a mask of the tile being
+bitblt is needed. The steps needed to bitblt the tile are as follows:
+</p><ol>
+   <li>You need the picture of the tile and a picture of a mask of the tile.<br>
+   <img src="Isometric%20Rendering%20Howto%203_soubory/tile_and_mask.gif" align="right">
+   In the picture to the right, the white background of the tile image is the transparent portion of the image.</li>   <li>Bitblt
+the mask using the OR operator. For windows, this is the SRCPAINT
+raster operation (ROP). This will create a sort of 'cookie cutout'
+where the part where the image will be is white.</li>
+   <li>Bitblt
+the actual image using the AND operator. For Windows, this is the
+SRCAND raster operation (ROP). This will place the image onto the
+cutout without damaging any surrounding images.</li>
+</ol>
+<p></p>
+
+<p>The actual shape of the mask is up to you. The mask shown in the
+picture above allows the entire image of the tile to come through.</p><p><img src="Isometric%20Rendering%20Howto%203_soubory/top_and_side.gif" align="right">Things
+get a bit trickier if you just want the top portion of the tile to
+show. No longer can simply just bitblt a mask and image because the
+second bitblt will damage the surrounding graphics. This is one
+drawback to having 3 dimensions. A solution to this drawback is to have
+the tile sides as a seperate image. This means more bitblt'ing but more
+flexiblity also. If you need the top of the tile refreshed, but not the
+sides then you can do that if you have the tile in two images.</p>
+
+<h1>Isometric Tile Layering</h1>
+<p>In order to get a smooth transition from one type of tile/terrain to
+another tile/terrain, 'fringe' layers need to be applied. Fringe layers
+are simply flat tile images (no sides) that are drawn on top of a tile
+for a smooth transition effect. Bellow is an example of the application
+of a fringe to a border of grass and stone. Of course a better artist
+could make the fringe look even better by applying a little dirt on the
+side and better colors.</p>
+<p><table width="100%">
+   <tbody><tr>
+      <td align="center"><img src="Isometric%20Rendering%20Howto%203_soubory/fringe_tiles.gif"></td>
+      <td align="center"><img src="Isometric%20Rendering%20Howto%203_soubory/fringe_example.gif"></td>
+   </tr>
+   <tr>
+      <td align="center"><span class="maintext-1">Tiles used to draw the image.  Third tile is a fringe tile.</span></td>
+      <td align="center"><span class="maintext-1">Small example of a fringe.</span></td>   </tr></tbody></table>
+</p><p>This example is not the best example but it will do. The way the
+the fringe layer is applied is the same way the stone tile is drawn.
+First the stone tile is drawn (mask and then image) and then the fringe
+is drawn at the same point (mask and then image). This gives the
+illusion that the grass is invading the cracks of the stone. (Well it's
+suppose to if the art work was better :) )</p><p>Layer upon layer can
+be applied to a tile. There is a drawback, of course. The more layers
+you add to the tile, the slower the drawing of the map will be since it
+needs to bitblt over and over again. Layering is nice and I recommend
+it... but don't go overboard.</p>
+
+<h1>Variable Tile Heights and Tile Base</h1>
+<p>An isometric tile occupies a three dimensional space. There is no
+rule that all tiles in a set of tiles (or tileset) need to be the same
+height. Having variable height tiles is actually a nice feature to
+have. Let's take our stone tile for instance. The first image of the
+tile has a height of 9 pixels. There is no rule that says that our
+grass tile needs to be the same height as the stone tile. Actually,
+making the tiles different heights by a pixel or two will make the
+landscape look even more realistic.</p>
+<p>In order to be able to draw tiles with variable heights properly, we
+need to know where is the base for this tile. What's the tile base? The
+tile base is simply the offset from the tile top (the maximum height
+value) to the point in the tile where the tile is flush with the
+ground. The image bellow shows an example of 3 tiles with different
+heights and how they are drawn next to each other using the tile base
+as a sort of guide line.</p>
+
+<table width="100%">
+   <tbody><tr>
+      <td align="center"><img src="Isometric%20Rendering%20Howto%203_soubory/var_height.gif"></td>
+      <td align="center"><img src="Isometric%20Rendering%20Howto%203_soubory/var_height_example.gif"></td>
+   </tr>
+   <tr>
+      <td align="center"><span class="maintext-1">3 tiles with different heights.  The purple line is the tile base for that tile.</span></td>
+      <td align="center"><span class="maintext-1">The 3 tiles drawn next to each other with the tile bases lined up.</span></td>
+   </tr>
+</tbody></table>
+
+<p>When drawing tiles with a tile base other than 0, simply move the
+tile up on the Y coordinate prior to the bitblt and then bitblt at that
+point. Here's a sample C/C++ code to do that:</p>
+
+<blockquote><pre><div class="code">
+void DrawTile(char TileID, long DestX, long DestY, char BaseOffset){
+    //Initializing stuff
+
+    DestY -= BaseOffset;    //Move the tile up the Y axis to take into
+                            //account the tile base.
+
+    //Actual bitblt call
+}
+
+</div></pre></blockquote>
+
+<p>It's actually very easy to implement. One very nice thing about
+variable height tiles is that it doesn't take away that much processing
+power to do unlike the bitblt'ing done above.</p>
+
+<h1>Conclusion</h1>
+<p>That is the quick and slightly confusing story of isometric tiles
+from my point-of-view. All of these ideas have been developed with a
+particular map engine in mind but the ideas should be abstract enough
+to be useful in any map engine. If you have any questions about this
+article, feel free to contact me (See above). I am willing to help
+anyone who asks nicely. If I don't respond right away, don't get mad...
+I'm probably just busy or away. I'll always respond to tell you I got
+your email.
+</p><p>Good Luck.</p>
+<p align="center"><b><a href="http://www.gamedev.net/community/forums/topic.asp?key=featart&amp;uid=738&amp;forum_id=35&amp;Topic_Title=Isometric+Tiles">Discuss this article in the forums</a></b></p>
+<p>
+<br><span class="maintext-2">Date this article was posted to GameDev.net: <b>9/16/1999</b>
+<br>(Note that this date does not necessarily correspond to the date the article was written)</span>
+</p><p><b>See Also:</b><br>
+
+<a href="http://www.gamedev.net/reference/list.asp?categoryid=198">General  </a><br>
+
+</p><p align="center">© 1999-2009 Gamedev.net. All rights reserved. <a href="http://www.gamedev.net/info/legal.htm#copyright"><u>Terms of Use</u></a> <a href="http://www.gamedev.net/info/legal.htm#privacy"><u>Privacy Policy</u></a>
+<br><span class="maintext-1">Comments? Questions? Feedback? <a href="http://www.gamedev.net/info/faq.asp">Click here!</a></span></p>
+
+</td></tr></tbody></table>
+
+
+<!-- start Vibrant Media IntelliTXT Tooltip style sheet -->
+<style type="text/css">
+.iTt{
+    FONT-FAMILY:       Verdana, Arial, Helvetica;
+    FONT-SIZE:         11px;
+    FONT-STYLE:        normal;
+    FONT-WEIGHT:       normal;
+    COLOR:             black;
+    BACKGROUND-COLOR:  lightyellow;
+    BORDER:            black 1px solid;
+    PADDING:           2px;
+}
+.iTt a {
+    COLOR:             0000CC;
+}
+.iTt a:visited {
+    COLOR:             0000CC;
+}
+.iTt a:hover {
+    COLOR:             6666CC;
+}
+.iTt TD {
+   COLOR:              999999;
+}
+</style>
+<!-- end Vibrant Media IntelliTXT style sheet -->
+<!-- start Vibrant Media IntelliTXT script section -->
+<script type="text/javascript" src="Isometric%20Rendering%20Howto%203_soubory/front.js"></script>
+<!-- end Vibrant Media IntelliTXT script section -->
+
+<script src="Isometric%20Rendering%20Howto%203_soubory/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-279474-1";
+urchinTracker();
+</script>
+</body></html>

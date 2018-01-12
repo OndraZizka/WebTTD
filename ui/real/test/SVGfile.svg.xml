@@ -1,0 +1,47 @@
+<?xml version="1.0" standalone="no"?>
+
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+
+<svg xmlns="http://www.w3.org/2000/svg"
+ style="xbackground-color: #FFFFE0;"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:svg="http://www.w3.org/2000/svg"
+ id="canvas">
+
+
+  <circle cx="300" cy="250" r="40" stroke="black" stroke-width="2" fill="red"/>
+
+  <g transform="translate(30,15)">
+    <defs>
+      <clipPath id="clip2">
+        <circle transform="" cx="100" cy="200" r="105" />
+        <rect width="50" height="50" transform="scale(1,0.5) translate(50,50) rotate(45)" />
+        <polygon points="0,17 32,0 64,17 32,34" transform="translate(70,40)" />
+      </clipPath>
+    </defs>
+    <image clip-path="url(#clip2)" x="0" y="0" width="400" height="300" preserveAspectRatio="xMinYMin" xlink:href="http://farm1.static.flickr.com/234/535566372_33c1025c7b_o.jpg" />
+  </g>
+
+
+  <image x="300" y="250" width="450" height="350" preserveAspectRatio="xMinYMin slice" xlink:href="http://farm1.static.flickr.com/234/535566372_33c1025c7b_o.jpg"  />
+
+  <g transform="translate(80,40) scale(1,0.5) rotate(45)">
+    <style type="text/css">rect { stroke: orange; stroke-width: 2; fill: transparent; width: 50; height: 50; }</style>
+    <text font-size="20pt">Ahoj</text>
+
+    <rect rx="2" ry="2" x="0" y="0" width="50" height="50" onclick="alert(1);">
+    </rect>
+    <rect rx="2" ry="2" x="0" y="50" width="50" height="50" onclick="alert(2);"/>
+    <rect rx="2" ry="2" x="50" y="0" width="50" height="50" onclick="alert(3);"/>
+    <rect rx="2" ry="2" x="50" y="50" width="50" height="50" onclick="alert(4);"/>
+  </g>
+
+  <circle cx="100" cy="250" r="40" stroke="black" stroke-width="2" fill="red">
+    <image x="20" y="20" width="450" height="350" preserveAspectRatio="xMinYMin slice" xlink:href="http://farm1.static.flickr.com/234/535566372_33c1025c7b_o.jpg"  />
+  </circle>
+
+
+
+</svg>

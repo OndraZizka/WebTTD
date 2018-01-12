@@ -1,0 +1,96 @@
+h1
+{
+	text-align:center;
+	padding: 0px 8px 8px 8px;
+	vertical-align: middle;
+	width:auto;
+}
+table
+{
+	margin-left: auto;
+	margin-right: auto;
+	border-style: solid;
+	width:auto;
+}
+caption
+{
+	font-size: larger;
+	font-weight: bold;
+}
+table.small td
+{
+	font-size:small;
+}
+table.smallright
+{
+	float: right;
+	margin-left: 10px;
+	margin-right: 5px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	border-style: solid;
+	border-width: 2px;
+	width: auto;
+}
+table.hidden, table.hidden td
+{
+	border-width: 0px;
+	text-align: right;
+}
+table.smallr td, table.smallright td
+{
+	vertical-align: top;
+	text-align: right;
+	font-size:small;
+	border-color:4f9f2f;
+}
+
+td, th
+{
+	border-style: solid;
+	border-width: 1px;
+	padding: 3px;
+}
+th
+{
+	border-width: 2px;
+}
+table.smallr td.hcenter, table.smallright td.hcenter, table.hidden td.hcenter, .hcenter
+{
+	text-align: center;
+	vertical-align: middle;
+}
+table.smallr td.hright, table.smallright td.hright, table.hidden td.hright, .hright
+{
+	text-align: right;
+	vertical-align: top;
+}
+table.smallr td.hleft, table.smallright td.hleft, table.hidden td.hleft, .hleft
+{
+	vertical-align: top;
+	text-align: left;
+}
+.Aircraft
+{
+	background-image : url(/common/subarctic.png);
+	background-color: Gray;
+}
+tr.Aircraft td, tr.Aircraft th, td.Aircraft
+{
+	border-width: 1px;
+	border-color: #bf7f4f;
+}
+.Ship
+{
+	background-image : url(/common/sea.png);
+	background-color: Blue;
+}
+tr.Ship td, tr.Ship th, td.Ship
+{
+	border-width: 1px;
+	border-color: #7B68EE;
+}
+.form
+{
+	padding:5px;
+}
