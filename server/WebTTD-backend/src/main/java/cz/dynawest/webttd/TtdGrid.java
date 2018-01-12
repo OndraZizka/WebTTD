@@ -60,3 +60,20 @@ public class TtdGrid extends TiledGrid<Cell> {
   }
 
 }// class TtdGrid
+
+/**
+ * Factory to create new cells which not yet exist when calling get().
+ */
+class TtdCellFactory implements GridCellFactory {
+
+  @Override
+  public Cell createCell( int x, int y ) {
+    return createCell( new Point(x,y) );
+  }
+
+  @Override
+  public Cell createCell( Point pt ) {
+    return new Cell( pt );
+  }
+
+}
